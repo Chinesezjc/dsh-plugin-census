@@ -1,0 +1,115 @@
+# Refresh the catalogue from the `dsh-plugin` topic.
+#
+# Runs on a schedule off the hour: GitHub queues scheduled workflows heavily at
+# :00, and this job spends its whole budget on search and contents API calls
+# that compete with everyone else's cron.
+#
+# The job only ever regenerates data and opens a commit on `main`. It does not
+# install or execute any third-party code: every check here is static, reading
+# `package.json` and the declared patch file through the contents API. Install
+# verification, when added, must run in a separate workflow with its own
+# isolation, because it executes untrusted postinstall scripts.
+name: refresh
+
+on:
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The gate runs before the data is regenerated: if the tier-3 predicate
+      # is broken, the catalogue it would produce is not trustworthy, and
+      # publishing it would be worse than publishing yesterday's.
+      - name: Verify contract gates reject invalid input
+        run: node scripts/test-gates.mjs
+
+      - name: Collect repositories carrying the topic
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          : > data/repos-raw.jsonl
+          for page in 1 2 3 4 5 6 7 8 9 10; do
+            gh api "search/repositories?q=topic:dsh-plugin&sort=updated&per_page=100&page=${page}" \
+              --jq '.items[] | {full_name, stars: .stargazers_count, pushed_at, created_at, archived, fork, desc: .description, lang: .language, topics}' \
+              >> data/repos-raw.jsonl
+            sleep 2
+          done
+          wc -l data/repos-raw.jsonl
+
+      - name: Probe the bundle contract
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RADAR_CONCURRENCY: '6'
+        run: |
+          jq -r -s 'unique_by(.full_name) | .[] | .full_name' data/repos-raw.jsonl > /tmp/repos.txt
+          node scripts/probe-contract.mjs < /tmp/repos.txt > data/contract-v2.jsonl
+          jq -r '.verdict' data/contract-v2.jsonl | sort | uniq -c | sort -rn
+
+      - name: Attribute plugin surfaces
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RADAR_CONCURRENCY: '6'
+        run: |
+          node scripts/attribute.mjs < data/contract-v2.jsonl > data/surface.jsonl
+          jq -r '"\(.surface) \(.confidence)"' data/surface.jsonl | sort | uniq -c | sort -rn
+
+      - name: Join and render
+        run: |
+          jq -s '.' data/surface.jsonl > /tmp/surf.json
+          jq -s 'unique_by(.full_name)' data/repos-raw.jsonl > /tmp/raw.json
+          jq -s -c --slurpfile S /tmp/surf.json --slurpfile R /tmp/raw.json '
+            ($S[0] | map({key:.repo, value:.}) | from_entries) as $s
+            | ($R[0] | map({key:.full_name, value:.}) | from_entries) as $r
+            | map(select(.verdict=="CONTRACT_OK") | {
+                repo, package: .name,
+                surface: ($s[.repo].surface // "unknown"),
+                confidence: ($s[.repo].confidence // "none"),
+                evidence: ($s[.repo].evidence // []),
+                stars: ($r[.repo].stars // 0),
+                description: ($r[.repo].desc // null),
+                pushed: ($r[.repo].pushed_at // null)})
+            | sort_by([(if .confidence=="high" then 0 elif .confidence=="medium" then 1
+                        elif .confidence=="low" then 2 else 3 end), -.stars])
+            | .[]' data/contract-v2.jsonl > data/catalog.jsonl
+          node scripts/render.mjs
+
+      # A refresh that produces an empty catalogue means the search or probe
+      # step failed without a non-zero exit, so it must not be committed over
+      # a good one.
+      - name: Guard against an empty catalogue
+        run: |
+          count=$(wc -l < data/catalog.jsonl)
+          echo "catalogue entries: ${count}"
+          if [ "${count}" -lt 100 ]; then
+            echo "refusing to publish a catalogue with ${count} entries" >&2
+            exit 1
+          fi
+
+      - name: Commit regenerated catalogue
+        run: |
+          if git diff --quiet; then
+            echo "catalogue is already current"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/ PLUGINS.md
+          git commit -m 'Refresh the contract-verified plugin catalogue'
+          git push

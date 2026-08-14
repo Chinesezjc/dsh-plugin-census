@@ -1,0 +1,999 @@
+121103qwq/dsh-vision-sidecar	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+147228/dsh-xiaoyao-skins	NO_DSH_FIELD	dsdeps=1 cordis=1
+0xsline/awesome-deepseek-harness	NO_PACKAGE_JSON	-
+030611/dsh-telemetry-redactor	BUNDLE_PATCH	patch=string dsdeps=7 cordis=3
+0xsline/dsh-spotlight	BUNDLE_PATCH	patch=string dsdeps=0 cordis=2
+147228/dsh-black-whale	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+0sour/dsh-plugins	NO_PACKAGE_JSON	-
+01Virex/dsh-status-rotator	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+030611/qiushi-dsh-evidence-audit	BUNDLE_PATCH	patch=string dsdeps=3 cordis=2
+1690834643/dsh-usage-dashboard	HAS_DSH_NO_PATCH	dsdeps=4 cordis=0
+030611/dsh-verification-receipt	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+1HelloMan1/dsh-stats-dashboard	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+1475505/dsh-plugin-miliastra-toolbox	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+318197375/dsh-bottom-stats	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+384961890-ui/pawin-brain-deepseek-harness	NO_DSH_FIELD	dsdeps=0 cordis=0
+Acidmoon/DIzzy-DSH	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+AdamPlatin123/awesome-dsh-plugins	NO_PACKAGE_JSON	-
+918154429/dsh-codex-import	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+1a125/dsh-mcp-manager	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+15828148/dsh-portable-launcher	NO_PACKAGE_JSON	-
+1na-ko/dsh-hdc-bridge	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+AlliotTech/deepseek-harness-docker	NO_DSH_FIELD	dsdeps=1 cordis=0
+AllenCX/dsh-quant-workspace	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+Alexis-fish/dsh-worktrees	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+Alyosha28/deep_option	NO_PACKAGE_JSON	-
+AnacondaKC/dsh-custom-css	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+AdamPlatin123/dsh-tonghuashun	NO_PACKAGE_JSON	-
+Amengclass/dsh-memory	BUNDLE_PATCH	patch=string dsdeps=3 cordis=0
+Alexis-fish/dsh-projects	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+AngelosZou/graphlint	NO_PACKAGE_JSON	-
+Anionex/agent-vision-toolkit	NO_PACKAGE_JSON	-
+AIMFllyYS/dsh-operating-context	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+Alex-Yanggg/awesome-DSH-plugin	NO_PACKAGE_JSON	-
+Anionex/dsh-turn-rewind	BUNDLE_PATCH	patch=string dsdeps=0 cordis=1
+Anionex/dsh-vision-toolkit	BUNDLE_PATCH	patch=string dsdeps=13 cordis=1
+Areium/dsh-fail-logger	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+AprilWizard/dsh-multi-cot	NO_DSH_FIELD	dsdeps=18 cordis=1
+Arnoldkevin/prismrelay-mcp	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+AnacondaKC/dsh-douyin	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+Anionex/dsh-computer-use	BUNDLE_PATCH	patch=string dsdeps=20 cordis=1
+Babulubobo/dsh-codex-oauth	NO_DSH_FIELD	dsdeps=3 cordis=0
+Asaiuta/dsh-session-hub	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+AnacondaKC/dsh-stock-market	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+Andy8647/dsh-auto-approval	NO_DSH_FIELD	dsdeps=0 cordis=0
+ArtificialNotImbecile/dsh-context-taxonomy	NO_DSH_FIELD	dsdeps=17 cordis=1
+Bandersnatch0x/amber-protocol	NO_DSH_FIELD	dsdeps=0 cordis=0
+Bandersnatch0x/design-playbook	NO_PACKAGE_JSON	-
+Beants/dsh-trellis	NO_DSH_FIELD	dsdeps=2 cordis=1
+BiBoyang/dsh-eval-harness	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+BeAChanger/dsh-openclaw-acp	BUNDLE_PATCH	patch=string dsdeps=3 cordis=0
+Bleed00/dsh-claude-mem	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+Ayase34/gal-view	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+BiBoyang/dsh-im-bridge	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+BrambleXu/dsh-annotate	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+BrambleXu/dsh-revdiff	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+BlockRunAI/dsh-clawrouter	BUNDLE_PATCH	patch=string dsdeps=12 cordis=3
+BruceWu1126/dsh-web-background	HAS_DSH_NO_PATCH	dsdeps=2 cordis=0
+Chi-hong22/dsh-latexcp	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+CanglongCl/dsh-web-review	NO_DSH_FIELD	dsdeps=0 cordis=0
+Chi-hong22/dsh-mdbox	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+Buyi-wsgzg/dsh-sidechain	BUNDLE_PATCH	patch=string dsdeps=15 cordis=1
+BrambleXu/dsh-prompt-profile	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+ChisaAlter/Deepseek-Harness-Desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+Chinesezjc/dsh-interconnect	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+ChuanTianML/dsh-island	NO_PACKAGE_JSON	-
+Chungor/owlx-mcp	NO_PACKAGE_JSON	-
+Civitasv/dsh-plugin-colorscheme	HAS_DSH_NO_PATCH	dsdeps=8 cordis=1
+CrazyShout/dsh-ssh-remote	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+DGPisces/deepseek-harness-openai-oauth	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+DDDFXYqiming/Agent_Extensions	NO_PACKAGE_JSON	-
+ChuanTianML/dsh-open-with	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+DTSFO/dsh-model-modes	BUNDLE_PATCH	patch=string dsdeps=13 cordis=1
+Deklan-Deng/Dcode	NO_DSH_FIELD	dsdeps=0 cordis=0
+ChuanTianML/dsh-share	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+Demogorgon314/dsh-resume-plugin	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+Devin-AXIS/iPolloWork	NO_DSH_FIELD	dsdeps=0 cordis=0
+Dino6021/dsh-usage-cost	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Dominic789654/awesome-deepseek-harness	NO_PACKAGE_JSON	-
+Electricitysheep/dsh-handbook	NO_PACKAGE_JSON	-
+DTSFO/dsh-conversation-rewind	BUNDLE_PATCH	patch=string dsdeps=18 cordis=1
+Elaina-real/dsh-tiered-approval	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+Electricitysheep/dsh-tool-turbo	NO_DSH_FIELD	dsdeps=3 cordis=1
+Elohia/dsh-plugin-mm-vision	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Degurechaff57/dsh-openapi	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+Equinox7379/dsh-config-watch	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Elohia/pi-mm-vision	NO_DSH_FIELD	dsdeps=0 cordis=0
+Equinox7379/dsh-daily-brief	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Equinox7379/dsh-session-repair	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Equinox7379/dsh-update-radar	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Easyhoov/deepseek-harness-desktop	NO_DSH_FIELD	dsdeps=1 cordis=0
+Drifter-yh/dsh-tool-policy	BUNDLE_PATCH	patch=string dsdeps=18 cordis=3
+Ericwong5021/deepseek-plugin-store	NO_DSH_FIELD	dsdeps=0 cordis=0
+EvilIrving/dsh-context-proxy	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+Equinox7379/dsh-turn-watchdog	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Favio8/dsh-plugin-deepeye	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+FantasyStarry/dsh-token-stats	HAS_DSH_NO_PATCH	dsdeps=2 cordis=0
+Fishquito7/dsh-skill-viewer	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Fisfzy/math-lean	NO_DSH_FIELD	dsdeps=0 cordis=0
+Fishsb/dsh-prompt-enhancer	NO_PACKAGE_JSON	-
+Ericwong5021/dsh-kanban	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+FlashingChen/dsh-worktree	NO_DSH_FIELD	dsdeps=5 cordis=1
+FlytoMAYDAY80/dsh-pet	NO_DSH_FIELD	dsdeps=0 cordis=0
+EvilIrving/dsh-repro	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+EvilIrving/dsh-proof	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+Flyvhidbwo/dsh-vision-proxy	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Gandufu/dsh-plugin	NO_DSH_FIELD	dsdeps=0 cordis=0
+Ghost011118/dsh-balance-meter	BUNDLE_PATCH	patch=string dsdeps=15 cordis=1
+GooodWei/context-vista	HAS_DSH_NO_PATCH	dsdeps=7 cordis=1
+GengDaPeng/dsh-agent-message	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+HackSing/dsh-plugins	NO_PACKAGE_JSON	-
+H1a3x/dsh-token-stats	HAS_DSH_NO_PATCH	dsdeps=1 cordis=1
+Han-1413141/dsh-sticky-disclosure	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Ethanout/computer-use-plus	NO_DSH_FIELD	dsdeps=0 cordis=0
+HaoyueQin/deepseek-harness-desktop	NO_DSH_FIELD	dsdeps=1 cordis=0
+Han-1413141/dsh-cost-meter	BUNDLE_PATCH	patch=string dsdeps=2 cordis=0
+He2way/dsh-task-console	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+HeiGeAi/deepseek-harness-skin	NO_PACKAGE_JSON	-
+HongzhongL/dsh-hotswap	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+HomophonicFate/rpg-maker-mac-skill	NO_PACKAGE_JSON	-
+Hu9956/dsh-codex-provider	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+HuanLinOTO/dsh-plugin-anti-ads	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+HarcoChen/dsh-vsc-integration	NO_DSH_FIELD	dsdeps=0 cordis=0
+Fisfzy/ego-browser	HAS_DSH_NO_PATCH	dsdeps=1 cordis=1
+HuanLinOTO/dsh-plugin-better-sidebar-plugin-office	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+HsiangNianian/dsh-auto-continue	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+HuanLinOTO/dsh-plugin-auto-blame	BUNDLE_PATCH	patch=string dsdeps=14 cordis=2
+HuanLinOTO/dsh-plugin-aigc-canvas	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+HuanLinOTO/dsh-plugin-d399	BUNDLE_PATCH	patch=string dsdeps=3 cordis=2
+HuanLinOTO/dsh-plugin-interpreters	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+Gordonynh/dsh-plugin-codex-import	NO_DSH_FIELD	dsdeps=4 cordis=1
+HuanLinOTO/dsh-plugin-mineru	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+HuanLinOTO/dsh-plugin-pet-rs	NO_PACKAGE_JSON	-
+HuanLinOTO/dsh-plugin-spur	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+InklingYoshi584/dsh-tool-hashline	NO_DSH_FIELD	dsdeps=11 cordis=1
+GiantGKL/dsh-cost	HAS_DSH_NO_PATCH	dsdeps=6 cordis=2
+HuanLinOTO/dsh-plugin-sleep	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+Hyperionjust/Primordial-soup-	NO_PACKAGE_JSON	-
+Jelee0145/dsh-mem	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+JasonJin2006/dsh-sound-effects-plugin	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+JeremyGuo/dsh-custom-workspace	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+HuanLinOTO/dsh-plugin-ya-workspace-sidebar	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+Isekai-Mfu/dsh-mimo-vision-hint	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+HuanLinOTO/dsh-plugin-yet-another-subagent	BUNDLE_PATCH	patch=string dsdeps=17 cordis=1
+Jesse-njx/dsh-memory	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+Jesse-njx/dsh-chatnode-wechat	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+Jesse-njx/dsh-plugin-manager	NO_DSH_FIELD	dsdeps=0 cordis=0
+Hyperionjust/dsh-tool-underseal	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+Jesse-njx/dsh-crosstalk	BUNDLE_PATCH	patch=string dsdeps=9 cordis=2
+Jesse-njx/dsh-plugin-manager-registry	NO_DSH_FIELD	dsdeps=0 cordis=0
+Jesse-njx/dsh-routines	BUNDLE_PATCH	patch=string dsdeps=10 cordis=2
+Jesse-njx/dsh-cowork	NO_DSH_FIELD	dsdeps=0 cordis=0
+Jesse-njx/dsh-skillport	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+Jesse-njx/dsh-polyglot	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+JimmyJin2006/dsh-skill-manager	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Jesse-njx/dsh-voice	BUNDLE_PATCH	patch=string dsdeps=18 cordis=1
+JustGenius-s/DSH-Desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+Jinsong-Zhou/dsh-html-canvas	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+Jinsong-Zhou/safe-find-dsh-plugins	NO_PACKAGE_JSON	-
+KarlOfLaw/dsh-side-chat	NO_PACKAGE_JSON	-
+KarlOfLaw/dsh-goal-mode-enhance	BUNDLE_PATCH	patch=string dsdeps=13 cordis=1
+Karuisawa-Mrs/dsh-plugins	NO_PACKAGE_JSON	-
+KhanZou/Deepseek-Harness-as-Desktop	NO_PACKAGE_JSON	-
+Kevoyuan/dsh-mac-vision	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+KitDoesIt/dsh-compaction-instant	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+KureKaruna/dsh-at	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+KeLearns/dsh-update-checker	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+LKRCharon/dsh-egress-guard	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+JustGenius-s/DSH-Plugs	NO_DSH_FIELD	dsdeps=0 cordis=0
+LJH-snow/dsh-tool-github	NO_DSH_FIELD	dsdeps=2 cordis=1
+KirschBluteX/engineer-software	NO_PACKAGE_JSON	-
+LaoYueHanNi/dsh-token-usage	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+KinGao294/dsh-skin	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+LaplaceYoung/dsh-qq2006	NO_DSH_FIELD	dsdeps=3 cordis=1
+LaplaceYoung/oh-my-dsh	NO_DSH_FIELD	dsdeps=0 cordis=1
+Lbryany/dsh-codebuddy	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+Leawind/dsh-minecraft-dev	NO_PACKAGE_JSON	-
+KnCRJVirX/dsh-desktop	NO_DSH_FIELD	dsdeps=20 cordis=1
+LX2000WASD/dsh-web-plugin-manager	BUNDLE_PATCH	patch=string dsdeps=12 cordis=2
+Lehmaning/dsh-randomuuid-polyfill	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+Komeiji-Shiki/graycode-for-dsh	NO_DSH_FIELD	dsdeps=0 cordis=0
+LiangYin233/dsh-model-config-sync	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+LingLambda/dsh-undo	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+Lixiaoyiao/deepseek-harness-action	NO_DSH_FIELD	dsdeps=1 cordis=0
+Leeaoyin/dr-agent-skills	NO_PACKAGE_JSON	-
+LnsiAxe/dsh-web-restart	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+LoftyTao/dsh-ui-workbench	BUNDLE_PATCH	patch=string dsdeps=7 cordis=2
+Liu-ty/dsh-balance-display	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+LoserFox/dsh-git-identity	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+LingyeSoul/dsh-rider	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+LoserFox/telegram	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+LuZhouheng/dsh-gen3d	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+Luke-Yong/dsh-plugin-knowledge-graph	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+Lyn-77/ProMentor	NO_PACKAGE_JSON	-
+Luaphes/dsh-web-attention-badge	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Luaphes/dsh-plugins-market	NO_PACKAGE_JSON	-
+MAXeaglet/dsh-bash-terminal	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+MaimoryLab/dib	NO_PACKAGE_JSON	-
+Lum1104/dsh-browser	NO_DSH_FIELD	dsdeps=1 cordis=0
+LoserFox/distill	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+MashedPotato817/dsh-git-plugin	NO_DSH_FIELD	dsdeps=6 cordis=1
+Mappedinfo/PlainDeck	NO_DSH_FIELD	dsdeps=0 cordis=0
+MashedPotato817/dsh-tool-browser	NO_DSH_FIELD	dsdeps=4 cordis=1
+MashedPotato817/dsh-tui	NO_DSH_FIELD	dsdeps=0 cordis=0
+MOLAaaaaaaa/dsh-seismicx	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+Miku196/dsh-tokensave	NO_DSH_FIELD	dsdeps=1 cordis=0
+MC5lan/dsh-multimodal	BUNDLE_PATCH	patch=string dsdeps=14 cordis=1
+Meredith2328/dsh-sticky-note	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+Mingxi2077/dsh-plugin-review	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+MirDie/dsh-xai	BUNDLE_PATCH	patch=string dsdeps=13 cordis=1
+MicroHEROX/dsh-exa-mcp	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Mintcolour/dsh-sidechat	BUNDLE_PATCH	patch=string dsdeps=24 cordis=1
+Moeblack/deepseek-manners	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+Moeblack/dsh-message-edit	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Moeblack/dsh-prompt-studio	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Moeblack/dsh-skins	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+MorGogh/widget-dock	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+MoonShadow1976/chiral-pulse	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+Moeblack/dsh-payload-capture	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+MostlyHarmlessxyz/dsh-safe-web-fetch	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+MuziIsabel/dsh-win-notify	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+Moximxxx/dsh-find-skill	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+Mongfayi/dsh-recall	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+MysaDC/dsh-plugin-description	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+NEXTINDIE/DeepSeek-Harness-for-VS-Code	NO_DSH_FIELD	dsdeps=0 cordis=0
+Nagi-ovo/dsh-find-plugins	NO_PACKAGE_JSON	-
+Nagi-ovo/dsh-visualize	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+Mongfayi/dsh-local-filetree	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+Nagi-ovo/dsh-ads	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+NigelYao/dsh-view-modes	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+NinjaSln-labs/dsh-plugins	NO_DSH_FIELD	dsdeps=0 cordis=0
+NoWint/Oh-My-DSH	NO_PACKAGE_JSON	-
+NexusAgentX/dsh-lens	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+Nexus-Aethra/DSH-plugin-switch	BUNDLE_PATCH	patch=string dsdeps=5 cordis=2
+Nunchakus888/dsh-turn-budget	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+Nwflower/dsh-chat-import	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+Nwflower/dsh-file-claim	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+NexusAgentX/dsh-mcp-adapter	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+NanmiCoder/dsh-agent-teams	BUNDLE_PATCH	patch=string dsdeps=13 cordis=1
+Ox0400/dsh-vault	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+PangYiMing/dsh-port-guard	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+PangYiMing/dsh-screenshot-diff	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+PeanutsDou/peanut-dsh-plugin	NO_PACKAGE_JSON	-
+PangYiMing/dsh-mobile-control	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+PangYiMing/dsh-browser-control	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+Opr4Mp3r/deepseek-harness-plugin-from-scratch	BUNDLE_PATCH	patch=string dsdeps=10 cordis=3
+PangYiMing/dsh-batch-regression	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+PM-Shawn/Abu-Cowork	NO_DSH_FIELD	dsdeps=0 cordis=0
+PerryLink/dsh-claude-move	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+PerryLink/dsh-checkpoint-rewind	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+PerryLink/dsh-doublecheck	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+PerryLink/dsh-github	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+PerryLink/dsh-composer-history	HAS_DSH_NO_PATCH	dsdeps=2 cordis=1
+PerryLink/dsh-lsp-actions	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+PerryLink/dsh-background-agents	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+PerryLink/dsh-mcp-panel	BUNDLE_PATCH	patch=string dsdeps=9 cordis=2
+PerryLink/dsh-output-styles	NO_DSH_FIELD	dsdeps=18 cordis=1
+PerryLink/dsh-memento	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+PerryLink/dsh-permission-rules	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+PerryLink/dsh-auto-review	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+PicGo/dsh-plugin	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+PerryLink/dsh-session-pin	HAS_DSH_NO_PATCH	dsdeps=6 cordis=1
+PerryLink/dsh-plugin-guide	NO_PACKAGE_JSON	-
+PivotStackIntelligence/dsh-github	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+Player-MINEPIG/dsh-llm-codex-oauth	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+PixLunaLab/dsh-plugin-pixluna	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+Porphyrioon/ironlaw	NO_DSH_FIELD	dsdeps=0 cordis=0
+PlutoKeating/dsh-lark-bot	NO_DSH_FIELD	dsdeps=1 cordis=0
+PangYiMing/dsh-bisect-debug	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+RNlao/dsh-wallpaper	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+PerryLink/dsh-skill-pack-security	NO_PACKAGE_JSON	-
+RYun601/dsh-launcher	NO_PACKAGE_JSON	-
+RangeKing/vibemeter	NO_DSH_FIELD	dsdeps=0 cordis=0
+RRRosmontis/dsh-qwen-mm	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+Qintsg/dsh-safe-delete	HAS_DSH_NO_PATCH	dsdeps=7 cordis=1
+Proton1917/dsh-live-stats	HAS_DSH_NO_PATCH	dsdeps=8 cordis=1
+RealAlexandreAI/dsh-nocturne-memory	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+Ruler4396/dsh-launcher	NO_PACKAGE_JSON	-
+Roy-oss1/dsh-lark	BUNDLE_PATCH	patch=string dsdeps=3 cordis=2
+Ruler4396/dsh-launcher-lifetime	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+RealAlexandreAI/dsh-atuin	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+STARDUSTLC666/dsh-dingtalk	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+RealAlexandreAI/dsh-cloudflare-browser-run	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+STARDUSTLC666/dsh-email	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+STARDUSTLC666/dsh-calendar	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+SakalioLabs/dsh-code-ide	NO_PACKAGE_JSON	-
+Scorp1o117/dsh-soul-md	HAS_DSH_NO_PATCH	dsdeps=3 cordis=0
+Scorp1o117/dsh-plugin-marketplace	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+RealAlexandreAI/dsh-all-search	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+Scorp1o117/dsh-tool-vision	HAS_DSH_NO_PATCH	dsdeps=3 cordis=0
+SenmuuuuW/dsh-group-photo	NO_DSH_FIELD	dsdeps=0 cordis=0
+Sdongmaker/vpshub	NO_DSH_FIELD	dsdeps=2 cordis=1
+Scorp1o117/dsh-tdai-memory	HAS_DSH_NO_PATCH	dsdeps=3 cordis=0
+Sev7een/ds-api-usage	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+STARDUSTLC666/dsh-slack	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+ShawnSiao/dsh-credentials-keychain	NO_PACKAGE_JSON	-
+ShawnSiao/dsh-agent-eval	NO_PACKAGE_JSON	-
+SepineTam/mcp-for-stata	NO_PACKAGE_JSON	-
+Shmilyol/galgame-skin	NO_PACKAGE_JSON	-
+SeverusZh/dsh-notify-windows	NO_DSH_FIELD	dsdeps=0 cordis=0
+Small-tailqwq/dsh-deep-whale	NO_PACKAGE_JSON	-
+Small-tailqwq/dsh-deepcel	NO_PACKAGE_JSON	-
+Small-tailqwq/dsh-tps	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+SnowCrescenter-tech/dsh-launcher	NO_PACKAGE_JSON	-
+Spirit4471/multimodal-bridge	NO_PACKAGE_JSON	-
+Spirtxiaoqi7/mindspace-dsh-session-memory	BUNDLE_PATCH	patch=string dsdeps=6 cordis=0
+Starfie1d1272/dsh-builtin-toggles	BUNDLE_PATCH	patch=string dsdeps=8 cordis=2
+SiYue-ZO/dsh-translator	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+Sunrisepeak/dsh-index	NO_PACKAGE_JSON	-
+TYEclipse/dsh-netdoctor	HAS_DSH_NO_PATCH	dsdeps=4 cordis=1
+TYEclipse/dsh-plugins-hub	NO_PACKAGE_JSON	-
+Simon314620/dsh-turn-index	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+THU-MAIC/dsh-openmaic	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+TecFancy/dsh-deeptutor	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+TheChengXi/intent-flow	NO_DSH_FIELD	dsdeps=0 cordis=0
+TheYoungChen/dsh-plugin-market	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+TYEclipse/dsh-webfetch	HAS_DSH_NO_PATCH	dsdeps=4 cordis=1
+SnowCrescenter-tech/dsh-milestone	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+TohsakaRIN521/dsh-academic-skill	NO_PACKAGE_JSON	-
+Tieboyh/dsh-session-search	NO_DSH_FIELD	dsdeps=5 cordis=1
+Thhoho/reSanity	NO_DSH_FIELD	dsdeps=3 cordis=1
+Totoro-qaq/Cobsidian	NO_PACKAGE_JSON	-
+Tokimorphling/deepseek-harness-rs	NO_PACKAGE_JSON	-
+TtTRz/dsh-gatedflow	NO_DSH_FIELD	dsdeps=6 cordis=2
+Toukaiteio/dsh-plugin-installer	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+Toukaiteio/dsh-effort-tweak	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+Tyan66666/billion-context-dsh	NO_DSH_FIELD	dsdeps=9 cordis=1
+TiankunDai/dsh-vision-LMstudio	NO_DSH_FIELD	dsdeps=0 cordis=0
+TtTRz/dsh-wecom	BUNDLE_PATCH	patch=string dsdeps=17 cordis=1
+Towzai/dsh-memory	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+TwotwoPiggy/dsh-balance	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+UynajGI/dsh-ssh	NO_DSH_FIELD	dsdeps=6 cordis=1
+Very12345/sai-dsh-plugins	NO_DSH_FIELD	dsdeps=0 cordis=0
+Uddoo/dsh-dashboard	BUNDLE_PATCH	patch=string dsdeps=15 cordis=1
+Very12345/sai	NO_PACKAGE_JSON	-
+Wanbinyu/dsh-billing	NO_PACKAGE_JSON	-
+Wine-Red/dsh-prompt-stash	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+Wha1eChai/dsh-supervisor	BUNDLE_PATCH	patch=string dsdeps=8 cordis=3
+XYZ1024-alt/dsh-side-panel	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Xieweikang123/dsh-vision-bridge	NO_DSH_FIELD	dsdeps=1 cordis=1
+Xilin3/dsh-prompt-persona	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+Wanbinyu/dsh-plugin-git-inspect	NO_DSH_FIELD	dsdeps=7 cordis=1
+XCNXNXNX/dsh-portable-tavern	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+XiLuovo/dsh-session-timeline	BUNDLE_PATCH	patch=string dsdeps=3 cordis=0
+Xplore-LAB/dsh-plugin-asmemory	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+YELEBAI/dsh-plugin-marketplace	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+WSL043/dsh-codex-subscription	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+YYTbit/dsh-plugin-claude-bridge	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+YYTbit/awesome-dsh-bridges	NO_PACKAGE_JSON	-
+YYTbit/dsh-plugin-cost-tracker	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+SnowCrescenter-tech/dsh-desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+YJSoooooo/dsh-chrome	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+YYTbit/dsh-plugin-codex-bridge	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+YYTbit/dsh-plugin-context-compressor	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+YYTbit/dsh-plugin-opencode-bridge	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+YYTbit/dsh-plugin-pi-bridge	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+YYTbit/dsh-plugin-meta-memory	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+YYTbit/dsh-plugin-auto-docs	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+YYTbit/dsh-plugin-code-review	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+YYTbit/dsh-plugin-vision-toolkit	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+Yan-Zero/dsh-codex	BUNDLE_PATCH	patch=string dsdeps=23 cordis=3
+YYTbit/dsh-plugin-agent-dashboard	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+YYTbit/dsh-plugin-rag	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Ychris12138/dsh-usage-stats	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+YisfL/dsh-desktop	NO_DSH_FIELD	dsdeps=1 cordis=0
+Youngxj/dsh-ProjectModel	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+YinFengWindy/dsh-plugin-shiori-role	NO_PACKAGE_JSON	-
+ZASENJC/dsh-plugins-store	NO_DSH_FIELD	dsdeps=0 cordis=0
+ZBCs-StudioCr-CN/dsh-skill-manager	NO_PACKAGE_JSON	-
+Yihong89/dsh-plugins	NO_DSH_FIELD	dsdeps=0 cordis=0
+YunTaiHua/illusion-agent	NO_PACKAGE_JSON	-
+ZK-Andy/dsh-continual-evolve	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+ZeroHackz/OpenFlowFrames	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+Zhenyu98/dsh-context-doctor	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+ZSeven-W/dsh-openpencil	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+ZhuXinAI/sidesight	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+a179-sanae/dsh-code-check	BUNDLE_PATCH	patch=string dsdeps=15 cordis=2
+Yuuz12/dsh-vision-helper	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+acosmi/dsh-session-supervisor	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+ZgblKylin/dsh-terminal	HAS_DSH_NO_PATCH	dsdeps=1 cordis=1
+akira399/dsh-plugin-publisher	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+acosmi/dsh-plugin	NO_PACKAGE_JSON	-
+akqwpeter-prog/dsh-media-skills	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+alingalingling/ui-status-label	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+agentic-control-plane/dsh-acp-plugin	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+ang-XWBWZ/Pwiki	NO_DSH_FIELD	dsdeps=0 cordis=0
+akira399/dsh-godot-skill	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+agent-plaza/agent-plaza	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+ang-XWBWZ/dsh-approval-ai	BUNDLE_PATCH	patch=string dsdeps=13 cordis=1
+alison-xx/deepseek-harness-flow	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+alooshxl/dsh-session-pins	BUNDLE_PATCH	patch=string dsdeps=10 cordis=2
+arrow949/dsh-turn-approval	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+aryswisnu/dsh-eval-regression	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+anweat/dsh-plugin-dev-guide	NO_PACKAGE_JSON	-
+asdf17128/dsh-doctor	NO_DSH_FIELD	dsdeps=0 cordis=0
+asdf17128/dshp	NO_DSH_FIELD	dsdeps=0 cordis=0
+ayuanwong/deepseek-harness-ux	NO_DSH_FIELD	dsdeps=1 cordis=0
+awesome-dsh-plugin/dsh-find-plugin	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+awesome-dsh-plugin/awesome-dsh-plugin	NO_DSH_FIELD	dsdeps=0 cordis=0
+aryswisnu/dsh-composition-check	NO_DSH_FIELD	dsdeps=0 cordis=0
+ben7am1n/dsh-browser	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+ben7am1n/dsh-claude-marketplace	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+anweat/dsh-web-search-pro	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+ben7am1n/dsh-lens-lite	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+ben7am1n/dsh-deepseek-usage	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+ben7am1n/dsh-mcp-proxy	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+baixinghao/intent-gate	NO_PACKAGE_JSON	-
+ben7am1n/dsh-review-skills	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+ben7am1n/dsh-telegram	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+ben7am1n/dsh-security-scan	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+bernardleex526/oh_my_deepseek_harness	NO_DSH_FIELD	dsdeps=0 cordis=0
+ben7am1n/dsh-memory	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+bill9109/dsh-conversation-share	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+ben7am1n/dsh-webhook-bridge	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+bill9109/dsh-webbridge	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+bill9109/dsh-drag-and-drop	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+benzhoupo/dsh-effort-config	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+bitterSmilezzz/dsh-mac-desktop	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+bitterSmilezzz/dsh-model-selector	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+bitterSmilezzz/dsh-skill-manager	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+bobleer/dsh-acp-for-bitfun	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+bill9109/dsh-web-ui-notify	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+blue-a11y/dsh-client-shortcuts	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+bruc3van/awesome-dsh-plugin	NO_PACKAGE_JSON	-
+bobleer/deepseek-harness-plugin-mcp	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+bruc3van/dsh-desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+biociao/dsh-science	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+btspoony/mstar-harness	NO_DSH_FIELD	dsdeps=0 cordis=0
+bugmaker2/dsh-plugin-template	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+bpc-oss/dsh-web-billing	BUNDLE_PATCH	patch=string dsdeps=2 cordis=0
+causebefore/dsh-pomodoro	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+cccakeee/awesome-dsh-plugins	NO_PACKAGE_JSON	-
+boNeXY226/dsh-cost-chip	HAS_DSH_NO_PATCH	dsdeps=2 cordis=1
+cakeni/harness-whale	BUNDLE_PATCH	patch=string dsdeps=2 cordis=0
+ccch1mneyyy/dsh-TUI	BUNDLE_PATCH	patch=string dsdeps=21 cordis=3
+cendaifeng/dsh-learn-everything	BUNDLE_PATCH	patch=string dsdeps=18 cordis=1
+bradeGithub/DSH-Plugins-Marketplace	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+cesaryike/dsh-image-to-path	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+chajiuqqq/dsh-claude-theme	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+chen-001/dsh-chat-width	HAS_DSH_NO_PATCH	dsdeps=4 cordis=2
+chen-001/dsh-grok-tui	NO_DSH_FIELD	dsdeps=6 cordis=1
+citrusli2026/dsh-mobile-ui	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+chyra-moon/deepseek-harness-desktop	NO_DSH_FIELD	dsdeps=96 cordis=7
+chushixixin/dsh-harness-mcp-server	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+cking000bigdemon/dsh-toolbelt	BUNDLE_PATCH	patch=string dsdeps=18 cordis=2
+codeAnqiang-ma/dsh-superpowers	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+coderPerseus/dsh-hub	NO_DSH_FIELD	dsdeps=0 cordis=0
+cofy-x/axern	NO_DSH_FIELD	dsdeps=0 cordis=0
+cnskycn/deepseek-harness-desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+congchuanling-dot/DSH-Telegram-Relay	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+crayonlu/dsh-web-search-tavily	NO_DSH_FIELD	dsdeps=5 cordis=1
+csiroqa/dsh-archive-viewer	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+crystalWinter666/dsh-header-status	HAS_DSH_NO_PATCH	dsdeps=1 cordis=1
+ccch1mneyyy/dsh-working-activity	NO_PACKAGE_JSON	-
+crayonlu/dsh-web-search-firecrawl	NO_DSH_FIELD	dsdeps=5 cordis=1
+csiroqa/dsh-backup-sync	BUNDLE_PATCH	patch=string dsdeps=9 cordis=2
+csiroqa/dsh-plugin-usage-report	NO_DSH_FIELD	dsdeps=0 cordis=0
+csiroqa/dsh-hotkeys	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+coppynight/dsh-doctor	NO_PACKAGE_JSON	-
+csiroqa/dsh-schedule	BUNDLE_PATCH	patch=string dsdeps=13 cordis=3
+cute-baobao/dsh-usage-meter	NO_DSH_FIELD	dsdeps=0 cordis=0
+csiroqa/dsh-command-opt	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+cyberlieflife/dsh-model-thinking	BUNDLE_PATCH	patch=string dsdeps=8 cordis=2
+csyangwen/dsh-memory-evolve	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+cyanseek/dsh-tool-chaos	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+cyzlmh/dsh-pi-adapter	NO_DSH_FIELD	dsdeps=1 cordis=2
+czzzlq/deepseek-harness-background	NO_PACKAGE_JSON	-
+cyanseek/dsh-native-playbook	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+cyanseek/dsh-landscape	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+dancingmemory/dskin	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+detpecca/DSH-Wiki	NO_PACKAGE_JSON	-
+dingyi222666/dsh-session-notification	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+czzzlq/deepseek-harness-desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+dongsheng123132/awesome-dsh-plugins	NO_DSH_FIELD	dsdeps=0 cordis=0
+detpecca/dsh-llm-wiki	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+dingkaihu63/dsh-robotic-harness	NO_DSH_FIELD	dsdeps=4 cordis=1
+dingyi222666/dsh-focus-chat	BUNDLE_PATCH	patch=string dsdeps=13 cordis=1
+dongsheng123132/dsh-action-parity	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dongsheng123132/dsh-benchmark	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dongsheng123132/dsh-cost	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dbydd/dsh-onlyne	NO_DSH_FIELD	dsdeps=6 cordis=1
+dongsheng123132/dsh-capability-receipt	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dongsheng123132/dsh-2origin	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dongsheng123132/dsh-recovery-proof	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dongsheng123132/dsh-policy-drift-proof	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dongsheng123132/dsh-release-proof	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dongsheng123132/dsh-cad-review	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dongsheng123132/dsh-switch	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dongsheng123132/dsh-narrative-ledger	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dongsheng123132/task-passport	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+deepseek-ai/deepseek-harness	NO_DSH_FIELD	dsdeps=1 cordis=0
+dongsheng123132/dsh-lineage	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+dsh-external/awesome-dsh-plugins	NO_PACKAGE_JSON	-
+drscrewdriver/inferglow	NO_PACKAGE_JSON	-
+dsh-external/dsh-automation	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+drfccv/dsh-theme-neko	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+dsh-external/dsh-better-browser	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+dsh-external/dsh-at-file	BUNDLE_PATCH	patch=string dsdeps=16 cordis=1
+dsh-external/dsh-book2skill	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+dsh-external/dsh-agent-teams	BUNDLE_PATCH	patch=string dsdeps=13 cordis=1
+dsh-external/dsh-computer-use	BUNDLE_PATCH	patch=string dsdeps=20 cordis=1
+dsh-external/dsh-custom-tool	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+dsh-external/dsh-daily-progress	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+dsh-external/dsh-deeplink	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+dsh-external/dsh-deeptag	NO_PACKAGE_JSON	-
+dsh-external/dsh-doctor	NO_PACKAGE_JSON	-
+dsh-external/dsh-daily-fortune	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+dsh-external/dsh-cyber-sec	NO_DSH_FIELD	dsdeps=0 cordis=0
+dsh-external/dsh-fun-weather	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+dsh-external/dsh-eye-care	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+dsh-external/dsh-fun-typewriter	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+dsh-external/dsh-genui	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+dsh-external/dsh-ernie-image	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+dsh-external/dsh-longbridge	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+dsh-external/dsh-input-history	HAS_DSH_NO_PATCH	dsdeps=4 cordis=1
+dsh-external/dsh-deepcel	NO_PACKAGE_JSON	-
+dsh-external/dsh-island	NO_PACKAGE_JSON	-
+dsh-external/dsh-minigames	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+dsh-external/dsh-notification	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+dsh-external/dsh-nowledge-mem	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+dsh-external/dsh-pet	NO_DSH_FIELD	dsdeps=0 cordis=0
+dsh-external/dsh-paste-input	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+dsh-external/dsh-pet-corner	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+dsh-external/dsh-paddle-ocr	BUNDLE_PATCH	patch=string dsdeps=15 cordis=1
+dsh-external/dsh-pi-adapter	NO_DSH_FIELD	dsdeps=1 cordis=2
+dsh-external/dsh-plannotator	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+dsh-external/dsh-plan-execute	BUNDLE_PATCH	patch=string dsdeps=25 cordis=3
+dsh-external/dsh-my-rsi	NO_DSH_FIELD	dsdeps=0 cordis=1
+dsh-external/dsh-openmaic	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+dsh-external/dsh-spotlight	BUNDLE_PATCH	patch=string dsdeps=0 cordis=2
+dsh-external/dsh-qq2006	HAS_DSH_NO_PATCH	dsdeps=3 cordis=1
+dsh-external/dsh-sentinel	BUNDLE_PATCH	patch=string dsdeps=2 cordis=0
+dsh-external/dsh-open-in-vscode	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+dsh-external/dsh-revive	BUNDLE_PATCH	patch=string dsdeps=17 cordis=2
+dsh-external/dsh-ui-progress	HAS_DSH_NO_PATCH	dsdeps=8 cordis=1
+dsh-external/dsh-ui-whale	HAS_DSH_NO_PATCH	dsdeps=7 cordis=1
+dsh-external/dsh-voice-funasr	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+dsh-external/dsh-suggested-replies	BUNDLE_PATCH	patch=string dsdeps=19 cordis=1
+dsh-external/dsh-webui-live-html	NO_DSH_FIELD	dsdeps=0 cordis=0
+dsh-tui/dsh-tui	BUNDLE_PATCH	patch=string dsdeps=28 cordis=3
+dshiq04/dsh-deepseek-balance	HAS_DSH_NO_PATCH	dsdeps=3 cordis=1
+dshiq04/dsh-notify	HAS_DSH_NO_PATCH	dsdeps=3 cordis=1
+dyuan311/dsh-openai-codex-oauth	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+dsh-external/dsh-web-review	NO_DSH_FIELD	dsdeps=0 cordis=0
+echo-escape/dsh-workbench	NO_DSH_FIELD	dsdeps=0 cordis=0
+entireyu/dsh-launcher	NO_DSH_FIELD	dsdeps=0 cordis=0
+fakechris/dsh-track	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+f0909172434/dsh-plugin-verified-search	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+edwardyang0011/dsh-ui-skins	HAS_DSH_NO_PATCH	dsdeps=12 cordis=1
+feiyang-dev/DeepSeek-Harness-Desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+fakechris/dsh-harness-ops	NO_PACKAGE_JSON	-
+emredeveloper/deepseek-harness-huggingface	NO_DSH_FIELD	dsdeps=2 cordis=1
+fff122/dsh-agent-arcade	NO_DSH_FIELD	dsdeps=3 cordis=1
+egnmosk/dsh-browser-bridge	NO_DSH_FIELD	dsdeps=1 cordis=0
+fengzhiyushui/dsh-desktop-window	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+fff122/dsh-task-checklist	NO_DSH_FIELD	dsdeps=3 cordis=1
+fff122/dsh-prompt-presets	NO_DSH_FIELD	dsdeps=3 cordis=1
+dsh-plugin/dsh-plugin.github.io	NO_PACKAGE_JSON	-
+fly3366/DeepJIT	BUNDLE_PATCH	patch=string dsdeps=10 cordis=2
+flee42/dsh-dsktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+flymysql/dsh-memory	HAS_DSH_NO_PATCH	dsdeps=5 cordis=1
+fountunt/dsh-session-cleaner	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+forrestchang/dsh-multica-runtime	BUNDLE_PATCH	patch=string dsdeps=10 cordis=2
+fishxcode/dsh-plugin-deepseek-balance	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+fff122/dsh-research-notes	NO_DSH_FIELD	dsdeps=3 cordis=1
+franksong2702/dsh-codex-connect	BUNDLE_PATCH	patch=string dsdeps=27 cordis=3
+gameswu/dsh-plugin-background	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+ginuim/multi-screen-wireframe	NO_DSH_FIELD	dsdeps=0 cordis=0
+green-dalii/dsh-plugin-dev-skill	NO_PACKAGE_JSON	-
+erduotong/dsh-plugin-graph	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+gnulife/dsh-plugin-wechat	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+gordonlu/dsh-context-lens	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+gxpppp/dsh-search-mcp	BUNDLE_PATCH	patch=string dsdeps=5 cordis=0
+hashdiana/dsh-archived-sessions	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+fuhefei/dsh-sentinel	BUNDLE_PATCH	patch=string dsdeps=2 cordis=0
+gxinxing/deepseek-harness-tui	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+fishlikewater/dsh-mcp-manager	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+green-dalii/dsh-shift-router	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+havingautism/dsh-ultra-ui	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+hashdiana/dsh-token-usage	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+havingautism/dsh-notebooks	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+haytham818/dsh-notify	NO_DSH_FIELD	dsdeps=0 cordis=0
+hccccc01333/dsh-eval	NO_PACKAGE_JSON	-
+havingautism/dsh-deepresearch	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+hellosz/dsh-ntfy	NO_DSH_FIELD	dsdeps=0 cordis=0
+hccccc01333/dsh-excel-chat	NO_DSH_FIELD	dsdeps=5 cordis=1
+hawkongz/doubao-vision-dsh	NO_PACKAGE_JSON	-
+hellodigua/dsh-emoji	BUNDLE_PATCH	patch=string dsdeps=15 cordis=1
+hellowind777/helloagents	NO_DSH_FIELD	dsdeps=0 cordis=0
+hccccc01333/dsh-analytics	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+hikariming/dshfind	NO_DSH_FIELD	dsdeps=0 cordis=0
+hisaniwo/dsh-ergonomics	HAS_DSH_NO_PATCH	dsdeps=3 cordis=1
+hccccc01333/dsh-report-html	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+happyren/dsh-agent-messaging	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+hnmrxz/dsh-plugin-deepseek-balance	HAS_DSH_NO_PATCH	dsdeps=5 cordis=2
+houyongsheng/deepseek-harness-molt	NO_PACKAGE_JSON	-
+hellodigua/dsh-share	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+huguangyu666/dsh-plugin-session-import	BUNDLE_PATCH	patch=string dsdeps=2 cordis=0
+hnmrxz/dsh-plugin-usage-dashboard	HAS_DSH_NO_PATCH	dsdeps=5 cordis=2
+huiliyi37/dsh-tianshu-build	NO_DSH_FIELD	dsdeps=0 cordis=0
+huiliyi37/dsh-tianshu-tui	BUNDLE_PATCH	patch=string dsdeps=21 cordis=3
+humblebanana/dsh-record-replay	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+hurry060215-tech/dsh-api-usage-bar	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+hnmrxz/dsh-plugin-sysmon	HAS_DSH_NO_PATCH	dsdeps=5 cordis=2
+hyqhyq3/dsh-mcp-manager	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+hrhgit/deepseek-harness-plugin-manager	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+hust-open-atom-club/oh-dsh	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+icetomoyo/dsh_workflow	BUNDLE_PATCH	patch=string dsdeps=14 cordis=1
+icodesign/orbis	NO_DSH_FIELD	dsdeps=0 cordis=0
+ilharp/dsh-tool-approval	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+huashenglian/dsh-her-eyes	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+imetn/dsh-lark-bridge	BUNDLE_PATCH	patch=string dsdeps=15 cordis=2
+jLeon-account/dsh-client-usage	HAS_DSH_NO_PATCH	dsdeps=2 cordis=0
+iuikj/dsh-desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+jasper-zsh/dsh-plugin-llm-codex	HAS_DSH_NO_PATCH	dsdeps=1 cordis=1
+jasper-zsh/dsh-plugin-provider-quota	HAS_DSH_NO_PATCH	dsdeps=1 cordis=1
+inmny/dsh-git-bash	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+jasonsun29/ds-balance-card	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+jelly-000/dsh-balance-monitor	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+jinhuang712/dsh-survey	BUNDLE_PATCH	patch=string dsdeps=0 cordis=1
+jihongboo/dsh-apple-mode	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+jiruidai/dsh-meta-orchestrator	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+jkrandom-sudo/dsh-plugin-audit	BUNDLE_PATCH	patch=string dsdeps=0 cordis=2
+isolat-3k/dsh-kanban	NO_PACKAGE_JSON	-
+jiesou/dsh-stream-rules	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+jorinyang/dsh-doctor	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+joyfoxai/dsh-eco-router	HAS_DSH_NO_PATCH	dsdeps=15 cordis=1
+junhongchashui/dsh-plugin-web-access	NO_DSH_FIELD	dsdeps=0 cordis=0
+jumpserver-east/jumpserver-dsh	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+junhongchashui/dsh-vision-relay	NO_DSH_FIELD	dsdeps=0 cordis=0
+kangjinghang/dsh-xueqiu	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+hyls9527/dsh-plugins	NO_DSH_FIELD	dsdeps=0 cordis=0
+kalynnka/vscode-deepseek-harness	NO_DSH_FIELD	dsdeps=0 cordis=0
+kazecreator/dsh-plugins	NO_DSH_FIELD	dsdeps=0 cordis=0
+karuboniru/dsh-approval-guardian	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+kejixiaoliang/awesome-dsh-plugins	NO_PACKAGE_JSON	-
+kelai141/dsh-client-ui-responsive	HAS_DSH_NO_PATCH	dsdeps=5 cordis=1
+kelai141/dsh-mobile-apk	NO_PACKAGE_JSON	-
+kelai141/dsh-host-web-compat	NO_DSH_FIELD	dsdeps=0 cordis=0
+keleus/deepseek-pet	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+kiim-wong/dsh-push	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+kinyokun/dsh-session-import	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+kerwin2046/dsh-pin-recall	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+kingsunb/dsh-model-plus	NO_PACKAGE_JSON	-
+keepermttl/dsh-archive-viewer	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+kevenxz/dsh-desktop	NO_DSH_FIELD	dsdeps=1 cordis=0
+kanallas/api-cost-meter	NO_PACKAGE_JSON	-
+kuailexiaozixin/fasthtml-desktop	NO_PACKAGE_JSON	-
+krislavten/ai-sdk-provider-dsh	NO_DSH_FIELD	dsdeps=22 cordis=0
+kuailexiaozixin/tkinter-desktop	NO_PACKAGE_JSON	-
+lakeofsky347/dsh-vision	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+leechen298/Code2Skill	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+lehhair/dsh-home-ui	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+lehhair/dsh-split-panes	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+knqiufan/powercontext-dsh	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+levi-qiao/dsh-plugin-longgraph	BUNDLE_PATCH	patch=string dsdeps=7 cordis=3
+lehhair/dsh-diff-viewer	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+kelai141/dsh-shell-termux	NO_DSH_FIELD	dsdeps=8 cordis=1
+lhh010/dsh-minigames	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+lhh010/dsh-ui-progress	HAS_DSH_NO_PATCH	dsdeps=8 cordis=1
+lhh010/dsh-paste-input	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+lhh010/dsh-bash-encoding	NO_DSH_FIELD	dsdeps=2 cordis=1
+kyorakuyk/dsh-desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+lhh010/dsh-input-history	HAS_DSH_NO_PATCH	dsdeps=4 cordis=1
+lhh010/dsh-ui-whale	HAS_DSH_NO_PATCH	dsdeps=7 cordis=1
+lhmd/dsh-promotion-toolkit	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+libukai/awesome-deepseek-harness	NO_PACKAGE_JSON	-
+lehhair/dsh-mobile	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+lhmd/dsh-director-toolkit	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+like-study1/Oh-My-DSH	NO_PACKAGE_JSON	-
+liguobao/dsh-desktop	NO_DSH_FIELD	dsdeps=20 cordis=1
+lin-cheng-lab/dsh-deepseek-balance	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+liustack/modlens	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+ljsysfurryACE/AgentFrame-v3	NO_PACKAGE_JSON	-
+liuup/dsh-latex-tools	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+liustack/modsearch	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+lin-cheng-lab/dsh-plugin-doctor	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+lin-cheng-lab/dsh-reloader	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+ljsysfurryACE/dsh-aura-scheduler	NO_DSH_FIELD	dsdeps=1 cordis=1
+lonelymoon87/dsh-gitflow	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+lonelymoon87/dsh-specflow	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+ljsysfurryACE/dsh-compaction	NO_DSH_FIELD	dsdeps=5 cordis=1
+lonelymoon87/dsh-vscode	NO_DSH_FIELD	dsdeps=1 cordis=0
+longyu065/dsh-session-index	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+lonelymoon87/dsh-code-intel	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+longyu065/dsh-theme-ti	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+lonelymoon87/dsh-guardian	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+longyu065/dsh-desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+lordship12138-crypto/dsh-plugin-dedup	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+lordqyxz/dsh-ark-quota	HAS_DSH_NO_PATCH	dsdeps=1 cordis=0
+ljsysfurryACE/dsh-memory-director	NO_DSH_FIELD	dsdeps=2 cordis=1
+lujoai/Lujo-MCP	NO_PACKAGE_JSON	-
+lvyuchuiyi/dsh-funpack	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+lunw/shopline-ai-toolkit-dsh	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+lwmxiaobei/dsh-plugins	NO_DSH_FIELD	dsdeps=0 cordis=0
+loudMore/dsh-drop-to-path	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+lxj808624/dsh-tool-git	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+lynx-gt/dsh-subagent-cwd	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+lynkas/dsh-think-flow-flow	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+lzszq/dsh-scholar	BUNDLE_PATCH	patch=string dsdeps=14 cordis=1
+malevrigns/dsh-session-stars	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+mario03690/dsh-netcafe	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+makuralymi/dsh-webUI-Glass-Theme	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+mitao-su/dsh-playwright-cli	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+misakimiku2/dsh-cost-display	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+moduqishi/dsh-open-in-finder	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+moduqishi/GrassVison	NO_PACKAGE_JSON	-
+lynx-gt/dsh-subagent-tools	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+minatoAI/jina-dsh-plugin	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+moduqishi/dsh-opencode-usage	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+miaobuao/dsh-document-parser	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+morluto/flameox	NO_PACKAGE_JSON	-
+morluto/jacobian	NO_PACKAGE_JSON	-
+morluto/leantoken	NO_PACKAGE_JSON	-
+mitao-su/dsh-playwright-native	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+moxisuki/dsh-lan	NO_DSH_FIELD	dsdeps=0 cordis=0
+modusensus/dsh-mneme	NO_PACKAGE_JSON	-
+mouliangyu/dsh-plugins	NO_DSH_FIELD	dsdeps=0 cordis=0
+morlay/session-persistence-rdb	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+nightwhale-dev/nightwhale	NO_PACKAGE_JSON	-
+nutshellai-tech/mobius	NO_PACKAGE_JSON	-
+nowledge-co/nowledge-mem-deepseek-harness	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+oitsukiii/deepseek-harness-lan	NO_PACKAGE_JSON	-
+mrbbbaixue/dsh-desktop	NO_PACKAGE_JSON	-
+omdsh-dev/dsh-advisor	BUNDLE_PATCH	patch=string dsdeps=19 cordis=1
+omdsh-dev/dsh-at-file	BUNDLE_PATCH	patch=string dsdeps=16 cordis=1
+oil-oil/dsh-vision	BUNDLE_PATCH	patch=string dsdeps=17 cordis=1
+omdsh-dev/DSH-better-sidebar	BUNDLE_PATCH	patch=string dsdeps=16 cordis=3
+omdsh-dev/7d7d	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+omdsh-dev/dsh-auto-chess	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+omdsh-dev/dsh-bash-encoding	NO_DSH_FIELD	dsdeps=2 cordis=1
+omdsh-dev/dsh-annotation	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+omdsh-dev/dsh-custom-tool	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+omdsh-dev/dsh-daily-fortune	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+omdsh-dev/dsh-data-agent	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+omdsh-dev/dsh-fun-weather	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+omdsh-dev/dsh-github-integration	NO_PACKAGE_JSON	-
+omdsh-dev/dsh-fun-ticker	HAS_DSH_NO_PATCH	dsdeps=9 cordis=1
+omdsh-dev/dsh-book2skill	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+omdsh-dev/dsh-hub	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+omdsh-dev/dsh-fun-typewriter	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+omdsh-dev/dsh-lark	BUNDLE_PATCH	patch=string dsdeps=3 cordis=2
+omdsh-dev/dsh-gomoku	BUNDLE_PATCH	patch=string dsdeps=9 cordis=2
+omdsh-dev/dsh-genui	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+omdsh-dev/dsh-longbridge	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+omdsh-dev/dsh-ernie-image	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+omdsh-dev/dsh-input-history	HAS_DSH_NO_PATCH	dsdeps=4 cordis=1
+omdsh-dev/dsh-llm-fallbacks	BUNDLE_PATCH	patch=string dsdeps=18 cordis=1
+omdsh-dev/dsh-mygo	NO_PACKAGE_JSON	-
+omdsh-dev/dsh-hub-workshop	NO_DSH_FIELD	dsdeps=0 cordis=0
+omdsh-dev/dsh-open-in-vscode	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+omdsh-dev/dsh-daily-progress	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+omdsh-dev/dsh-paste-input	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+omdsh-dev/dsh-paddle-ocr	BUNDLE_PATCH	patch=string dsdeps=15 cordis=1
+omdsh-dev/dsh-mnemon	BUNDLE_PATCH	patch=string dsdeps=0 cordis=1
+omdsh-dev/dsh-pet-corner	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+omdsh-dev/dsh-minigames	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+omdsh-dev/dsh-session-health	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-notification	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+omdsh-dev/dsh-revive	BUNDLE_PATCH	patch=string dsdeps=17 cordis=2
+omdsh-dev/dsh-science	NO_DSH_FIELD	dsdeps=1 cordis=0
+omdsh-dev/dsh-plugin-dev	NO_PACKAGE_JSON	-
+omdsh-dev/dsh-security-audit	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-plugin-check	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-tool-csv	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-tool-diff	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-tool-calculator	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-tool-json	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-tool-encoding	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-tool-markdown	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-tool-regex	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-tool-stat	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-tool-schema	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-tool-time	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-toolkit	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+omdsh-dev/dsh-ui-progress	HAS_DSH_NO_PATCH	dsdeps=8 cordis=1
+omdsh-dev/dsh-tool-browser	NO_PACKAGE_JSON	-
+omdsh-dev/fabric	BUNDLE_PATCH	patch=string dsdeps=0 cordis=4
+omdsh-dev/ex-setting	BUNDLE_PATCH	patch=string dsdeps=10 cordis=5
+omdsh-dev/dsh-voice-funasr	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+omdsh-dev/session-teleport	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+omdsh-dev/dsh-scout	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+omdsh-dev/toybox	NO_DSH_FIELD	dsdeps=0 cordis=0
+omdsh-dev/omdsh	NO_DSH_FIELD	dsdeps=0 cordis=0
+openHacking/pptkit-presentation	NO_DSH_FIELD	dsdeps=0 cordis=0
+openma-ai/deepseek-harness-acp	BUNDLE_PATCH	patch=string dsdeps=58 cordis=2
+openma-ai/deepseek-harness-tui	NO_PACKAGE_JSON	-
+openma-ai/deepseek-harness-typescript-sdk	NO_DSH_FIELD	dsdeps=0 cordis=0
+ophielel/dsh-devkit	NO_DSH_FIELD	dsdeps=0 cordis=0
+opensetk/dsh-xiaohei	HAS_DSH_NO_PATCH	dsdeps=4 cordis=1
+omdsh-dev/omdsh-runtime	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+omdsh-dev/dsh-ui-whale	HAS_DSH_NO_PATCH	dsdeps=7 cordis=1
+pandashere/dsh-self-control-guard	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+oslook/awesome-dsh-plugins	NO_PACKAGE_JSON	-
+pingfanfan/hello-dsh	NO_PACKAGE_JSON	-
+pandashere/dsh-kimi-bridge	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+peach0x33a/dsh-open-browser	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+orxz/deepseek-harness-themes	NO_DSH_FIELD	dsdeps=0 cordis=0
+pinch-eng/dsh-audio-dub	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+pandashere/dsh-codex-bridge	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+pulseaiclub/phi	NO_PACKAGE_JSON	-
+qingzhuo-cn/agent-fix	NO_PACKAGE_JSON	-
+qing3a/dsh-plugin-verify	NO_DSH_FIELD	dsdeps=0 cordis=0
+pinkllo/dsh-reasoning-translator	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+qingchunnh/dsh-desktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+qing3a/dsh-event-auditor	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+qiqikuaidianpao/mypet	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+openguardrails/openguardrails	NO_DSH_FIELD	dsdeps=0 cordis=0
+qizhen2021/dsh-plugin-vision	NO_DSH_FIELD	dsdeps=4 cordis=0
+orriduck/dsh-tui	BUNDLE_PATCH	patch=string dsdeps=14 cordis=2
+qwased/dsh-web-search-duckduckgo	NO_PACKAGE_JSON	-
+rabbitknight/dsh-tui	NO_DSH_FIELD	dsdeps=0 cordis=0
+radaren/dsh-auth	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+quan2005/dsh-plugin-jinji	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+randerous/dsh-turn-budget	NO_DSH_FIELD	dsdeps=8 cordis=1
+rainforest888/dsh-plugins-raincode	NO_DSH_FIELD	dsdeps=10 cordis=1
+realguan/dsh-mermaid-preview	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+renat3u/dsh-paseo	NO_DSH_FIELD	dsdeps=0 cordis=0
+qyw233/dsh-deeplink	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+reshuibuduo/tmcra-deepseek-harness-memory	BUNDLE_PATCH	patch=string dsdeps=20 cordis=1
+qing3a/dsh-tray	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+ropon/dsh-plugin-clawrouters	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+renat3u/tonghuashun-webui	NO_DSH_FIELD	dsdeps=0 cordis=0
+renat3u/dsh-web-archive	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+railgun0325/dsh-phone	NO_PACKAGE_JSON	-
+rsagacom/dsh-ajw	NO_PACKAGE_JSON	-
+runzhliu/deepseek-harness-docker	NO_PACKAGE_JSON	-
+rxa3c/chat2skill	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+saitamahang/dsh-skill-importer	HAS_DSH_NO_PATCH	dsdeps=13 cordis=1
+rxh1999/dsh-jingle	NO_DSH_FIELD	dsdeps=3 cordis=1
+sala003/dsh-tool-describe-image	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+sakurarain1213/deepseek-harness-lite	NO_DSH_FIELD	dsdeps=0 cordis=0
+sandbaseai/sandbase-skills	NO_PACKAGE_JSON	-
+sb1733831438-maker/DSH-closerAI	NO_DSH_FIELD	dsdeps=0 cordis=0
+sakikoTGW/pack-agent	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+rizkirmdhnnn/dsh-tool-notify	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+securstack/securstack-dsh-plugin	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+shelken/dsh-co-authored-by	BUNDLE_PATCH	patch=string dsdeps=14 cordis=1
+shiningsprk-arch/dsh-context-viewer	NO_DSH_FIELD	dsdeps=0 cordis=0
+shuguang1994/project-blueprint	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+randerous/dsh-turn-meta	NO_DSH_FIELD	dsdeps=8 cordis=1
+schhaohao/dsh-file-explorer	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+sikwoxy/dsh-tool-reqpipe	NO_PACKAGE_JSON	-
+shaokeyibb/dsh-plugin-product-subagents	NO_DSH_FIELD	dsdeps=3 cordis=1
+shujiTech/dsh-plugin-wepre	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+sindo-s/dsh-qq-bot	NO_DSH_FIELD	dsdeps=5 cordis=1
+sjscy05/dsh-task-progress-notifier	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+shyboy/dsh-k12-lesson-builder	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+sisyphus-iambe/northstar-exam	NO_PACKAGE_JSON	-
+sjscy05/matlab-modelsim-vivado-plugin	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+sjscy05/deepseek-harness-vision-plugin	NO_DSH_FIELD	dsdeps=0 cordis=0
+skyzhao1223/dsh-plugin-scaffold	NO_DSH_FIELD	dsdeps=7 cordis=3
+shi275773124/falsify-dsh	BUNDLE_PATCH	patch=string dsdeps=0 cordis=1
+sliverp/DeepSeek-harness-dingtalk	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+sliverp/DeepSeek-harness-lark	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+sliverp/DeepSeek-harness-qqbot	BUNDLE_PATCH	patch=string dsdeps=13 cordis=1
+sliverp/DeepSeek-harness-weixin	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+songqikong/dash	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+skitse/dsh-dev-actions	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+smanx/dsh-conversation-indicator	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+simon300000/dsh-auto	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+springbrand-lab/dsh-oauth-mcp-client	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+sliverp/DeepSeek-harness-wecom	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+spike-faye-lei/spike-faye-lei-dsh-skills	NO_PACKAGE_JSON	-
+studyzy/dsh-suggest-prompt	NO_DSH_FIELD	dsdeps=0 cordis=0
+sublatesublate-design/dsh-doctor-windows	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+suntianc/dsh-codex-auth	BUNDLE_PATCH	patch=string dsdeps=14 cordis=1
+suimi8/dsh-test-runner	BUNDLE_PATCH	patch=string dsdeps=1 cordis=0
+stushansusu/dsh-miku-skin	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+sybolization/agent-jit	BUNDLE_PATCH	patch=string dsdeps=5 cordis=2
+tanf1ng/dsh-tool-hackernews	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+suimi8/dsh-cost-ledger	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+sunshine-lang/dsh-weather	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+syy-shark/dsh-music-plugin	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+tappass/dsh-governance	BUNDLE_PATCH	patch=string dsdeps=15 cordis=1
+taxueseek/argo	NO_DSH_FIELD	dsdeps=0 cordis=0
+techysy/deepseek-harness-fnos	NO_PACKAGE_JSON	-
+sunshine-lang/dsh-pdf	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+titanwings/colleague-skill	NO_PACKAGE_JSON	-
+titanwings/dsh-automation	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+titanwings/dsh-plannotator	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+tkr520521/dsh-repo-analyzer	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+titanwings/dsh-better-browser	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+tttnny/DSH-Launcher	NO_PACKAGE_JSON	-
+unknowbug/anchorlaw	NO_PACKAGE_JSON	-
+turtle1999/turtle-ui	BUNDLE_PATCH	patch=string dsdeps=24 cordis=1
+tree201/dsh-capability-inspector	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+userInner/dsh-academic-research	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+tianji-qingtian/dsh-model-router	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+vcxmug/dsh-enhance	NO_DSH_FIELD	dsdeps=0 cordis=0
+unknowbug/RE-Framework	NO_PACKAGE_JSON	-
+unnnnoooo/dsh-cue-plugin	BUNDLE_PATCH	patch=string dsdeps=7 cordis=0
+tkr520521/dsh-team-runner	BUNDLE_PATCH	patch=string dsdeps=21 cordis=1
+vlln/dsh-loop	BUNDLE_PATCH	patch=string dsdeps=0 cordis=1
+vlln/dsh-task-status	BUNDLE_PATCH	patch=string dsdeps=0 cordis=1
+vibeinging/dsh-work	NO_DSH_FIELD	dsdeps=0 cordis=0
+tensorlakeai/dsh-tensorlake-sandbox	BUNDLE_PATCH	patch=string dsdeps=5 cordis=2
+vlln/whale-girl	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+vvlife/dsh-agnes-paseo	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+vlln/plugin-registry	NO_PACKAGE_JSON	-
+vexpaer/ContextGate	NO_DSH_FIELD	dsdeps=0 cordis=0
+walkinglabs/awesome-deepseek-harness-plugins	NO_PACKAGE_JSON	-
+walnut-a/dsh-user-message-navigation	BUNDLE_PATCH	patch=string dsdeps=4 cordis=1
+vlln/dsh-navbar	BUNDLE_PATCH	patch=string dsdeps=0 cordis=1
+wangxiang0605qvq/dsh-auto-compact	NO_DSH_FIELD	dsdeps=3 cordis=1
+vvlife/awesome-deepseek-harness-plugins	NO_PACKAGE_JSON	-
+wangxiang0605qvq/dsh-deepseek-balance	HAS_DSH_NO_PATCH	dsdeps=5 cordis=1
+weijiafu14/pi2dsh	NO_DSH_FIELD	dsdeps=15 cordis=1
+wess09/DeepSeekHarnessDesktop	NO_DSH_FIELD	dsdeps=0 cordis=0
+whiteguo233/OpenBiliClaw	NO_PACKAGE_JSON	-
+weijiafu14/dsh-remote-sandbox	NO_DSH_FIELD	dsdeps=0 cordis=0
+wangshunnn/oh-my-dsh	NO_DSH_FIELD	dsdeps=0 cordis=0
+walavave/dsh-git	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+wangyang10/image-vision	NO_PACKAGE_JSON	-
+whyihaveyou/dsh-suite	NO_DSH_FIELD	dsdeps=0 cordis=0
+whiteguo233/dsh-openbiliclaw	HAS_DSH_NO_PATCH	dsdeps=4 cordis=1
+white0dew/awesome-dsh-plugins	NO_DSH_FIELD	dsdeps=0 cordis=0
+whitelonng/dshcode	NO_DSH_FIELD	dsdeps=1 cordis=0
+william-jin-cmu/dsh-artifact	NO_DSH_FIELD	dsdeps=3 cordis=1
+william-jin-cmu/dsh-stickers	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+wellorbetter/dsh-product-delivery-workflow	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+william-jin-cmu/dsh-companion	NO_DSH_FIELD	dsdeps=0 cordis=0
+wink-run/dsh-plugin-store	NO_PACKAGE_JSON	-
+william-jin-cmu/dsh-vision	NO_DSH_FIELD	dsdeps=3 cordis=1
+wly8691-jpg/knowlp-rag	NO_PACKAGE_JSON	-
+wink-run/tokenbank	NO_PACKAGE_JSON	-
+why913/dshx	BUNDLE_PATCH	patch=string dsdeps=2 cordis=0
+wingoo/codex-plugin-dsh	BUNDLE_PATCH	patch=string dsdeps=15 cordis=1
+wulun811/LiuHe	NO_PACKAGE_JSON	-
+wuxiangru915/dsh-review-loop	BUNDLE_PATCH	patch=string dsdeps=11 cordis=1
+xDer666/dsh-mobile-nav	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+wuwangmao/dsh-qwen-multimodal	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+xiaohai-78/Top	NO_PACKAGE_JSON	-
+xiangshangya/deepseek-harness-desktop	NO_DSH_FIELD	dsdeps=1 cordis=0
+xiaomiba0904/dsh-obsidian-export	BUNDLE_PATCH	patch=string dsdeps=4 cordis=0
+wuyuanjiang1/dsh2wechat	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+wssfk12138/dsh-wechat-notify	NO_DSH_FIELD	dsdeps=2 cordis=1
+xiaoshihou514/dsh-tui	BUNDLE_PATCH	patch=string dsdeps=11 cordis=2
+william-jin-cmu/dsh-evolve	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+wuxinzhe/dsh-speech-sherpa	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+xingyingyuzhui/dsh-updater-ui	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+xiaoyuxiaoyuqwq/dsh-desktop	NO_DSH_FIELD	dsdeps=29 cordis=6
+xiaoshihou514/dsh-weixin	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+xiaoxiao-svg/delivery-review-dsh-plugin	BUNDLE_PATCH	patch=string dsdeps=2 cordis=0
+xinmo114514/dsh-usage-widget	HAS_DSH_NO_PATCH	dsdeps=3 cordis=2
+xjackzenvey/Dsh-UI-Enhance	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+xinCodes/deepseek-billing-plugin	NO_DSH_FIELD	dsdeps=0 cordis=0
+xiaoshihou514/dsh-vision	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+xu1132/dsh-plugin-hello	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+xuender/dsh-history	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+yan9651688/dsh-file-checksum	BUNDLE_PATCH	patch=string dsdeps=6 cordis=1
+xu1132/dsh-plugin-browser	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+yangYzc/dsh-plugin-quote-reply	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+xing-shuyin/ds-web-ui	NO_DSH_FIELD	dsdeps=11 cordis=0
+yangzhe1003/dsh-web-search-firecrawl	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+ycp424c/dsh-luna-vision-bridge	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+yanglongyun/dsh-ramify	BUNDLE_PATCH	patch=string dsdeps=12 cordis=1
+yjm110517/content-to-editable-ppt-skill	NO_PACKAGE_JSON	-
+ycp424c/dsh-browser-bridge	NO_DSH_FIELD	dsdeps=0 cordis=0
+yjh051108/dsh-super-injector	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+yequ172672/dsh-codex-subscription	BUNDLE_PATCH	patch=string dsdeps=4 cordis=0
+yoke233/dsh-openai-codex-auth	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+yeshimei/dsh-sound	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+ylwl1997/noatmark-dsh-plugin	NO_DSH_FIELD	dsdeps=2 cordis=1
+yoke233/dsh-prime-agent	BUNDLE_PATCH	patch=string dsdeps=9 cordis=3
+yoke233/dsh-tool-monitor	BUNDLE_PATCH	patch=string dsdeps=10 cordis=1
+yoke233/dsh-pixel-whale	BUNDLE_PATCH	patch=string dsdeps=5 cordis=1
+yuezengwu/dsh-explain	BUNDLE_PATCH	patch=string dsdeps=21 cordis=1
+yweilai77-dev/dsh-plugin-cost	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+yuxino/dsh-blue-whale-maid	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+ysr666/dsh-vision-router	HAS_DSH_NO_PATCH	dsdeps=3 cordis=0
+yumimanji/dsh-ui-spec	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+yuzi-ska/DSH-Chrome-devtools	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+yyh-001/dsh-expression	NO_DSH_FIELD	dsdeps=1 cordis=0
+zcx369658780/governed-workflow-for-dsh	BUNDLE_PATCH	patch=string dsdeps=1 cordis=1
+yyyyukari/dsh-plugin-workshop	HAS_DSH_NO_PATCH	dsdeps=0 cordis=0
+zenx0x/allinluna	NO_PACKAGE_JSON	-
+youjiaqi421/dsh-plugin-workspace-rules	BUNDLE_PATCH	patch=string dsdeps=3 cordis=1
+zhangzujian/dsh-subprocess-inherit-environment	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+zhangzujian/dsh-same-mode-sandbox-noop	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+zhouzhencheng07/dsh-tavily-search	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+yyh-001/dsh-companion	NO_DSH_FIELD	dsdeps=2 cordis=0
+zhaoscsc/dsh-wikilink	BUNDLE_PATCH	patch=string dsdeps=16 cordis=1
+zhaoolee/notes	NO_DSH_FIELD	dsdeps=0 cordis=0
+zibo2025/dsh-orchestrator	BUNDLE_PATCH	patch=string dsdeps=9 cordis=1
+zhu1090093659/dsh-web-ui	NO_DSH_FIELD	dsdeps=0 cordis=0
+zimai233/dsh-adhd-copilot	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+zimai233/dsh-exam-countdown	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+zimai233/dsh-image-search	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+zevorn/dsh-humanize	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+zimixvx/dsh-archive-manager	BUNDLE_PATCH	patch=string dsdeps=8 cordis=1
+zimai233/dsh-figma-to-lottie	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+zimzaza4/dsh-bash-win	BUNDLE_PATCH	patch=string dsdeps=3 cordis=0
+zjl88858/dsh-huadongbianzuqi	BUNDLE_PATCH	patch=string dsdeps=0 cordis=0
+zsyu9779/dsh-desktop	NO_PACKAGE_JSON	-
+zimai233/dsh-wash-calendar	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+zimai233/dsh-video-downloader	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+zp-home/dsh-recommend	BUNDLE_PATCH	patch=string dsdeps=7 cordis=1
+zhang66633/dsh-plugin-installer	BUNDLE_PATCH	patch=string dsdeps=2 cordis=1
+zzh-newlearner/dsh-postmortem	NO_DSH_FIELD	dsdeps=4 cordis=1
