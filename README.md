@@ -1,6 +1,8 @@
-# DSH Plugin Radar
+# DSH Plugin Census
 
-Contract-verified, category-sorted index of the DeepSeek Harness plugin ecosystem.
+A reproducible census of the DeepSeek Harness plugin ecosystem: what the
+`dsh-plugin` topic actually contains, and which entries can actually be
+installed.
 
 > **Disclaimer.** This is a personal, community-run project. It is **not** an
 > official DeepSeek product and does **not** represent DeepSeek's position.
@@ -138,9 +140,26 @@ Several catalogues already cover this ecosystem, with different tradeoffs:
 - [`wangshunnn/oh-my-dsh`](https://github.com/wangshunnn/oh-my-dsh) — registry
   refreshed every eight hours from `topic:dsh-plugin`, with schema validation.
 
-This project's distinct contribution is contract verification traced to DSH
-source, surface attribution with published confidence, and compliance-based
-rather than star-based ordering.
+This project does not compete with those on per-repository depth.
+`omdsh-dev/dsh-plugin-check` applies **36 criteria** to a single repository —
+manifest protocol, patch structure, build layout, TypeScript imports, row-id
+registration — and its criteria are finer than the contract tiers published
+here. It has no topic search, so it cannot enumerate the ecosystem.
+
+What this project contributes instead:
+
+- **Census over the whole topic.** 999 repositories probed, not one.
+- **Installability.** 36 compliant plugins name themselves under a scope their
+  owner cannot publish, and 399 exist only as Git sources. No other catalogue
+  reports this, and `dsh-plugin-check` structurally cannot: its own
+  `invalid-name` rule treats `@deepseek-ai/*` as the recommended convention, so
+  it cannot detect that its own name is unpublishable.
+- **Compliance-based ordering** rather than star-based.
+
+A deeper per-repository audit is under development but **not published** — see
+[AUDIT-EXPERIMENTAL.md](AUDIT-EXPERIMENTAL.md). Its first implementation
+produced false positives on every repository tested, so no criterion ships
+before it passes a hand-labelled fixture suite.
 
 ## License
 

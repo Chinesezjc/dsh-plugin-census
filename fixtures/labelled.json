@@ -1,0 +1,74 @@
+{
+  "$comment": [
+    "Labelled fixtures for the conformance auditor. Every expectation here was",
+    "established by reading the repository, not by running the auditor and",
+    "recording its output — a fixture set derived from the tool under test",
+    "cannot detect that tool's errors.",
+    "",
+    "Each entry records why the expectation holds, so a future change that",
+    "breaks one of these has to argue with the evidence rather than just",
+    "update the number. The three false-positive classes found in the first",
+    "implementation are pinned as mustNotReport."
+  ],
+  "fixtures": [
+    {
+      "repo": "omdsh-dev/dsh-plugin-check",
+      "label": "compliant except for reserved scope",
+      "mustReport": ["unpublishable-scope"],
+      "mustNotReport": ["missing-rewrite-imports", "stale-ts-imports", "no-manifest", "lib-layout-mismatch", "types-path-mismatch"],
+      "evidence": {
+        "unpublishable-scope": "package.json name is @deepseek-ai/dsh-plugin-check but the repository owner is omdsh-dev; only the deepseek-ai npm organisation can publish that scope, and the registry returns 404 for the name",
+        "missing-rewrite-imports": "tsconfig.json sets rewriteRelativeImportExtensions: true, so relative .ts imports are rewritten on emit by tsc; this is correct TypeScript 5.7 usage",
+        "stale-ts-imports": "the .ts occurrences in lib/*.js are inside doc comments and an extension-name string constant, not import specifiers",
+        "lib-layout-mismatch": "tsconfig outDir is lib and main is lib/index.js; the prefixes agree",
+        "types-path-mismatch": "declarationDir is lib/types and types is lib/types/index.d.ts; the prefixes agree"
+      }
+    },
+    {
+      "repo": "HsiangNianian/dsh-auto-continue",
+      "label": "compliant, builds via a separate tsconfig",
+      "mustReport": [],
+      "mustNotReport": ["no-manifest", "missing-rewrite-imports", "missing-peer", "stale-ts-imports", "lib-layout-mismatch"],
+      "evidence": {
+        "no-manifest": "package.json exists on the default branch at 2385 bytes; an earlier verdict of no-manifest came from a truncated fetch that extracted 15 of 38 files",
+        "missing-rewrite-imports": "src contains no relative .ts import specifiers at all, so the check has nothing to fire on",
+        "missing-peer": "peerDependencies declares @deepseek-ai/dsh-settings and @deepseek-ai/schemastery; a client plugin need not peer-depend on cordis under its bare name",
+        "lib-layout-mismatch": "build configuration lives in tsconfig.build.json, not tsconfig.json, so reading only tsconfig.json cannot conclude a mismatch"
+      }
+    },
+    {
+      "repo": "Chinesezjc/dsh-interconnect",
+      "label": "compliant, esbuild bundle without a lib checkout",
+      "mustReport": [],
+      "mustNotReport": ["missing-rewrite-imports", "missing-main-or-types", "no-build-entry"],
+      "evidence": {
+        "missing-rewrite-imports": "src does import relative .ts paths, but build.mjs compiles with esbuild in bundle: true mode, which resolves and inlines imports so no .ts specifier survives into lib/",
+        "missing-main-or-types": "main is lib/index.js and lib/ is a build artefact absent from a source checkout; its absence in a fresh clone is expected, not a manifest defect",
+        "no-build-entry": "scripts.build is 'node build.mjs', so a build entry exists even though lib/ is not committed"
+      }
+    },
+    {
+      "repo": "HuanLinOTO/dsh-plugin-interpreters",
+      "label": "two tsconfigs with opposite layouts, both in use",
+      "mustReport": [],
+      "mustNotReport": ["lib-layout-mismatch", "types-path-mismatch"],
+      "evidence": {
+        "lib-layout-mismatch": "scripts.build runs 'tsc -p tsconfig.build.json && node scripts/build-client.mjs && tsc -p tsconfig.json': tsconfig.build.json has outDir lib and emits the JavaScript that main (./lib/index.js) points at, while tsconfig.json has outDir lib/types and emits the declarations that types (./lib/types/index.d.ts) points at. Reading only tsconfig.json compares lib/types against main and reports a mismatch that does not exist",
+        "types-path-mismatch": "types is ./lib/types/index.d.ts and tsconfig.json emits there, so the declaration layout agrees"
+      },
+      "$why": "Added while trying to lock the tsconfig.build.json candidate list. It does NOT lock it: this repository's tsconfig.json extends ../dsh/tsconfig.base.client.json, a path outside the repository, so in a standalone checkout the extends chain cannot resolve and the layout comparison is skipped before it can misfire. The fixture is kept because it pins tsconfig-extends-unresolved behaviour on a real out-of-tree extends, which is common in this ecosystem.",
+      "$unverifiedPath": "Reading tsconfig.build.json in preference to tsconfig.json remains UNVERIFIED by any fixture. Removing it from the candidate list leaves this suite green. Locking it needs a repository with two tsconfigs, an outDir declared in tsconfig.json, no unresolvable extends, and layouts that disagree; a scan of the top 60 compliant plugins did not find one before timing out. Do not claim this path is tested."
+    },
+    {
+      "repo": "hyqhyq3/dsh-mcp-manager",
+      "label": "compliant, JavaScript-only with committed lib",
+      "mustReport": [],
+      "mustNotReport": ["no-tsconfig", "no-source-entry", "missing-rewrite-imports"],
+      "evidence": {
+        "no-tsconfig": "the package ships JavaScript with a committed lib/ and no TypeScript sources; requiring a tsconfig would penalise a valid plain-JS plugin",
+        "no-source-entry": "there is no src/ because lib/ is authored directly; absence of src is not a defect for a plain-JS package",
+        "missing-rewrite-imports": "no TypeScript sources exist, so extension rewriting is irrelevant"
+      }
+    }
+  ]
+}

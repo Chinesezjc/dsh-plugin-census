@@ -34,11 +34,46 @@ jobs:
         with:
           node-version: 22
 
-      # The gate runs before the data is regenerated: if the tier-3 predicate
-      # is broken, the catalogue it would produce is not trustworthy, and
-      # publishing it would be worse than publishing yesterday's.
+      # Gates run before the data is regenerated: if a predicate is broken, the
+      # catalogue it would produce is not trustworthy, and publishing it would
+      # be worse than republishing yesterday's.
       - name: Verify contract gates reject invalid input
         run: node scripts/test-gates.mjs
+
+      - name: Verify the checkout fetcher rejects incomplete transfers
+        run: ./scripts/test-fetch.sh
+
+      # The conformance auditor does NOT build the catalogue; see
+      # AUDIT-EXPERIMENTAL.md. Its fixture suite runs here regardless, so a
+      # regression surfaces while the auditor is still experimental rather than
+      # at the moment someone decides to publish its verdicts.
+      #
+      # A fixture whose checkout could not be fetched fails the job instead of
+      # being skipped: an audit run over an incomplete tree produces confident
+      # false findings, which is the exact failure this suite exists to prevent.
+      - name: Verify the experimental auditor against labelled fixtures
+        run: |
+          root=$(mktemp -d)
+          while read -r repo; do
+            [ -n "$repo" ] || continue
+            set +e
+            ./scripts/fetch-checkout.sh "$repo" "$root/$(echo "$repo" | tr '/' '_')" package.json
+            code=$?
+            set -e
+            if [ "$code" -eq 1 ]; then
+              echo "fixture fetch failed for ${repo}; audit results would not be valid" >&2
+              exit 1
+            fi
+          done < <(node -e "
+            const { readFileSync } = require('node:fs')
+            const spec = JSON.parse(readFileSync('fixtures/labelled.json', 'utf8'))
+            // Each name needs its own trailing newline: joining with '\n' omits
+            // one after the last entry, and 'while read' discards that final
+            // unterminated line. Measured — it silently dropped the last
+            // fixture, which then reported as skipped rather than failing.
+            process.stdout.write(spec.fixtures.map((f) => f.repo + '\n').join(''))
+          ")
+          node scripts/test-audit.mjs "$root"
 
       - name: Collect repositories carrying the topic
         env:
