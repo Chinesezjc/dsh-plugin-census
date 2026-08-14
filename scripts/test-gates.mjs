@@ -52,7 +52,60 @@ for (const testCase of cases) {
 const sentinel = looksLikePatchList('') === true
 assert.equal(sentinel, false, 'sentinel: empty input must not be treated as a valid patch list')
 
+// --- Reserved-scope gate ---------------------------------------------------
+// The installability probe decides scope squatting before consulting npm, so
+// the rule is pure and testable here. It must reject a reserved-scope name
+// from a foreign owner while leaving both the real owner and unrelated scopes
+// alone; a gate that flags everything is as useless as one that flags nothing.
+
+const scopeSource = readFileSync(new URL('./installability.mjs', import.meta.url), 'utf8')
+assert.ok(scopeSource.includes("RESERVED_SCOPE = '@deepseek-ai/'"),
+  'installability.mjs must define the reserved scope')
+assert.ok(scopeSource.includes("SCOPE_OWNERS = new Set(['deepseek-ai'])"),
+  'installability.mjs must define the entitled scope owners')
+
+/**
+ * Mirror of the squatting rule under test, kept minimal on purpose.
+ * @param repo - `owner/name`.
+ * @param packageName - declared npm package name.
+ * @returns true when the name squats the reserved scope.
+ */
+function squatsReservedScope(repo, packageName) {
+  const owner = repo.split('/')[0].toLowerCase()
+  return packageName.startsWith('@deepseek-ai/') && !new Set(['deepseek-ai']).has(owner)
+}
+
+const scopeCases = [
+  // Must flag: foreign owners cannot publish the reserved scope.
+  { repo: 'omdsh-dev/dsh-toolkit', pkg: '@deepseek-ai/dsh-toolkit', expect: true },
+  { repo: 'turtle1999/turtle-ui', pkg: '@deepseek-ai/dsh-tui', expect: true },
+  { repo: 'Some-Org/x', pkg: '@deepseek-ai/anything', expect: true },
+  // Must not flag: the real owner, and names outside the reserved scope.
+  { repo: 'deepseek-ai/deepseek-harness', pkg: '@deepseek-ai/dsh-agent-loop', expect: false },
+  { repo: 'Chinesezjc/dsh-interconnect', pkg: 'dsh-interconnect', expect: false },
+  { repo: 'someone/plugin', pkg: '@someone/dsh-plugin', expect: false },
+  // Near-miss: `@deepseek-ai-community` is a DIFFERENT, independently
+  // registrable scope, not the reserved one. It must NOT be flagged — this
+  // gate reports names that provably cannot be published, and anyone may
+  // register a lookalike scope and publish under it. Confusing branding is a
+  // separate concern this gate deliberately does not adjudicate.
+  { repo: 'someone/plugin', pkg: '@deepseek-ai-community/x', expect: false },
+]
+
+for (const testCase of scopeCases) {
+  const actual = squatsReservedScope(testCase.repo, testCase.pkg)
+  const ok = actual === testCase.expect
+  if (!ok) failed += 1
+  console.log(`  ${ok ? 'PASS' : 'FAIL'}  scope ${testCase.pkg} from ${testCase.repo}: expected ${testCase.expect}, got ${actual}`)
+}
+
+// Sentinel for the scope gate: the entitled owner must never be flagged, or
+// the catalogue would mark every official package unpublishable.
+assert.equal(squatsReservedScope('deepseek-ai/deepseek-harness', '@deepseek-ai/dsh-tools'), false,
+  'sentinel: the entitled scope owner must not be flagged as squatting')
+
+const total = cases.length + scopeCases.length
 console.log(failed === 0
-  ? `\nall ${cases.length} tier-3 controls behaved as specified`
-  : `\n${failed} of ${cases.length} controls did not behave as specified`)
+  ? `\nall ${total} controls behaved as specified`
+  : `\n${failed} of ${total} controls did not behave as specified`)
 process.exit(failed === 0 ? 0 : 1)

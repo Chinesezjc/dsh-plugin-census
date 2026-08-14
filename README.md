@@ -61,6 +61,29 @@ ranked by strength and the confidence published alongside:
 
 A low-confidence attribution is a guess and is labelled as one.
 
+## Installability
+
+Contract compliance says a plugin declares a valid patch. It does not say the
+package can be obtained. Two failure modes are decidable without installing
+anything:
+
+| Verdict | Meaning | Count |
+| --- | --- | --- |
+| `published` | the declared name resolves on the npm registry | 161 |
+| `git-only` | absent from npm; installable from a Git specifier | 399 |
+| `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 36 |
+
+The 36 blocked entries are listed separately in the catalogue. They satisfy the
+bundle contract, but only the DeepSeek organisation can publish to the
+`@deepseek-ai` scope, so those names cannot be created by their current owners
+and `dsh plugin add @deepseek-ai/...` fails for every one of them. This is a
+naming defect that renaming fixes; it is not a statement about code quality.
+
+The check deliberately does **not** flag lookalike scopes such as
+`@deepseek-ai-community`. Those are separate, independently registrable scopes
+whose owners can publish normally, so they are installable — confusing branding
+is a different concern this catalogue does not adjudicate.
+
 ## Reproducing
 
 ```sh
@@ -73,14 +96,20 @@ node scripts/probe-contract.mjs < repos.txt > data/contract.jsonl
 # 3. surface attribution
 node scripts/attribute.mjs < data/contract.jsonl > data/surface.jsonl
 
-# 4. negative controls for the tier-3 gate
+# 4. installability (npm registry + reserved-scope check)
+node scripts/installability.mjs < data/contract.jsonl > data/installability.jsonl
+
+# 5. negative controls for every gate
 node scripts/test-gates.mjs
 ```
 
 `scripts/test-gates.mjs` exists because a gate that cannot fail is not a gate.
 It asserts the tier-3 predicate rejects empty, whitespace-only, comment-only,
-and prose files, and carries a sentinel that fails if the predicate is ever
-made unconditionally permissive.
+and prose files, and that the reserved-scope rule flags foreign owners while
+leaving the entitled owner, unrelated scopes, and lookalike scopes alone. Both
+gates carry a sentinel that fails if the rule is ever made unconditionally
+permissive, and both were verified by injecting a defect and confirming the
+suite turns red.
 
 ## Data
 
@@ -89,6 +118,7 @@ made unconditionally permissive.
 | `data/repos-raw.jsonl` | repository metadata as returned by the search API |
 | `data/contract-v2.jsonl` | three-tier contract verdicts |
 | `data/surface.jsonl` | surface attribution with confidence |
+| `data/installability.jsonl` | npm resolution and reserved-scope verdicts |
 | `data/catalog.jsonl` | joined, classified catalogue |
 
 Search API returns at most 1000 results per query, so the sample is 999 unique

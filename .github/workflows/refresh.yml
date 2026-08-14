@@ -70,22 +70,34 @@ jobs:
           node scripts/attribute.mjs < data/contract-v2.jsonl > data/surface.jsonl
           jq -r '"\(.surface) \(.confidence)"' data/surface.jsonl | sort | uniq -c | sort -rn
 
+      - name: Assess installability
+        env:
+          RADAR_CONCURRENCY: '6'
+        run: |
+          node scripts/installability.mjs < data/contract-v2.jsonl > data/installability.jsonl
+          jq -r '.installable' data/installability.jsonl | sort | uniq -c | sort -rn
+
       - name: Join and render
         run: |
           jq -s '.' data/surface.jsonl > /tmp/surf.json
+          jq -s '.' data/installability.jsonl > /tmp/inst.json
           jq -s 'unique_by(.full_name)' data/repos-raw.jsonl > /tmp/raw.json
-          jq -s -c --slurpfile S /tmp/surf.json --slurpfile R /tmp/raw.json '
+          jq -s -c --slurpfile S /tmp/surf.json --slurpfile I /tmp/inst.json --slurpfile R /tmp/raw.json '
             ($S[0] | map({key:.repo, value:.}) | from_entries) as $s
+            | ($I[0] | map({key:.repo, value:.}) | from_entries) as $i
             | ($R[0] | map({key:.full_name, value:.}) | from_entries) as $r
             | map(select(.verdict=="CONTRACT_OK") | {
                 repo, package: .name,
                 surface: ($s[.repo].surface // "unknown"),
                 confidence: ($s[.repo].confidence // "none"),
                 evidence: ($s[.repo].evidence // []),
+                installable: ($i[.repo].installable // "unknown"),
+                installReason: ($i[.repo].reason // null),
                 stars: ($r[.repo].stars // 0),
                 description: ($r[.repo].desc // null),
                 pushed: ($r[.repo].pushed_at // null)})
-            | sort_by([(if .confidence=="high" then 0 elif .confidence=="medium" then 1
+            | sort_by([(if .installable=="published" then 0 elif .installable=="git-only" then 1 else 2 end),
+                       (if .confidence=="high" then 0 elif .confidence=="medium" then 1
                         elif .confidence=="low" then 2 else 3 end), -.stars])
             | .[]' data/contract-v2.jsonl > data/catalog.jsonl
           node scripts/render.mjs
