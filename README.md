@@ -21,12 +21,12 @@ Measured over a 999-repository sample (the search API's per-query ceiling):
 
 | Stars | Satisfies the plugin contract |
 | --- | --- |
-| 0 | 78.6% |
-| 1-2 | 76.0% |
-| 3-9 | 77.2% |
-| 10-49 | 81.4% |
-| 50+ | **55.9%** |
-| all | 76.4% |
+| 0 | 73.4% |
+| 1-2 | 78.5% |
+| 3-9 | 75.2% |
+| 10-49 | 78.2% |
+| 50+ | **57.3%** |
+| all | 74.3% |
 
 Only the top band is depressed, and its contents explain why: the
 highest-starred repositories carrying this topic are mostly the *catalogues* of
@@ -47,13 +47,14 @@ All 999 probed repositories, by verdict:
 
 | Verdict | Count | Share |
 | --- | --- | --- |
-| `CONTRACT_OK` | 763 | 76.4% |
-| `NO_DSH_FIELD` | 95 | 9.5% |
-| `NO_PACKAGE_JSON` | 72 | 7.2% |
-| `DSH_WITHOUT_BUNDLE_PATCH` | 53 | 5.3% |
-| `PATCH_FILE_MISSING` | 8 | 0.8% |
-| `VENDORED_HARNESS` | 5 | 0.5% |
-| `PATCH_FILE_EMPTY_OR_INVALID` | 3 | 0.3% |
+| `CONTRACT_OK` | 742 | 74.3% |
+| `NO_DSH_FIELD` | 101 | 10.1% |
+| `NO_PACKAGE_JSON` | 83 | 8.3% |
+| `DSH_WITHOUT_BUNDLE_PATCH` | 54 | 5.4% |
+| `PATCH_FILE_MISSING` | 10 | 1.0% |
+| `VENDORED_HARNESS` | 6 | 0.6% |
+| `PATCH_FILE_EMPTY_OR_INVALID` | 2 | 0.2% |
+| `TREE_UNREADABLE` | 1 | 0.1% |
 
 `VENDORED_HARNESS` marks a repository that ships a copy of the harness rather
 than a plugin: it satisfies the contract because it *contains* DSH's own bundle
@@ -63,7 +64,7 @@ name. One has 203 stars.
 
 ## Shelf life
 
-These figures describe one sample at one moment, and the moment is short. All 169
+These figures describe one sample at one moment, and the moment is short. All 257
 repositories judged non-compliant were re-probed a few hours after the first
 pass: two had become compliant because their authors added `dsh.bundle` in the
 interval — `songoao25/dsh-plugin-guardian` at 08:58 and
@@ -72,6 +73,11 @@ came from a probe fix; the authors simply shipped.
 
 Treat any number here as a reading with a timestamp, not a standing fact. The
 scripts are included so the reading can be retaken rather than trusted.
+
+The scheduled workflow demonstrates this directly: a run a few hours after the
+figures above were written produced a catalogue of 742 rather than 763 entries
+from the same 999-repository ceiling. Nothing in the probe changed between them —
+the topic's most-recently-updated 999 repositories were simply a different set.
 
 ## What "contract-verified" means
 
@@ -100,8 +106,8 @@ ranked by strength and the confidence published alongside:
 - **high** — depends on `@deepseek-ai/dsh-client-*` (client) or
   `@deepseek-ai/dsh-host-*` and host-only packages (host).
 - **low** — no `@deepseek-ai/*` dependency at all; attributed from name and
-  description keywords. 273 of 763 (35.8%) fall here, against 448 attributed
-  from dependency evidence and 42 partially attributed.
+  description keywords. 284 of 742 (38.3%) fall here, against 423 attributed
+  from dependency evidence and 35 partially attributed.
 
 A low-confidence attribution is a guess and is labelled as one.
 
@@ -113,9 +119,9 @@ anything:
 
 | Verdict | Meaning | Count |
 | --- | --- | --- |
-| `published` | the declared name resolves on the npm registry | 388 |
-| `git-only` | absent from npm; installable from a Git specifier | 373 |
-| `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 2 |
+| `published` | the declared name resolves on the npm registry | 384 |
+| `git-only` | absent from npm; installable from a Git specifier | 353 |
+| `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 5 |
 
 A further five repositories carry `@deepseek-ai/dsh-base` verbatim. They are not
 misnamed plugins but **vendored copies of the harness**, so they are classified
