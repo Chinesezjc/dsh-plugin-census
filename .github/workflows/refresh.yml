@@ -53,6 +53,9 @@ jobs:
       - name: Verify decay never reports doubt as decay
         run: node scripts/test-decay.mjs
 
+      - name: Verify attribution refuses to publish a broken fetch
+        run: node scripts/test-attribution.mjs
+
       - name: Verify the checkout fetcher rejects incomplete transfers
         run: ./scripts/test-fetch.sh
 
