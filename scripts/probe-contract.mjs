@@ -66,42 +66,213 @@ function looksLikePatchList(text) {
 }
 
 /**
+ * Decide whether a manifest path is a plausible plugin location.
+ *
+ * Hint prefixes alone are not enough: `anywhere-labs/deepseek-harness-desktop`
+ * keeps its bundle in a root-level `dsh-plugin-desktop/` directory, which no
+ * conventional prefix matches. Depth is the more reliable signal, with test
+ * fixtures excluded because a fixture manifest is not the package on offer.
+ * @param path - manifest path within the repository.
+ * @returns true when the path could hold the repository's plugin.
+ */
+function isPluginCandidate(path) {
+  if (path === 'package.json') return true
+  if (/(^|\/)node_modules\//.test(path)) return false
+  // Exclude test and fixture manifests: a fixture is not the package on offer.
+  // `examples/` is deliberately NOT excluded wholesale — `volcengine/OpenViking`
+  // ships its real plugin as `examples/dsh-memory-plugin`, and an earlier
+  // blanket `examples/*/` rule rejected it. Only nesting BELOW a package
+  // directory indicates a fixture.
+  if (/(^|\/)(tests?|__tests__|fixtures?|e2e|spec)\//.test(path)) return false
+  const depth = path.split('/').length
+  if (WORKSPACE_HINTS.some((hint) => path.startsWith(hint))) return depth <= 4
+  // A directory one level down is a plausible single-package layout.
+  return depth === 2
+}
+
+/** Directory prefixes that conventionally hold workspace subpackages. */
+const WORKSPACE_HINTS = ['packages/', 'plugins/', 'extensions/', 'bundle/', 'bundles/',
+  'npm/', 'apps/', 'integrations/', 'examples/', 'src/plugins/']
+/** Cap on manifests read per repository, so one monorepo cannot exhaust the budget. */
+const MAX_MANIFESTS = 25
+
+/**
+ * Package names published only by the DSH project itself.
+ *
+ * A repository whose bundle manifest carries one of these is not offering a
+ * plugin; it is shipping a copy of the harness. Measured on the live topic:
+ * five repositories (including `fufankeji/deepseek-harness-studio` at 203
+ * stars) contain `packages/bundle/base/package.json` naming
+ * `@deepseek-ai/dsh-base` verbatim. `fork` is false for all five, so these are
+ * source copies that an owner-name check cannot detect. Reporting them as
+ * misnamed plugins was wrong: the name is not the author's mistake, it is the
+ * harness's own name.
+ */
+const FIRST_PARTY_PACKAGES = new Set([
+  '@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@deepseek-ai/dsh-headless',
+])
+
+/**
+ * List every `package.json` path in a repository's default-branch tree.
+ * @param repo - `owner/name`.
+ * @returns manifest paths, nearest the root first, or null when unreadable.
+ */
+function listManifests(repo) {
+  return new Promise((resolve) => {
+    execFile('gh', ['api', `repos/${repo}/git/trees/HEAD?recursive=1`, '--jq',
+      '[.tree[]?|select(.path|endswith("package.json"))|.path]'],
+      { maxBuffer: 16 * 1024 * 1024 }, (error, stdout) => {
+        if (error || !stdout.trim()) return resolve(null)
+        try {
+          const paths = JSON.parse(stdout)
+          if (!Array.isArray(paths)) return resolve(null)
+          // Shallow paths first: a root or top-level workspace manifest is more
+          // likely to be the plugin than something nested in a test fixture.
+          resolve(paths.sort((a, b) => a.split('/').length - b.split('/').length))
+        } catch {
+          resolve(null)
+        }
+      })
+  })
+}
+
+/**
+ * Read a manifest and extract its bundle declaration.
+ * @param repo - `owner/name`.
+ * @param path - manifest path within the repository.
+ * @returns parsed shape, or null when unreadable or malformed.
+ */
+async function readManifest(repo, path) {
+  const text = await fetchFile(repo, path)
+  if (text === null) return null
+  try {
+    const manifest = JSON.parse(text)
+    return {
+      path,
+      name: manifest?.name ?? null,
+      declared: manifest?.dsh?.bundle?.patch,
+      hasDsh: manifest?.dsh !== undefined,
+      hasBundle: manifest?.dsh?.bundle !== undefined,
+    }
+  } catch {
+    return { path, malformed: true }
+  }
+}
+
+/**
  * Probe one repository through all three contract tiers.
+ *
+ * Searches the whole default-branch tree rather than only the root, because
+ * monorepos place the plugin manifest in a subdirectory. Measured on the
+ * current topic: `zhu1090093659/dsh-web-ui` declares five bundles under
+ * `packages/`, `volcengine/OpenViking` one under `examples/`,
+ * `anywhere-labs/deepseek-harness-desktop` one under `dsh-plugin-desktop/`, and
+ * `Q00/ouroboros` one under `integrations/` — a root-only probe reports all of
+ * them as non-plugins.
  * @param repo - `owner/name`.
  * @returns a verdict record describing the highest tier reached.
  */
 async function probe(repo) {
-  const manifestText = await fetchFile(repo, 'package.json')
-  if (manifestText === null) {
-    return { repo, tier: TIER.NONE, verdict: 'NO_PACKAGE_JSON', patch: null, note: 'not an npm package' }
-  }
-
-  let manifest
-  try {
-    manifest = JSON.parse(manifestText)
-  } catch {
-    return { repo, tier: TIER.NONE, verdict: 'MALFORMED_PACKAGE_JSON', patch: null, note: 'package.json is not valid JSON' }
-  }
-
-  const declared = manifest?.dsh?.bundle?.patch
-  if (typeof declared !== 'string' || declared.length === 0) {
-    const hasDsh = manifest?.dsh !== undefined
+  // DSH's own repository declares bundles (`packages/bundle/base` is
+  // `@deepseek-ai/dsh-base`), so tree-walking makes the harness itself pass the
+  // plugin contract. It is the product, not a plugin for the product, and it is
+  // the highest-starred entry carrying the topic — reporting it as a plugin
+  // would put the single most visible wrong answer at the top of the census.
+  if (repo.toLowerCase() === 'deepseek-ai/deepseek-harness') {
     return {
       repo,
       tier: TIER.NONE,
-      verdict: hasDsh ? 'DSH_WITHOUT_BUNDLE_PATCH' : 'NO_DSH_FIELD',
+      verdict: 'FIRST_PARTY_HARNESS',
       patch: null,
-      note: hasDsh ? 'dsh present but dsh.bundle.patch missing' : 'no dsh field',
-      name: manifest.name ?? null,
+      note: 'DeepSeek Harness itself; its bundles are product packages, not third-party plugins',
     }
   }
 
-  // Tier 2: the declared path must resolve inside the repository.
-  const patchPath = declared.replace(/^\.\//, '')
+  const rootManifest = await readManifest(repo, 'package.json')
+  let candidates = []
+  if (rootManifest !== null && !rootManifest.malformed) candidates.push(rootManifest)
+
+  // Only walk the tree when the root does not already satisfy the contract:
+  // the tree call is an extra request per repository and most plugins are
+  // single-package.
+  if (!candidates.some((entry) => typeof entry.declared === 'string' && entry.declared.length > 0)) {
+    const paths = await listManifests(repo)
+    if (paths === null && rootManifest === null) {
+      return { repo, tier: TIER.NONE, verdict: 'NO_PACKAGE_JSON', patch: null, note: 'no readable package.json in the tree' }
+    }
+    const workspacePaths = (paths ?? [])
+      .filter((path) => path !== 'package.json')
+      .filter(isPluginCandidate)
+      .slice(0, MAX_MANIFESTS)
+    for (const path of workspacePaths) {
+      const entry = await readManifest(repo, path)
+      if (entry === null || entry.malformed) continue
+      candidates.push(entry)
+      if (typeof entry.declared === 'string' && entry.declared.length > 0) break
+    }
+  }
+
+  if (candidates.length === 0) {
+    if (rootManifest?.malformed === true) {
+      return { repo, tier: TIER.NONE, verdict: 'MALFORMED_PACKAGE_JSON', patch: null, note: 'package.json is not valid JSON' }
+    }
+    return { repo, tier: TIER.NONE, verdict: 'NO_PACKAGE_JSON', patch: null, note: 'not an npm package' }
+  }
+
+  const bundle = candidates.find((entry) => typeof entry.declared === 'string' && entry.declared.length > 0)
+
+  // A vendored copy of the harness satisfies the contract because it contains
+  // the harness's own bundle packages. Detected by package name rather than by
+  // repository or owner name, since these are source copies rather than forks.
+  if (bundle !== undefined && typeof bundle.name === 'string' && FIRST_PARTY_PACKAGES.has(bundle.name)) {
+    return {
+      repo,
+      tier: TIER.NONE,
+      verdict: 'VENDORED_HARNESS',
+      patch: null,
+      note: `contains the first-party package ${bundle.name} at ${bundle.path}; this is a copy of the harness, not a plugin`,
+      name: bundle.name,
+      manifestPath: bundle.path,
+    }
+  }
+
+  if (bundle === undefined) {
+    const anyDsh = candidates.find((entry) => entry.hasDsh)
+    const source = anyDsh ?? candidates[0]
+    return {
+      repo,
+      tier: TIER.NONE,
+      verdict: anyDsh === undefined ? 'NO_DSH_FIELD' : 'DSH_WITHOUT_BUNDLE_PATCH',
+      patch: null,
+      note: anyDsh === undefined
+        ? `no dsh field in ${candidates.length} manifest(s)`
+        : `dsh present in ${source.path} but dsh.bundle.patch missing`,
+      name: source.name,
+      manifestPath: source.path,
+    }
+  }
+
+  const manifest = bundle
+  const declared = manifest.declared
+
+  // Tier 2: the declared path must resolve, relative to the manifest that
+  // declared it. A subpackage patch path is relative to its own directory, so
+  // resolving against the repository root would report every monorepo bundle
+  // as missing its patch file.
+  const manifestDir = manifest.path === 'package.json'
+    ? ''
+    : `${manifest.path.slice(0, manifest.path.lastIndexOf('/'))}/`
+  const patchPath = `${manifestDir}${declared.replace(/^\.\//, '')}`
   const patchText = await fetchFile(repo, patchPath)
-  const base = { repo, patch: declared, name: manifest.name ?? null }
+  const base = {
+    repo,
+    patch: declared,
+    name: manifest.name ?? null,
+    manifestPath: manifest.path,
+    patchPath,
+  }
   if (patchText === null) {
-    return { ...base, tier: TIER.DECLARED, verdict: 'PATCH_FILE_MISSING', note: `declares ${declared} but the file is absent` }
+    return { ...base, tier: TIER.DECLARED, verdict: 'PATCH_FILE_MISSING', note: `declares ${declared} but ${patchPath} is absent` }
   }
 
   // Tier 3: the patch file must carry patch-list structure.

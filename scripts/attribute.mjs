@@ -115,7 +115,15 @@ async function main() {
   async function worker() {
     while (cursor < targets.length) {
       const record = targets[cursor++]
-      const manifestText = await fetchFile(record.repo, 'package.json')
+      // Read the manifest that actually declared the bundle, not the repository
+      // root. 109 of 766 compliant plugins declare theirs in a subpackage, and
+      // their dependencies live there too: reading the root manifest would
+      // attribute every one of them from the wrong dependency list, usually an
+      // empty one, silently collapsing them to low-confidence keyword guesses.
+      const manifestPath = typeof record.manifestPath === 'string' && record.manifestPath.length > 0
+        ? record.manifestPath
+        : 'package.json'
+      const manifestText = await fetchFile(record.repo, manifestPath)
       let dependencies = []
       let description = null
       if (manifestText !== null) {

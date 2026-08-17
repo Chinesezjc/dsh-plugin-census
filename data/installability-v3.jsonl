@@ -1,0 +1,766 @@
+{"repo":"534119219/chicheng-peak","packageName":"chicheng-peak","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"1052326311/dsh-plan-lattice","packageName":"dsh-plan-lattice","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"863683348/dsh-gov","packageName":"dsh-gov","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"1321928757/dsh-prompt-polish","packageName":"dsh-prompt-polish","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"1624318455/dsh-plugin-tts","packageName":"@dsh-external/dsh-plugin-tts","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"1MLightyears/dsh-theme-synthwave","packageName":"dsh-theme-synthwave","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"13071301808/dsh-composer-expand","packageName":"dsh-composer-expand","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"22-ai-00/dsh-enhanced","packageName":"@dsh-enhanced/acp","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"1264459640/dsh-trellis","packageName":"dsh-trellis","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"534119219/chicheng-stats","packageName":"chicheng-stats","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"1797833970/dsh-data-analysis-plugin","packageName":"@andy1797833970/dsh-bundle-data-analysis","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"534119219/dsh-custom-provider-reasoning","packageName":"dsh-custom-provider-reasoning","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"863683348/dsh-need-finder","packageName":"dsh-need-finder","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"863683348/dsh-feed","packageName":"dsh-feed","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"863683348/dsh-plugin-audit","packageName":"dsh-audit","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"863683348/dsh-plugin-gate","packageName":"dsh-plugin-gate","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"7dgroup-ai/dsh-skill-7d-code-reviewer","packageName":"@7dgroup/dsh-skill-7d-code-reviewer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"863683348/dsh-plugin-verify","packageName":"dsh-plugin-verify","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"940842546/dsh-permissions","packageName":"dsh-permissions","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"863683348/dsh-starter-zh","packageName":"dsh-starter-zh","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"863683348/dsh-plugin-recommend","packageName":"dsh-plugin-recommend","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"863683348/dsh-trend-radar","packageName":"dsh-trend-radar","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"263311487-ux/dsh-verify","packageName":"dsh-verify","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"940842546/dsh-usage-billing","packageName":"dsh-usage-billing","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"863683348/dsh-recipe","packageName":"dsh-recipe","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"863683348/dsh-insight","packageName":"dsh-insight","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"A3Boy/dsh-web-tools","packageName":"dsh-web-tools","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"A-G-guy/dsh-plugins","packageName":"@dsh-custom/bundle-main","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"AX1202/ax-feishu-bridge","packageName":"ax-feishu-bridge","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"AdonisSheldon/dsh-openai-oauth","packageName":"dsh-openai-oauth","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"AlexYin-Tongji/dsh-plugin-console","packageName":"dsh-plugin-console","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"AgentConnect/dsh-awiki","packageName":"dsh-awiki","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Alvin-Somedo/dsh-app-launcher","packageName":"dsh-app-launcher","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"AmethystLuna/embedded-workbench","packageName":"@amethystluna/embedded-workbench","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Andrietteprotective835/dsh-mcp-lens","packageName":"dsh-mcp-lens","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"AmethystLuna/logicprobe","packageName":"@amethystluna/logicprobe","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"AngelosZou/dsh-python-env","packageName":"dsh-python-env","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"863683348/dsh-plugin-scorecard","packageName":"dsh-plugin-scorecard","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Anionex/dsh-vision-toolkit","packageName":"@anionex/dsh-vision-toolkit","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"AndyYang12345/dsh-butler-memory","packageName":"dsh-butler-memory","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ArcherLyu/dsh-plugin-ssh","packageName":"dsh-plugin-ssh","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"AlwaysSum/deepseek-harness-kit","packageName":"@dsh-kit/plugin-file-explorer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"AITabby/dockyard-dsh","packageName":"@dockyard-dsh/plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"AtlasCloudAI/dsh-media-gen","packageName":"dsh-media-gen","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"AtomerCore/dsh-qq-agent-mail","packageName":"dsh-qq-agent-mail","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ArcoCodes/bloome-finance-plugin","packageName":"bloome-finance-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"AwesomeHou/dsh-plugin-marketplace","packageName":"dsh-plugin-marketplace","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Blank-not-black/dsh-remote-plugin","packageName":"dsh-remote-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Bryan-cmf/dsh-infra-observability","packageName":"@bryan-cmf/dsh-infra-observability","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Bryan-cmf/dsh-vector-memory","packageName":"@bryan-cmf/dsh-vector-memory","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"CN-Leo/dsh-deepseek-balance","packageName":"dsh-deepseek-balance","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Britneycode/dsh-update-center","packageName":"dsh-update-center","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"CH4ACKO3/dsh-harmony","packageName":"dsh-harmony","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Blank-not-black/dsh-Remote","packageName":"dsh-remote-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Artificialwhale/session-reader-plugin","packageName":"dsh-session-reader","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ChenRuoT/dsh-sidebar-qa","packageName":"dsh-sidebar-qa","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"CC19990113/dsh-plugin-codegraph","packageName":"dsh-plugin-codegraph","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Cheng-xiu/dsh-mobile-link","packageName":"dsh-mobile-link","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ChengxiuCDP/dsh-plugin-advisor","packageName":"dsh-plugin-advisor","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Chang-Tong/dsh-import-agents","packageName":"dsh-import-agents","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ChongCyrus/Vibe-Mathematics","packageName":"dsh-vibe-math","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ChrisZhangWG/dsh-codex-meter","packageName":"dsh-codex-meter","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Czerror/dsh-plugin-prompt-tool","packageName":"dsh-plugin-prompt-tool","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"CodeIdeal/dsh_review","packageName":"dsh_review","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Devin-AXIS/deepseek-design","packageName":"deepseek-idesign","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"CanglongCl/dsh-web-review","packageName":"@canglongcl/dsh-web-review","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Anestis271/dsh-desktop","packageName":"@anestis271/dsh-desktop","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"AskingTheHeavens/dsh-openclaw-persona","packageName":"@user/dsh-openclaw-persona","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ClausYang/dsh-bang-shell","packageName":"@omdsh-dev/dsh-bang-shell","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"DietCokewithSugar/dsh-user-experience","packageName":"dsh-user-experience","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"D4Cluv-Train/dsh-plugin-manager","packageName":"@d4cluvtrain/dsh-plugin-manager","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Dely0/dsh-personal-workbench","packageName":"@dely0/dsh-personal-workbench","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Dwsy/dsh-pi-extension-bridge","packageName":"dsh-pi-extension-bridge","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"DshMarketPlace/dsh-plugins-store","packageName":"dshmarketplace-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Electricitysheep/dsh-tool-turbo","packageName":"dsh-tool-turbo","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"E83737664/dsh-skills-manager","packageName":"dsh-skill-manager","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Enderfga/dsh-clawo","packageName":"@enderfga/dsh-clawo","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Er1c0v0/dsh-whale-pet","packageName":"dsh-whale-pet","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Easyhoov/deepseek-harness-desktop-windows","packageName":"@dsh-desktop/balance","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"EchoUser005/dsh-fate-spectrum","packageName":"dsh-fate-spectrum","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ECHOUniverse/dshacp","packageName":"@hanxu131/dshacp","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Dominic789654/awesome-deepseek-harness","packageName":"dsh-code-review","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Ericwong5021/deepseek-plugin-store","packageName":"deepseek-plugin-store","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"FUSU123fusu/dsh-tui-checkpoints","packageName":"dsh-tui-checkpoints","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"FUSU123fusu/dsh-tui-jobs","packageName":"dsh-tui-jobs","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Favio8/dsh-plugin-deepeye","packageName":"dsh-plugin-deepeye","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"FUSU123fusu/dsh-tui-market","packageName":"dsh-tui-market","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"FUSU123fusu/dsh-tui-subagents","packageName":"dsh-tui-subagents","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"EthanYoQ/AI-Novel-Writer","packageName":"@ethanyoq/dsh-ai-novel-writer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"FeatherHunter/dsh-prompt","packageName":"dsh-prompt","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"BenHuHuan/dhs-tuicode","packageName":"@deepseek-ai/dsh-base","installable":"unpublishable-scope","reason":"names itself under @deepseek-ai/ but is owned by benhuhuan, which cannot publish that scope","registry":"published"}
+{"repo":"FengLingYaaa/dsh-gpt-perm-strip","packageName":"dsh-gpt-perm-strip","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"FeatherHunter/dsh-mattpocock-skills-deck","packageName":"dsh-mattpocock-skills-deck","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Failing-coachman563/dsh-skill-viewer","packageName":"dsh-skill-viewer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"FuncWei/dsh-kanban","packageName":"dsh-kanban","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"GHJIVHIDD/dsh-plugin-vm-sandbox","packageName":"@deepseek-ai/dsh-plugin-vm-sandbox","installable":"unpublishable-scope","reason":"names itself under @deepseek-ai/ but is owned by ghjivhidd, which cannot publish that scope","registry":"absent"}
+{"repo":"Eleven-is-cool/dsh-worktree","packageName":"@eleven-is-cool/dsh-worktree","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Fisfzy/ego-browser","packageName":"@dsh-external/ego-browser","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"GIT121995/dsh-memory-gate","packageName":"dsh-memory-gate","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Fishsb/dsh-prompt-enhancer","packageName":"dsh-prompt-enhancer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"GMH13552/dsh-timer-scheduler","packageName":"dsh-timer-scheduler-ui","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"FeatherHunter/dsh-opencode-palette","packageName":"dsh-opencode-palette","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Gdnaiteab/pingo-dsh-plugin","packageName":"pingo-dsh-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Gin-7/dsh-pet-remielle","packageName":"dsh-pet-remielle","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Han-1413141/dsh-cost-meter","packageName":"dsh-cost-meter","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"GooodWei/context-vista","packageName":"context-vista","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Happy2Git/dsh-compass","packageName":"dsh-compass","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"H97y/dsh-devflow","packageName":"dsh-devflow","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"GraySilver/dsh-task-modes","packageName":"@graysilver/dsh-task-modes","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"HeWhenJay/dsh-provider-hub","packageName":"@hewhenjay/dsh-provider-hub","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"GPIOX/dsh-api-balance","packageName":"dsh-api-balance-badge","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Hefulalala/dsh-remote-workspace","packageName":"@dsh-external/dsh-remote-workspace","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"IAMLieutenant/dsh-tool-user-memory","packageName":"dsh-tool-user-memory","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"JUANWANG-BUAA/dsh-full-remote","packageName":"dsh-full-remote","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"GuoxinShan/dsh-yzj","packageName":"@dsh-yzj/bundle","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"IZRINO/dsh-token-stats","packageName":"dsh-token-stats","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Hanihahaha/deepseek-harness-plugins","packageName":"dsh-auto-approve","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"JUANWANG-BUAA/dsh-session-git","packageName":"dsh-session-git","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Jannchie/dsh-bill","packageName":"dsh-bill","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"J-Chien/dsh-meter","packageName":"dsh-meter","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"JachinShen/dsh-subagent-response-promoter","packageName":"dsh-subagent-response-promoter","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"JohnXu22786/session-titler","packageName":"dsh-session-caption","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"JAdpp/dsh-whale-galgame","packageName":"@dsh-external/dsh-whale-galgame","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"JonyChan8394/dsh-llm-balance","packageName":"dsh-llm-balance","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"JxaMe/dsh-telegram-bridge","packageName":"dsh-telegram-bridge","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Julyves/dsh-git-ui","packageName":"dsh-git-ui","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"JustGenius-s/DSH-Plugs","packageName":"@just-genius/dsh-codex","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"JunNanLYS/dsh-layered-memory","packageName":"dsh-layered-memory","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Jiyr0119/dsh-workspace-explorer","packageName":"@jiyr0119/dsh-workspace-explorer","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"LaplaceYoung/dsh-directorx","packageName":"dsh-directorx","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Laplace-bit/dsh-smooth-stream","packageName":"dsh-smooth-stream","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"LeemanCheung/dsh-skin-studio","packageName":"dsh-skin-studio","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Letter2025/dsh-model-failover","packageName":"dsh-model-failover","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"LINNoot/dsh-co-pet","packageName":"dsh-pet-bridge","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"LAN-TINA-WS/dsh-gui-customization","packageName":"dsh-gui-customization","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"LeemanCheung/dsh-vibe-pack","packageName":"dsh-vibe-pack","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Lilien-xu/dsh-meego","packageName":"dsh-meego","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"LeemanCheung/dsh-agent-arena","packageName":"dsh-agent-arena","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Ikalus1988/MisakaNet","packageName":"misakanet","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"LX2000WASD/dsh-web-plugin-manager","packageName":"dsh-web-plugin-manager","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"LeemanCheung/dsh-whale-companion","packageName":"dsh-whale-companion","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Lion-1209/dsh-plugin-lion-skills","packageName":"dsh-plugin-lion-skills","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Luaphes/dsh-plugins-market","packageName":"dsh-plugins-market","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"LyaxZ/dsh-quick-toc","packageName":"dsh-quick-toc","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Lum1104/dsh-browser","packageName":"@yuxianglin/dsh-bridge-browser","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"MaRi23333/dsh-fish-tts","packageName":"dsh-fish-tts","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"MagicCrazyMan/dsh-password-prompt","packageName":"dsh-password-prompt","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"MRZHUH/dsh-remote-server","packageName":"dsh-remote-server","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"LiuJunheng/DeepSeekHarnessGreen","packageName":"dsh-archive-purge","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Luke-Yong/dsh-plugin-knowledge-graph","packageName":"dsh-plugin-knowledge-graph","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Mars-Sea/dsh-commandcode-provider","packageName":"@mars-sea/dsh-commandcode-provider","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MangMax/dsh-themes","packageName":"dsh-themes","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"LingyeSoul/dsh-tavern","packageName":"dsh-tavern","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MHfire/dsh-im-bridge","packageName":"@mhfire/dsh-im-bridge","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MaxHou-infinity/dsh-scout","packageName":"dsh-scout","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MicroMilo/upstream-radar","packageName":"upstream-radar","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Melody-max114/dsh-excel-panel","packageName":"dsh-excel-panel","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MarecGents/deepseek-harness-hub","packageName":"@marecgents/dsh-hub","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MichengAI/dsh-agency-agents","packageName":"@michengai/dsh-agency-agents","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Mr-remon219/dsh-search-boost","packageName":"dsh-search-boost","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MimicHunterZ/dsh-agent-compact","packageName":"@mimichunterz/agent-compact","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MichengAI/dsh-skills-manager","packageName":"@michengai/dsh-skills-manager","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MuYu-Zh/dsh-open-browser","packageName":"dsh-open-browser","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"LA7-F/dsh-MyCordis","packageName":"dsh-mycordis","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MrWeiCodes/dsh-permgate","packageName":"dsh-permgate","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Mombrane/dsh-subagent-monitor","packageName":"@leetoners/dsh-ui-subagent-monitor","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Nicotinamide/dsh-plugin-tg-bridge","packageName":"dsh-plugin-tg-bridge","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"MiraculousGarfield/dsh-ops-health","packageName":"dsh-ops-health","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Neplich/dsh_plugin","packageName":"@neplich/dsh-preset-dev","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Neumannzc/dsh-archive-manager","packageName":"@tangzai/dsh-ui-archive-manager","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Ox0400/dsh-vault","packageName":"dsh-vault","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"MichengAI/dsh-archive-manager","packageName":"@michengai/dsh-archive-manager","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PandaAIDD/dsh-molecule-viewer","packageName":"@dsh-plugins/dsh-molecule-viewer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PerryLink/dsh-background-agents","packageName":"dsh-background-agents","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"NanmiCoder/dsh-auto-mode","packageName":"@nanmicoder/dsh-auto-mode","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Mrzhailiming/deepseek-pet","packageName":"dsh-pet-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PerryLink/dsh-claude-move","packageName":"dsh-claude-move","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-defend","packageName":"dsh-defend","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-checkpoint-rewind","packageName":"dsh-checkpoint-rewind","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-composer-history","packageName":"dsh-composer-history","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-budget","packageName":"dsh-budget","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PeanutsDou/peanut-dsh-plugin","packageName":"dsh-apex-standard","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PerryLink/dsh-click","packageName":"dsh-click","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-auto-review","packageName":"dsh-auto-review","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-fast","packageName":"dsh-fast","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PerryLink/dsh-draw","packageName":"dsh-draw","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PerryLink/dsh-doublecheck","packageName":"dsh-doublecheck","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-mask","packageName":"dsh-mask","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PerryLink/dsh-mcp-panel","packageName":"dsh-mcp-panel","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-library","packageName":"dsh-library","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-lsp-actions","packageName":"dsh-lsp-actions","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-github","packageName":"@perrylink/dsh-github","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-output-styles","packageName":"dsh-output-styles","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-observe","packageName":"dsh-observe","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-local-ai","packageName":"dsh-local-ai","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PerryLink/dsh-memento","packageName":"dsh-memento","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-permission-rules","packageName":"dsh-permission-rules","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-score","packageName":"dsh-score","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PerryLink/dsh-session-pin","packageName":"dsh-session-pin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"NoNameLeGo/dsh-catppuccin-theme","packageName":"@nonamelego/dsh-catppuccin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-plugin-guide","packageName":"dsh-plugin-guide","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"KeepLost/harniverse","packageName":"@deepseek-ai/dsh-base","installable":"unpublishable-scope","reason":"names itself under @deepseek-ai/ but is owned by keeplost, which cannot publish that scope","registry":"published"}
+{"repo":"PerryLink/dsh-skill-pack-security","packageName":"dsh-skill-pack-security","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PerryLink/dsh-talk","packageName":"dsh-talk","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PerryLink/dsh-session-sync","packageName":"dsh-session-sync","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Phant0Meow/dsh-memory-meow","packageName":"meow-memory","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PlutoKeating/dsh-lark-bot","packageName":"dsh-lark-bot","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"QCYTSN/dsh-dafeiyu","packageName":"dsh-dafeiyu","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-translate","packageName":"dsh-translate","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Q00/ouroboros","packageName":"dsh-ouroboros","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"PivotStackIntelligence/dsh-github","packageName":"dsh-github","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Qing45/dsh-feishu-chat","packageName":"dsh-feishu-chat","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"RealAlexandreAI/dsh-cloudflare-browser-run","packageName":"dsh-cloudflare-browser-run","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"RealAlexandreAI/dsh-nocturne-memory","packageName":"dsh-nocturne-memory","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PicGo/dsh-plugin","packageName":"@picgo/dsh-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"RealHacker/dsh-theme-colorizer","packageName":"dsh-theme-colorizer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Plocr/dsh-desktop","packageName":"ui-dashboard","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ReiRui/dsh-image-preview","packageName":"dsh-image-preview","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Ri0n72Y/workspace-scope","packageName":"workspace-scope","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ReachGa0/dsh-desktop","packageName":"dsh-desktop-windows-launcher","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Ready22Race/team-task","packageName":"@ready22race/dsh-team-task","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"PerryLink/dsh-test-drive","packageName":"dsh-test-drive","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"SYMlp/dsh-markdown-memory","packageName":"dsh-markdown-memory","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Rianico/dsh-better-edit","packageName":"dsh-better-edit","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"SakalioLabs/dsh-code-ide","packageName":"dsh-code-ide","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"RangeKing/dsh-iris","packageName":"dsh-iris","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Relistencode/dsh-extension-hub","packageName":"dsh-extension-hub","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"SMWHff/dsh-delete-session","packageName":"dsh-delete-session","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"SamurAIGPT/dsh-plugin-muapi","packageName":"@dsh-plugin/dsh-plugin-muapi","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"SenmuuuuW/dsh-whale-report","packageName":"dsh-whale-report","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"SCSpotato/dsh-remote","packageName":"dsh-remote-control","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"RossBool/dsh-plugins","packageName":"dsh-agent-orchestration","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Ricketts-Guo/dsh-shortcuts","packageName":"dsh-shortcuts","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"SipengXie2024/dsh-memory-hermes","packageName":"dsh-memory-hermes","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"SailingLoong/loongport-dsh","packageName":"loongport","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"SiriLee/dsh-rewind","packageName":"dsh-rewind-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"SoDaZilla-zzz/dsh-liquid-glass-balance-card","packageName":"dsh-liquid-glass-balance-card","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"SeverusZh/dsh-plugin-subagent-director","packageName":"dsh-plugin-subagent-director","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"SeverusZh/dsh-yolo-mode","packageName":"dsh-yolo-mode","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"SipengXie2024/dsh-turn-reminder","packageName":"dsh-turn-reminder","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"SiriLee/dsh-edit-approval","packageName":"dsh-edit-approval","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"SodaMem/dsh-plugin-sodamem","packageName":"dsh-plugin-sodamem","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Spirtxiaoqi7/mindspace-dsh-session-memory","packageName":"mindspace-dsh-session-memory","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Songran241/dsh-req-workbench","packageName":"@dsh-community/dsh-req-workbench","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Sparrived/DSH-Deeptop","packageName":"deeptop-bridge","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Sttrevens/dsh-cost-meter","packageName":"@steven-wu/dsh-cost-meter","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"StockMCP-net/dsh-stockmcp","packageName":"dsh-stockmcp","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Tabbit-Browser/dsh-plugin","packageName":"tabbit-browser","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Taler97/dsh-rollback","packageName":"dsh-rollback","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"THEWOLFWALKER/dsh-notifier","packageName":"dsh-notifier","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"StarChen-Cycler/octie-dsh-plugin","packageName":"octie-cli","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Suef-666/dsh-tab-alert","packageName":"dsh-tab-alert","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"TheColdWorld/dsh-wsl-keepalive","packageName":"wsl-keepalive","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Temoa/dsh-sessions-rm","packageName":"@temoa/dsh-sessions-rm","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Sttrevens/dsh-linked-folders","packageName":"@steven-wu/dsh-linked-folders","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Spirtxiaoqi7/mindspace-dsh-local-rag","packageName":"mindspace-dsh-local-rag","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Tang-mm95/dsh-kdocs-connector","packageName":"dsh-kdocs-connector","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"TheYoungChen/dsh-plugin-market","packageName":"dsh-plugin-market","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Thhoho/reSanity","packageName":"resanity","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"TeaClearInkII/DSH-Marketplaces-Nexus","packageName":"dsh-marketplaces-nexus","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"TongaiLinC/dsh-mobile-access","packageName":"dsh-mobile-access","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"TtTRz/dsh-wecom","packageName":"dsh-wecom","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"TingRuDeng/dsh-feishu-bot","packageName":"@tingrudeng/dsh-feishu-bot","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"UNLINEARITY/dsh-code","packageName":"dsh-code","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Tisitan/dsh-live2d-companion","packageName":"dsh-live2d-companion","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Tyan66666/billion-context-dsh","packageName":"billion-context-dsh","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"TecFancy/dsh-auth-gate","packageName":"dsh-auth-gate","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Viger1/dsh-pilot","packageName":"dsh-pilot","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"UnKnownFish125/dsh-deepmemory","packageName":"dsh-deepmemory","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Very12345/sai-dsh-plugins","packageName":"@sai/dsh-android","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"WSL043/dsh-codex-subscription","packageName":"dsh-codex-subscription","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"TwistedRiCen/dsh-vision-bridge","packageName":"@liangdacheng/dsh-vision-bridge","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Walvez/dsh-search-failover","packageName":"dsh-search-failover","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"WayneJin0918/dsh-wm","packageName":"dsh-wm","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Viger1/dsh-preview","packageName":"dsh-preview","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"WTStarMark/QAQ","packageName":"dsh-qaq","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Very12345/sai","packageName":"sai-dsh-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"WilliamShi666/dsh-wsl-workspace-picker","packageName":"dsh-wsl-workspace-picker","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"WonderfulEdge/dsh-publish-skill","packageName":"dsh-publish-skill","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"WenhongPan/dsh-projects","packageName":"dsh-projects","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Xs1KVerOA/dsh-service-manage","packageName":"dsh-service-manage","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Xenia0922/dsh-opencode-go-usage","packageName":"dsh-opencode-go-usage","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"YLingHao/dsh-codeui","packageName":"dsh-codeui","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"TQSY114514/dsh-ui-appearance","packageName":"dsh-ui-appearance","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"XiaoSong1223/dsh-release-guardian","packageName":"dsh-release-guardian","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Yan-Zero/dsh-codex","packageName":"dsh-codex","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Shiyao-Huang/awesome-deepseek-harness-plugin","packageName":"deeplugin-market","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Ye-Yu-Mo/dsh-llm-proxy","packageName":"dsh-llm-proxy","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"XMoon/dsh-pi-tui","packageName":"@xmoon76/dsh-pi-tui","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Yiipu/dsh-agentmemory","packageName":"dsh-agentmemory","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Yui-Little/dsh-mobile-shell","packageName":"dsh-mobile-shell","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Ychris12138/dsh-usage-stats","packageName":"dsh-usage-stats","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"YELEBAI/dsh-plugin-marketplace","packageName":"dsh-plugin-marketplace","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ZSeven-W/dsh-crew","packageName":"@zseven-w/dsh-crew","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"Zdram/deepseek-harness-skin","packageName":"deepseek-harness-skin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ZASENJC/dsh-plugins-store","packageName":"dsh-plugins-store","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ZnonEn/dsh-volcark-quota","packageName":"@dsh-external/dsh-volcark-quota","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"a179-sanae/dsh-auto-collapse","packageName":"dsh-auto-collapse","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"a903067276-rgb/dsh-file-mentions","packageName":"dsh-file-mentions","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Zhengshuji/dsh-sound-notifier","packageName":"dsh-sound-notifier","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"a903067276-rgb/dsh-hud","packageName":"dsh-hud","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"a903067276-rgb/dsh-file-upload","packageName":"dsh-file-upload","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"a903067276-rgb/dsh-perm-guard","packageName":"dsh-perm-guard","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Zalpha263/dsh-ui-beautify","packageName":"dsh-ui-beautify","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Yidien/dsh-capture-window","packageName":"dsh-capture-window","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"aka-danielZhang/dsh-mcp-settings","packageName":"dsh-mcp-settings","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"Zoramoris/Amoris-agent","packageName":"dsh-nyamu-skin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"akqwpeter-prog/skill-bartender","packageName":"skill-bartender","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"a903067276-rgb/dsh-plan-switch","packageName":"dsh-plan-switch","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"allentnetus/dsh-job-hunting","packageName":"dsh-job-hunting","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"alanzhao0128/dsh-image-plugins","packageName":"dsh-image-plugins","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"XJungit/omdp","packageName":"@omdp/dsh-connector","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"alanzhao0128/dsh-balance-monitor","packageName":"dsh-balance-monitor","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"april-jk/dsh-mobile-plugin","packageName":"@april-jk/dsh-mobile","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"amplifthq/oh-my-dsh","packageName":"oh-my-dsh","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"anneheartrecord/dsh-desk-pet","packageName":"dsh-desk-pet","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"akqwpeter-prog/dsh-skill-router","packageName":"dsh-skill-router","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"antibrow/dsh-antibrow","packageName":"dsh-antibrow","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"banlanzs/dsh-web-enhanced","packageName":"dsh-web-enhanced","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"anywhere-labs/deepseek-harness-desktop","packageName":"dsh-plugin-desktop","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"alib8b8/aflare","packageName":"@alib8b8/dsh-plugin-aflare","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"astra3294/dsh-doctor","packageName":"dsh-doctor","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"beijingwahw/dsh-companion-dev","packageName":"dsh-companion","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"beijingwahw/dsh-companion","packageName":"dsh-companion","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"bill084153-cell/dsh-knowledge-forge","packageName":"dsh-knowledge-forge","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"beijingwahw/dsh-conv-search","packageName":"@dsh-external/dsh-conv-search","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"agentrq/agentrq","packageName":"@agentrq/dsh-plugin-agentrq","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"beijingwahw/dsh-companion-enterprise","packageName":"dsh-companion-enterprise","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"biociao/dsh-science","packageName":"dsh-science","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"beijingwahw/dsh-proactive","packageName":"dsh-proactive","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"bradeGithub/DSH-Plugins-Marketplace","packageName":"dsh-plugin-marketplace","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"balcoz/dsh-ocr-local","packageName":"dsh-ocr-local","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"beijingwahw/dsh-conv-export","packageName":"@dsh-external/dsh-conv-export","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"bitxeno/dsh-at-github","packageName":"dsh-at-github","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"bx33661/dsh-omv","packageName":"dsh-omv","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"bowenliang123/dsh-context","packageName":"dsh-context","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"cainiao1992/dsh-codebuddy-auth","packageName":"dsh-codebuddy-auth","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"bpc-oss/dsh-web-billing","packageName":"dsh-web-billing","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"chnjames/dsh-plugin-market","packageName":"dsh-plugin-market","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"c-v-c-v/dsh-chat-nav","packageName":"dsh-chat-nav","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"charrywhite/dsh-sticky-notes","packageName":"dsh-sticky-notes","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"bruc3van/dsh-desktop-safe-market","packageName":"dsh-desktop-safe-market","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"caoyiwei850/dsh-ssh-ops","packageName":"dsh-ssh-ops","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"clarkzhao/dsh-llm-grok","packageName":"dsh-llm-grok","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ciceroyang/dsh-report-studio","packageName":"dsh-report-studio","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"chengzhi43/dsh-file","packageName":"dsh-file","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ccch1mneyyy/dsh-TUI","packageName":"@deepseek-harness-tui/dsh-tui","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"corrinehu/dsh-chat-imagine","packageName":"dsh-chat-imagine","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"crack-time/dsh-client-ui-skin-cottage","packageName":"@crack/dsh-client-ui-skin-cottage","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"cokiscarazo-rgb/dsh-session-management","packageName":"dsh-session-management","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"chuyue-1/deepseek-harness-gamepad-cursor","packageName":"@dsh-user/gamepad-cursor","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"cungphammanh590-star/dsh-quiz","packageName":"dsh-quiz","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"cyanseek/dsh-landscape","packageName":"dsh-landscape","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"btspoony/mstar-harness","packageName":"@mstar-harness/dsh","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"crazywoola/dsh-balance","packageName":"@pinkbanana/dsh-balance","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"dancingmemory/dskin","packageName":"dskin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"cookiesheep/whale-on-desk","packageName":"whale-on-desk","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ddll8023/dsh-codex","packageName":"dsh-codex","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"daboge-beach/dsh-skin-studio","packageName":"@dsh-skin-studio/gallery","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"csyangwen/dsh-memory-evolve","packageName":"dsh-memory-evolve","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"deronghe/dsh-plugin-desktop-installer","packageName":"dsh-plugin-desktop-installer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"dami9527/dsh-image-pathify","packageName":"dsh-image-pathify","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"dhicoc/dsh-reverse-skill","packageName":"@dhicoc/dsh-reverse-skill","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"dhb861832993-star/pbr-render","packageName":"pbr-render","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"daetz-coder/dsh-multi-chat","packageName":"dsh-multi-chat","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"djt889/dsh-drag-to-attachment","packageName":"@dsh-external/dsh-drag-to-attachment","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"dove-a/dsh-chat-window-fold","packageName":"dsh-chat-window-fold","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"drscrewdriver/dsh-seatbelt-sandbox","packageName":"dsh-seatbelt-sandbox","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"dfkai/dsh-board","packageName":"dsh-board","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"coderPerseus/dsh-hub","packageName":"@dshhubs/plugin-search","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"edynasty/dsh-opencode-go-provider","packageName":"dsh-opencode-go-provider","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"dushaobindoudou/dsh-acp","packageName":"dsh-acp-server","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"dshworks/dsh-crew","packageName":"@dshworks/dsh-crew","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"dttxorg/deepseekeyes","packageName":"@dttxorg/deepseekeyes","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"duhu2000/qcc-mcp-oauth","packageName":"qcc-dsh-mcp-oauth","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"eeyzs1/dsh-plugins","packageName":"@eeyzs1/dsh-attach-files","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"dshworks/dsh-meter","packageName":"@dshworks/dsh-meter","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"fengs2021/dsh-feishu-bridge","packageName":"dsh-feishu-bridge","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"fengs2021/dsh-plugin-catalog","packageName":"dsh-plugin-catalog","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"elves-ai/dsh-web-search-firecrawl","packageName":"@elves-ai/dsh-web-search-firecrawl","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"fengs2021/dsh-narrow-screen-fix","packageName":"dsh-narrow-screen-fix","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"fengs2021/dsh-boot-failsafe","packageName":"dsh-boot-failsafe","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"fengs2021/dsh-session-title-cold","packageName":"dsh-session-title-cold","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"elementor-i/dsh-agentmemory","packageName":"@elementor-i/dsh-agentmemory","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"fengs2021/dsh-file-bridge","packageName":"dsh-file-bridge","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"franksong2702/dsh-codex-connect","packageName":"dsh-codex-connect","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"flyhigao/dsh-sticky-notes","packageName":"dsh-sticky-notes","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"flg1217/dsh-llm-agy","packageName":"@dsh-external/dsh-llm-agy","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"fwerkor/local-shell-mcp","packageName":"local-shell-mcp-dsh","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"fazhu4/dsh-activity-report","packageName":"dsh-activity-report","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"facai0316/dsh-auto-coding","packageName":"@auto-coding/mega","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"fleg45/memoria-framework","packageName":"dsh-memoria","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"dsh-market/dsh-market","packageName":"dshmarket","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"fuhefei/dsh-sentinel","packageName":"dsh-sentinel","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"guhanfei-ai/dsh-grafana","packageName":"dsh-grafana","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"guo6x/dsh-pilot","packageName":"dsh-pilot","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"firecrawl/dsh-firecrawl","packageName":"@firecrawl/dsh-firecrawl","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"guobinmengxiang-rgb/dsh-memory-canvas","packageName":"dsh-memory-canvas","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"guobinmengxiang-rgb/dsh-plugins","packageName":"dsh-cli-guard","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"hackerFish/dsh-video-studio","packageName":"@hackerfish/dsh-video-studio","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"gfds2005/dsh-timed-goal","packageName":"dsh-timed-goal","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ghbhiee/dsh-plugins","packageName":"dsh-plugin-cli-session","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"haiyoucuv/dsh-model-provider-label","packageName":"dsh-model-provider-label","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"haiyoucuv/dsh-chat-tweaks","packageName":"dsh-chat-tweaks","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"geml-spec/geml","packageName":"@geml/dsh-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"hajimilvdou/dsh-storecloud","packageName":"dsh-storecloud","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"haohao16421/dsh-add-conversation","packageName":"dsh-add-conversation","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"fz-lyle/dsh-deveco-cli","packageName":"@ah-plugins/dsh-deveco-cli","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"gxx950224/backpack","packageName":"@ggame/backpack","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"hatsuyuki0103/oh-my-deepseek-harness","packageName":"oh-my-deepseek-harness","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"geebos/dsh-terminal","packageName":"@geebos/dsh-terminal","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"hhy66/dsh-balance-stats","packageName":"dsh-balance-stats","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"haoku123/dsh-budget-guard","packageName":"dsh-budget-guard","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"gxx950224/ggame","packageName":"@ggame/backpack","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"huxint/dsh-team","packageName":"dsh-team","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"huangrx6/dsh-plugin","packageName":"dsh-layout","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ipcjs/dsh-model-slider","packageName":"dsh-model-slider","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"isheng-eqi/dsh-hermes-memory","packageName":"dsh-hermes-memory","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"honghudavy-star/DSH_plugins_4U","packageName":"@dsh-plugins/4u","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"jackyoung022/dsh-session-canvas","packageName":"@linxin666/dsh-session-canvas","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"iamzcr/dsh-obsidian-assistant","packageName":"dsh-obsidian-assistant","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jaxxchen003/foliodrop-dsh-publish","packageName":"@foliodrop/dsh-publish","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"imsai-sh/awesome-deepseek-harness-plugins","packageName":"dsh1024","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"hrhgit/deepseek-harness-plugin-manager","packageName":"dsh-plugin-manager","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"huiliyi37/dsh-tianshu-tui","packageName":"@huiliyi37/dsh-tianshu-tui","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"iwker/dsh-htmlrun","packageName":"dsh-htmlrun","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jean3690/dsh-devtoolbox","packageName":"dsh-devtoolbox","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"hyqibot/DeepSeek-Harness-Token-Free","packageName":"dsh-plugin-desktop","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jcc1997/dsh-plugins","packageName":"dsh-git","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jiay98528-dev/dsh-model-sync","packageName":"dsh-model-sync","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"hyzyn/dsh-plugin-kit","packageName":"@hyzyn/dsh-plugin-kit","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jesspig/deepseek-harness-desktop","packageName":"@dsh-desktop/bundle","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"jiay98528-dev/dsh-plugin-weaknet-adaptor","packageName":"dsh-plugin-weaknet-adaptor","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"icodesign/orbis","packageName":"@orbisapp/remote-dsh","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jiesou/dsh-cline-free-provider","packageName":"@jiesou/dsh-cline-free-provider","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jiewaigongxing/dsh-jiey-browser","packageName":"dsh-jiey-browser","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jiaoqsh/dsh-document","packageName":"@jiaoqsh/dsh-document","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jing-hy/dsh-task-runner","packageName":"dsh-task-runner","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"jxwb125646/dsh-niu-lai","packageName":"dsh-niu-lai","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kaiqiangh/dsh-workshpace-plugin","packageName":"dsh-workspace-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"juhe291/dsh-token-panel","packageName":"dsh-token-panel","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jinhuoooo/dsh-voice-input","packageName":"dsh-voice-input","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jypjypjypjyp/dsh-vqa-agent","packageName":"dsh-vqa-agent","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"jiesou/dsh-opencode-zen-free-provider","packageName":"@jiesou/dsh-opencode-zen-free-provider","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jeremy9682/dsh-cursor-codex","packageName":"@jeremy9682/dsh-acp","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"jingzhao-l/iterate-plugin","packageName":"iterate-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"keepview/dsh-lark","packageName":"dsh-lark","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"kaixinbaba/dsh-complete-notify","packageName":"dsh-complete-notify","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"kangjinghang/dsh-xueqiu","packageName":"dsh-xueqiu","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"kanchengw/dsh-mindseye","packageName":"dsh-mindseye","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"kiefeng/dsh-lan-memory","packageName":"dsh-lan-memory","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"fufankeji/deepseek-harness-studio","packageName":"@deepseek-ai/dsh-base","installable":"unpublishable-scope","reason":"names itself under @deepseek-ai/ but is owned by fufankeji, which cannot publish that scope","registry":"published"}
+{"repo":"kevin-luo/dsh-org-panel","packageName":"dsh-org-panel","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kelai141/dsh-code-diff-viewer","packageName":"dsh-code-diff-viewer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kanneiren/dsh-windows-manager","packageName":"dsh-windows-manager-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kingOfSoySauce/dsh-skin-market","packageName":"dsh-skin-market","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kingOfSoySauce/dsh-liang-skin","packageName":"dsh-client-liang-intensity-skin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kinoward/dsh-plugin-subhub","packageName":"dsh-plugin-subhub","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kobenfang/BigFish","packageName":"@kobenfang/dsh-bigfish","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kobenfang/BigLead","packageName":"@kobenfang/dsh-biglead","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kobenfang/Big8","packageName":"@kobenfang/dsh-big8","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"jumpserver-east/jumpserver-dsh","packageName":"@jumpserver-east/jumpserver-dsh","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"kobenfang/BigPlan","packageName":"@kobenfang/dsh-bigplan","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kobenfang/BigFocus","packageName":"@kobenfang/dsh-bigfocus","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kobenfang/BigFood","packageName":"@kobenfang/dsh-bigfood","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kc0ed/dsh-bottom-bar","packageName":"@kc0ed/dsh-bottom-bar","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"kobenfang/FruitPi","packageName":"@kobenfang/dsh-fruitpi","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kaziii/dsh-github-connector","packageName":"dsh-github-connect","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"kobenfang/ListForm","packageName":"@kobenfang/dsh-listform","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kobenfang/BigSeedSkill","packageName":"@kobenfang/dsh-bigseed","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kobenfang/bigA","packageName":"@kobenfang/dsh-biga","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"klarkxy/dsh-plugin-autoevo","packageName":"dsh-plugin-autoevo","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kouyichi/dsh-tui-app","packageName":"dsh-tui-app","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"leo-lab-2026/dsh-lark-bridge","packageName":"dsh-lark-bridge","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ktziy/dsh-plugin-factory","packageName":"dsh-plugin-factory","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"kobenfang/Eyes","packageName":"@kobenfang/dsh-eyes","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ld-1101/dsh-file-preview","packageName":"dsh-file-preview","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"lecutu/dsh-slide-reflex","packageName":"dsh-slide-reflex","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"lhwu1/dsh-lookseek","packageName":"dsh-lookseek","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"lehhair/dsh-mobile","packageName":"@dsh-external/dsh-mobile","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"lee259/dsh-workbench","packageName":"dsh-workbench","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"kirkchinese/claude2dsh","packageName":"claude2dsh","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"kouyichi/dsh-plugins","packageName":"dsh-a2a","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"light-only/dsh-codex-select","packageName":"dsh-codex-select","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"libinghui55/dsh-tavily-search","packageName":"dsh-tavily-search","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"lingruan28-boop/dsh-balance-float","packageName":"@dsh-external/dsh-balance-float","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"liulei237136/dsh-test-plugin","packageName":"dsh-test-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"liguobao/deepseek-harness-remote","packageName":"dsh-remote","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"lijian-ui/dsh-session-cleaner","packageName":"@lijian-ui/dsh-session-cleaner","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ljsysfurryACE/dsh-aura-scheduler","packageName":"@agentframe/dsh-aura-scheduler","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"liulei237136/dsh-publish-plugin","packageName":"dsh-publish-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"littleblakew/msds-chain-mcp","packageName":"dsh-msds-chain","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"loonai321/dsh-humanized-deepseek-maid","packageName":"dsh-humanized-deepseek-maid","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"liuyuelintop/dsh-conversation-exporter","packageName":"dsh-conversation-exporter","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"loster12520/dsh-btw","packageName":"dsh-btw","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"lovezi0/dsh-memory-palace","packageName":"dsh-memory-palace","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"loongsuite/dsh-plugin","packageName":"@loongsuite/dsh-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"luodeb/dsh-web-auth-gateway","packageName":"dsh-web-auth-gateway","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"losebird/dsh-plugin-market","packageName":"@ace-zone/dsh-market","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"lqhl/dsh-pi-tui","packageName":"dsh-pi-tui","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"luis1232023/dsh-workspace-enhance","packageName":"dsh-workspace-enhance","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"linhut/gongwen-skill","packageName":"gongwen-skill","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"lxzy-7/dsh-plugin-guard","packageName":"dsh-plugin-guard","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"liustack/modsearch","packageName":"@liustack/modsearch","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"luoyan96/dsh-catnap-studio","packageName":"dsh-catnap-plugins","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"lywusichen/dsh-skill-panel","packageName":"dsh-skill-panel","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"mcxianyujun/dsh-web-search-anysearch","packageName":"dsh-web-search-anysearch","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"lzszq/dsh-scholar","packageName":"@dsh-scholar/research-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"maxwell-feng/dsh-tesseract-ocr","packageName":"@maxwell-feng/dsh-tesseract-ocr","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"lk251066/dsh-tui-pro","packageName":"@lk251066/dsh-tui","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"memorax-ai/dsh-patchouli","packageName":"dsh-patchouli","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"meltartica/dsh-mcp-servers","packageName":"dsh-mcp-servers","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"lywusichen/dsh-jmcomic","packageName":"dsh-jmcomic","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"minivv/dsh-agent-skills","packageName":"dsh-agent-skills","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"mengyun233/dsh-codex-pet","packageName":"dsh-codex-pet","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"miiaowuwu/dsh-event-sounds","packageName":"dsh-client-ui-event-sounds","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"maxwell-feng/dsh-windows-ocr","packageName":"@maxwell-feng/dsh-windows-ocr","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"mytianyi0712/dsh-tui-plugin-OhMyPi","packageName":"dsh-omp-tui","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"nanshanzhaoji/dsh-download-progress","packageName":"dsh-download-progress","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"nexsjournal/dsh-customui-plugin","packageName":"dsh-customui-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"moon09300731/dsh-approval-gate","packageName":"dsh-approval-gate","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"nexsjournal/dsh-imagegen-plugin","packageName":"dsh-imagegen-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"nan1010082085/dsh-plugin-ima-sync","packageName":"dsh-plugin-ima-sync","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"monotykamary/dsh-fovea","packageName":"dsh-fovea","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"nonentity303/dsh-plugin-manager","packageName":"dsh-plugin-manager-pro","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"modusensus/dsh-mneme","packageName":"@modusensus/dsh-mneme","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"nowledge-co/nowledge-mem-deepseek-harness","packageName":"nowledge-mem-deepseek-harness","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"mouliangyu/dsh-plugins","packageName":"dsh-remote","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"oThTJx/dsh-skill-always-apply","packageName":"@firefly0621/dsh-skill-always-apply","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"oThTJx/dsh-skill-ponytail","packageName":"@firefly0621/dsh-skill-ponytail","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"oThTJx/dsh-skill-impeccable","packageName":"@firefly0621/dsh-skill-impeccable","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"noname-iii/dsh-code-checker","packageName":"dsh-code-checker","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"moonquake2004/dsh-doctor","packageName":"@moonquake2004/dsh-doctor","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"oThTJx/dsh-skill-superpowers","packageName":"@firefly0621/dsh-skill-superpowers","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"omdsh-dev/dsh-at-file","packageName":"dsh-at-file","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"oThTJx/dsh-skill-taste","packageName":"@firefly0621/dsh-skill-taste","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"omdsh-dev/dsh-inspect","packageName":"@dsh-external/dsh-inspect","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-dev/DSH-better-sidebar","packageName":"dsh-better-sidebar","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"omdsh-dev/dsh-sidechain","packageName":"@dsh-external/dsh-sidechain","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"oThTJx/dsh-skill-karpathy-guidelines","packageName":"@firefly0621/dsh-skill-karpathy-guidelines","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"omdsh-dev/dsh-lark","packageName":"dsh-lark-channel","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ningbainb/deepseek-harness-desktop","packageName":"@linxin666/dsh-client-ui-aionui-panel","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"omdsh-dev/plugin-template","packageName":"@your-scope/dsh-plugin-template","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-dev/dsh-llm-fallbacks","packageName":"dsh-llm-fallbacks","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"omdsh-dev/fabric","packageName":"cordis-fabric-bundle","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-plugins/omdsh-chatmode","packageName":"@omdsh-plugins/omdsh-chatmode","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-dev/ex-setting","packageName":"@deepseek-ai/dsh-ex-setting","installable":"unpublishable-scope","reason":"names itself under @deepseek-ai/ but is owned by omdsh-dev, which cannot publish that scope","registry":"absent"}
+{"repo":"omdsh-plugins/omdsh-editor","packageName":"@omdsh-plugins/omdsh-editor","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-plugins/omdsh-codemode","packageName":"@omdsh-plugins/omdsh-codemode","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-plugins/omdsh-sidepanel","packageName":"@omdsh-plugins/omdsh-sidepanel","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-plugins/omdsh-sidechat","packageName":"@omdsh-plugins/omdsh-sidechat","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"nonewind/dsh-spend","packageName":"dsh-spend","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"omdsh-plugins/omdsh-remdev","packageName":"@omdsh-plugins/omdsh-remdev","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-plugins/omdsh-remctrl","packageName":"@omdsh-plugins/omdsh-remctrl","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"opencamel/dsh-x-archive","packageName":"dsh-x-archive","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-plugins/omdsh-base","packageName":"@omdsh-plugins/omdsh-base","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"omdsh-plugins/omdsh-status","packageName":"@omdsh-plugins/omdsh-status","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-plugins/omdsh-shortcuts","packageName":"@omdsh-plugins/omdsh-shortcuts","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-plugins/omdsh-tui","packageName":"@omdsh-plugins/omdsh-tui-app","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"omdsh-dev/dsh-mnemon","packageName":"dsh-mnemon","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"penguin-oo/dsh-delegate-router","packageName":"dsh-delegate-router","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"oukeming64-tech/codex-skills","packageName":"@oukeming64-tech/codex-skills","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"protoctistmoses143/dsh-docs","packageName":"dsh-doc","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"penguin-oo/dsh-quota-hub","packageName":"dsh-quota-hub","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"omdsh-plugins/omdsh-plughub","packageName":"@omdsh-plugins/omdsh-plughub","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"omdsh-plugins/omdsh-usage","packageName":"@omdsh-plugins/omdsh-usage","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"peterliucius/dsh-prompt-optimize","packageName":"dsh-prompt-optimize","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"qiuyiwu1989-star/dsh-k12-substrate","packageName":"dsh-k12-substrate","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"qinyre/dsh-plugin-install","packageName":"dsh-plugin-install","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"preflower/deepseek-harness-compaction-ui","packageName":"deepseek-harness-compaction-ui","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"realpkuasule/dsh-session-id","packageName":"dsh-session-id-footer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"my-dsh/oh-my-dsh","packageName":"@deepseek-ai/dsh-base","installable":"unpublishable-scope","reason":"names itself under @deepseek-ai/ but is owned by my-dsh, which cannot publish that scope","registry":"published"}
+{"repo":"quicksandznzn/dsh-session-share","packageName":"dsh-session-share","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"pycjava/dsh-usage","packageName":"dsh-usage-ledger","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"realMisakaMikoto/dsh-skin-studio","packageName":"dsh-skin-studio","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"realpkuasule/dsh-side-notify","packageName":"dsh-side-notify","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"rbelem/dsh-tui","packageName":"@rbelem/dsh-tui","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"realpkuasule/dsh-sidechat","packageName":"dsh-sidechat","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"roxyyn0304/dsh-tool-everything","packageName":"dsh-tool-everything","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"qinyre/dsh-plugin-capabilities","packageName":"dsh-plugin-capabilities","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"rouyiemei/dsh-smart-router","packageName":"dsh-smart-router","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ruby1304/dsh-preset-anchored-standard","packageName":"dsh-preset-anchored-standard","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"pengpengyi92/dsh-quant","packageName":"dsh-quant","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"realpkuasule/dsh-archive-panel","packageName":"dsh-archive-panel","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"nexu-io/open-design","packageName":"@open-design/dsh-runtime","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"rj-jiangyichen/dsh-rules","packageName":"dsh-rules","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"rxa3c/chat2skill","packageName":"chat2skill-plugin-runtime","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ruby1304/dsh-quota-status","packageName":"dsh-quota-status","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ruby1304/dsh-turn-fork","packageName":"dsh-turn-fork","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ruby1304/dsh-vision-subagent","packageName":"dsh-vision-subagent","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"rrrrrredy/skill-security-guard","packageName":"dsh-skill-security-guard","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"sandbaseai/sandbase-harness","packageName":"managed-agents","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"shouwang37/dsh-comfyui-node-development","packageName":"dsh-comfyui-node-development","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"shsr07/dsh-go-usage","packageName":"dsh-go-usage","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ruimin251204/dsh-plugin-surgery","packageName":"dsh-plugin-surgery","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"seven282/oss-prompt-optimizer","packageName":"oss-prompt-optimizer","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"shukookie/dsh-plugin-wallpaper","packageName":"dsh-plugin-wallpaper","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"shifan3/dsh-approve-for-me","packageName":"dsh-approve-for-me","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"saitamahang/dsh-skill-importer","packageName":"dsh-skill-importer","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"siberiah2o/dsh-plugin-terminal","packageName":"dsh-plugin-terminal","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"seed-forge/harness-ai-kit","packageName":"harness-ai-kit-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"shuxue6662-a11y/dsh-risk-guard","packageName":"dsh-risk-guard","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"shatyuka/dsh-llm-codebuddy","packageName":"@shatyuka/dsh-llm-codebuddy","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"siweina/dsh-novel-writer","packageName":"dsh-novel-writer","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"space-spacee-clamation/dsh-package-manager","packageName":"@dsh-ext/dsh-package-manager","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"siegfly/dsh-deepseek-vision","packageName":"dsh-deepseek-vision","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"slicenferqin/dsh-whale-tui","packageName":"dsh-whale-tui","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"spacexun2/dsh-worktime-board","packageName":"@dsh-external/dsh-worktime-board","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"sjh9714/dsh-win32","packageName":"dsh-win32","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"sundusk/dsh-moodball","packageName":"@linxin666/dsh-moodball-status","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"supersealwqas/dsh-custom-provider-settings","packageName":"dsh-custom-provider-settings","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"syncable-dev/dsh-plugin-memtrace","packageName":"dsh-plugin-memtrace","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"superdesigndev/treg","packageName":"treg-dsh","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"sjh9714/dsh-what-changed","packageName":"dsh-what-changed","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"springbrand-lab/dsh-skin-universe","packageName":"@linxin666/dsh-client-ui-aionui-panel","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"sjh9714/dsh-lean","packageName":"dsh-lean","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"sjh9714/dsh-movein","packageName":"dsh-movein","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"tbxy09/dsh-replay-lab","packageName":"@tbxy09/dsh-replay-lab","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"suanlayu666/suanlayu-dsh-plugins","packageName":"dsh-file-upload","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"toolazytoname/dsh-plugin-grok","packageName":"dsh-plugin-grok","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"tiantyu/dsh-skin-toggle","packageName":"dsh-skin-toggle","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"toolclub/dsh-agent-team-gui","packageName":"dsh-agent-team-gui","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"stvlynn/dsh.fish","packageName":"dsh-hub","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"slywalker2006/dsh-passwords","packageName":"dsh-passwords","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"truelove-dreamer/dsh-plugin-git-workflow","packageName":"dsh-plugin-git-workflow","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"tttwh/dsh-plugin-Audit","packageName":"dsh-plugin-Audit","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"tyql688/dsh-providers","packageName":"dsh-providers","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"tancheng33/dsh-yogacara","packageName":"dsh-yogacara","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"tencent-connect/dsh-qqbot","packageName":"@tencent-connect/dsh-qqbot","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"truelove-dreamer/dsh-plugin-vetting","packageName":"dsh-plugin-vetting","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"u9521/dsh-subagent-custom-model","packageName":"@local/dsh-subagent-custom-model","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-base64url","packageName":"dsh-base64url","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"tpmoonchefryan/dsh-joi-channel-theme","packageName":"dsh-joi-channel-theme","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-api-testgen","packageName":"dsh-api-testgen","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-byte-size","packageName":"dsh-byte-size","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-api-mock","packageName":"dsh-api-mock","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"u9521/dsh-advanced-model-editor","packageName":"@local/dsh-advanced-model-editor","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-api-contract","packageName":"dsh-api-contract","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-code-stats","packageName":"dsh-code-stats","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-cinematography","packageName":"dsh-cinematography","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-color-contrast","packageName":"dsh-color-contrast","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"tt-a1i/archify","packageName":"@tt-a1i/archify-dsh","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-color-name","packageName":"dsh-color-name","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-animation-principles","packageName":"dsh-animation-principles","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-color","packageName":"@i6060/dsh-color","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-color-theory","packageName":"dsh-color-theory","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-cron","packageName":"dsh-cron","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-design-patterns","packageName":"dsh-design-patterns","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-duration","packageName":"dsh-duration","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-design-styles","packageName":"dsh-design-styles","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-http-uckkk","packageName":"dsh-http-uckkk","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-context-dashboard","packageName":"dsh-context-dashboard","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-grid-system","packageName":"dsh-grid-system","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-git-commit","packageName":"dsh-git-commit","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-composition","packageName":"dsh-composition","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-image-uckkk","packageName":"dsh-image-uckkk","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-json-flatten","packageName":"dsh-json-flatten","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-json-merge","packageName":"dsh-json-merge","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-jwt-uckkk","packageName":"dsh-jwt-uckkk","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-number-words","packageName":"dsh-number-words","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-interaction-design","packageName":"dsh-interaction-design","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-password-uckkk","packageName":"dsh-password-uckkk","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-motion-design","packageName":"dsh-motion-design","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-db-migration","packageName":"dsh-db-migration","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-license-guard","packageName":"dsh-license-guard","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-photography","packageName":"dsh-photography","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-dependency-audit","packageName":"dsh-dependency-audit","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-roman","packageName":"dsh-roman","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-storyboard","packageName":"dsh-storyboard","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-session-export","packageName":"dsh-session-export","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-test-coverage","packageName":"dsh-test-coverage","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-regex","packageName":"@i6060/dsh-regex","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-session-search","packageName":"dsh-session-search","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-secret-scan","packageName":"dsh-secret-scan","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-paper-sizes","packageName":"dsh-paper-sizes","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-text-diff","packageName":"dsh-text-diff","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-ux-writing","packageName":"dsh-ux-writing","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uluckystar/dsh-plugin-market","packageName":"dsh-plugin-market","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-text-wrap","packageName":"dsh-text-wrap","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"vlln/whale-girl","packageName":"whale-girl","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"valuz-ai/dsh-valuz-genui","packageName":"@valuz/dsh-valuz-genui","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"vlln/dsh-task-status","packageName":"@vlln/dsh-task-status","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"vlln/plugin-registry","packageName":"@dsh-external/plugin-console","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"soolaugust/deepseek-harness-cli","packageName":"@deepseek-ai/dsh-base","installable":"unpublishable-scope","reason":"names itself under @deepseek-ai/ but is owned by soolaugust, which cannot publish that scope","registry":"published"}
+{"repo":"urzeye/dsh-outline","packageName":"dsh-outline","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"wangxing-git/dsh-autogate","packageName":"dsh-autogate","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"wade20250715/dsh-pubmed","packageName":"dsh-pubmed","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"wangzhuo-coding/geo-content-optimizer","packageName":"@dsh-external/dsh-plugin-geo-content-optimizer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"uckkk/dsh-string-similarity","packageName":"dsh-string-similarity","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"warm-flame-core/new-project-init","packageName":"new-project-init","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"uckkk/dsh-video-creator","packageName":"dsh-video-creator","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"welsione/dsh-mmx-bridge","packageName":"dsh-mmx-bridge","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"wanshichenguang/dsh-tool-vision","packageName":"dsh-tool-vision","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"weshopai/weshop-dsh-plugin","packageName":"weshop-dsh-plugin","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"white-sand-grand/dsh-plugin-doctor","packageName":"dsh-plugin-doctor","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"wly8691-jpg/knowlp-rag","packageName":"@eqman00003/knowlp-rag","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"whyihaveyou/dsh-suite","packageName":"@dsh-suite/all","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"winterhuan/dsh-skills-viewer","packageName":"@winterchenhuan/dsh-skills-viewer","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"wingsky-1/dsh-plugin-hub","packageName":"@wingsky-1/dsh-gzip","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"wwumit/dsh-compliancehub","packageName":"@wwumit/dsh-compliancehub","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"wuhobin/dsh-mcp-manage","packageName":"dsh-mcp-manage","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"wwumit/dsh-plugin-tools","packageName":"@wwumit/dsh-plugin-tools","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"weijiafu14/pi2dsh","packageName":"pi2dsh","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"wz-heng/dsh-feishu-bridge","packageName":"dsh-feishu-bridge","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"xbzbing/dsh-password-gate","packageName":"dsh-password-gate","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"winliyou/dsh-plugins","packageName":"@chaoset/adaptive-perf","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"wsxwj123/dsh-plugins","packageName":"dsh-composer-tools","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xiagaogaozi/dsh-subagent-pool","packageName":"dsh-subagent-pool","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xiaozhe7772222/dsh-api-key-pool","packageName":"dsh-api-key-pool","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xavier711/dsh-plugin-deepseek-usage","packageName":"@xavier711/dsh-deepseek-usage","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"xiajingchun/dsh-nebulagraph-v5","packageName":"dsh-nebula","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xiaoshihou514/dsh-vision","packageName":"dsh-vision","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"volcengine/OpenViking","packageName":"@openviking/dsh-memory-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xiaozhe7772222/dsh-opencode-zen","packageName":"dsh-opencode-zen","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xiaozhiaixue/dsh-session-id","packageName":"dsh-session-id-footer","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xiaoyi-xx/dsh-peak-status","packageName":"dsh-peak-status","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"xgone/dsh-remote","packageName":"@xgone/dsh-remote","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"xDylanLong/dsh-snapmarketing","packageName":"@snapmarketing/dsh-plugin-center","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xingyingyuzhui/dsh-session-actions","packageName":"dsh-session-actions","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xiaozhiaixue/dsh-side-notify","packageName":"dsh-side-notify","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xiaozhiaixue/dsh-sidechat","packageName":"dsh-sidechat","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xczhanjun/lazeword","packageName":"dsh-lazeword","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"xiyuepcl/dsh-translator","packageName":"dsh-translator","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xjwwjx/dsh-conversation-quote","packageName":"@xjwwjx/dsh-conversation-quote","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xjwwjx/dsh-sonic","packageName":"@xjwwjx/dsh-sonic","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xiaosenho/dsh-plugin-remote-access","packageName":"@xiaosenho/dsh-plugin-remote-access","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"xingyingyuzhui/dsh-folded-chat","packageName":"dsh-folded-chat","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"yanglongyun/dsh-ramify","packageName":"@ramify/dsh-ramify","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xiaozhiaixue/dsh-archive-panel","packageName":"dsh-archive-panel","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xxxrickymorty-dev/dsh-rick","packageName":"dsh-rick","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"yangzhaofeng496/dsh-feishu-plugin","packageName":"dsh-feishu-plugin","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"yepyeel/dsh-vision","packageName":"dsh-vision","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"xun404/dsh-pihuo-plugins","packageName":"@pihuo/dsh-pihuo","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"xmutfyh/dsh-plugin-writing-guard","packageName":"dsh-plugin-writing-guard","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"yoke233/dsh-prime-agent","packageName":"dsh-prime-agent","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xlight/deepseek-visionary","packageName":"@xlight-oss/visionary-dsh","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ymh0000123/dsh-theme-endfield","packageName":"dsh-theme-endfield","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"yauntyour/DSH-Encrypt","packageName":"dsh-encrypt","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"yangfch3/dsh-mcp-mgr","packageName":"dsh-mcp-mgr","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"yujianjian1013/dsh-codex-media","packageName":"dsh-codex-media","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ycp424c/dsh-luna-vision-bridge","packageName":"@ycp424c/dsh-luna-vision-bridge","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"yhlooo/dsh-bridges","packageName":"dsh-bridges","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zh667/TokenLedger","packageName":"dsh-tokenledger","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zhenkun26/dsh-repo-atlas","packageName":"dsh-repo-atlas","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"yfzhou0904/dsh-plugin-gallery","packageName":"@yfzhou/dsh-codex-moot-escalation","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zhao999/dsh-plugin-wecom-bot","packageName":"dsh-plugin-wecom-bot","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"zhongjie10086/dsh-adaptive-native-standard","packageName":"dsh-adaptive-native-standard","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xmanrui/dsh-im","packageName":"@xmanrui/dsh-im","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zdx8637-gitdog/dshmobile","packageName":"@zdx8637/dshmobile-bridge","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zhtx2024/dsh-skin-switcher","packageName":"dsh-skin-switcher","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zhxqc/dsh-oh-my-theme","packageName":"dsh-oh-my-theme","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"yzke/dsh-extension-ops","packageName":"dsh-extension-ops","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"yoli-mi/dsh-client-ui-custom","packageName":"@ha-na-bi/dsh-client-ui-custom","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zoyluoblue/deepseek-harness-token","packageName":"@zoytown/dsh-token","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zhu168/dsh-save-money","packageName":"dsh-save-money","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"ztlovelsw/dsh-model-profile","packageName":"@ztlovelsw/dsh-model-profile","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zerob13/dsh-better-markdown","packageName":"dsh-better-markdown","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zuorn/Tydora","packageName":"tydora","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"zuoguyoupan2023/openharness-reader","packageName":"openharness-reader","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zhao-wuyan/dsh-maestro-runtime","packageName":"dsh-maestro-runtime","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"zp-home/dsh-recommend","packageName":"dsh-recommend","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"ysr666/dsh-vision-router","packageName":"dsh-vision-router","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zoyluoblue/deepseek-harness-billing","packageName":"@zoytown/dsh-billing","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zjcdkj/dsh-plugins","packageName":"dsh-plugin-qwen-image","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zhuiyueya/dsh-im-gateway","packageName":"dsh-im-gateway","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"zhu1090093659/dsh-web-ui","packageName":"@linxin666/dsh-client-ui-aionui-panel","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
