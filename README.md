@@ -13,23 +13,53 @@ installed.
 
 ## Why this exists
 
-The [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic holds over a
-thousand repositories, and GitHub sorts topic pages by stars. Measured across
-999 of them, contract compliance runs **opposite** to star count:
+The [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic held **6081**
+repositories on 2026-08-17, up from 1064 three days earlier. GitHub sorts topic
+pages by stars, and the most-starred entries are the least likely to be plugins.
+
+Measured over a 999-repository sample (the search API's per-query ceiling):
 
 | Stars | Satisfies the plugin contract |
 | --- | --- |
-| 0 | 64.5% |
-| 1–2 | 61.9% |
-| 3–9 | 54.6% |
-| 10–49 | 39.6% |
-| 50+ | **36.4%** |
+| 0 | 78.6% |
+| 1–2 | 75.3% |
+| 3–9 | 77.2% |
+| 10–49 | 81.4% |
+| 50+ | **55.9%** |
+| all | 76.2% |
 
-So the entries a visitor sees first are the least likely to be installable
-plugins. The highest-starred repository carrying the topic is DeepSeek Harness
-itself; the second is a Python skill collection. Neither is a plugin. That is
-the problem this index addresses — not that the topic is abused, but that its
-default ordering inverts usefulness.
+Only the top band is depressed, and its contents explain why: the
+highest-starred repositories carrying this topic are mostly the *catalogues* of
+it — `awesome-dsh-plugin` (6439), `AdamPlatin123/awesome-dsh-plugins` (1098),
+`0xsline/awesome-deepseek-harness` (649) — plus adjacent tooling such as
+`Tencent/BrowserSkill` (1089). None is a plugin, none claims to be, and all sort
+above the plugins a visitor is looking for.
+
+An earlier measurement (2026-08-14, n=999) found compliance falling
+monotonically with stars, from 64.5% at zero to 36.4% above fifty. **That
+pattern no longer holds** and the earlier figures should not be cited: the
+ecosystem grew 5.7x in three days, and this probe now finds bundles in
+subpackages, which the earlier one missed.
+
+## Sample composition
+
+All 999 probed repositories, by verdict:
+
+| Verdict | Count | Share |
+| --- | --- | --- |
+| `CONTRACT_OK` | 761 | 76.2% |
+| `NO_DSH_FIELD` | 97 | 9.7% |
+| `NO_PACKAGE_JSON` | 72 | 7.2% |
+| `DSH_WITHOUT_BUNDLE_PATCH` | 53 | 5.3% |
+| `PATCH_FILE_MISSING` | 8 | 0.8% |
+| `VENDORED_HARNESS` | 5 | 0.5% |
+| `PATCH_FILE_EMPTY_OR_INVALID` | 3 | 0.3% |
+
+`VENDORED_HARNESS` marks a repository that ships a copy of the harness rather
+than a plugin: it satisfies the contract because it *contains* DSH's own bundle
+packages. All five have `fork: false`, so they are source copies that neither an
+owner check nor a fork check detects; they are identified by first-party package
+name. One has 203 stars.
 
 ## What "contract-verified" means
 
@@ -45,11 +75,10 @@ failure the loader would raise:
 
 Only `PARSED` entries are listed as plugins.
 
-**Honest limit:** tiers 2 and 3 reject almost nothing in practice — 596 of 597
-tier-1 passers cleared both. Static verification is close to exhausted at tier 1,
-and the remaining uncertainty can only be resolved by installing a plugin.
-Install verification is not implemented yet; nothing in this repository currently
-claims a plugin runs.
+**Honest limit:** tiers 2 and 3 reject little in practice — 11 of 772 tier-1
+passers fail them. Static verification is close to exhausted at tier 1, and the
+remaining uncertainty can only be resolved by installing a plugin. Install
+verification is not implemented; nothing here claims a plugin runs.
 
 ## Surface attribution
 
@@ -59,7 +88,8 @@ ranked by strength and the confidence published alongside:
 - **high** — depends on `@deepseek-ai/dsh-client-*` (client) or
   `@deepseek-ai/dsh-host-*` and host-only packages (host).
 - **low** — no `@deepseek-ai/*` dependency at all; attributed from name and
-  description keywords. 22.6% of verified plugins fall here.
+  description keywords. 271 of 761 (35.6%) fall here, against 448 attributed
+  from dependency evidence and 42 partially attributed.
 
 A low-confidence attribution is a guess and is labelled as one.
 
@@ -71,11 +101,15 @@ anything:
 
 | Verdict | Meaning | Count |
 | --- | --- | --- |
-| `published` | the declared name resolves on the npm registry | 161 |
-| `git-only` | absent from npm; installable from a Git specifier | 399 |
-| `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 36 |
+| `published` | the declared name resolves on the npm registry | 387 |
+| `git-only` | absent from npm; installable from a Git specifier | 372 |
+| `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 2 |
 
-The 36 blocked entries are listed separately in the catalogue. They satisfy the
+A further five repositories carry `@deepseek-ai/dsh-base` verbatim. They are not
+misnamed plugins but **vendored copies of the harness**, so they are classified
+`VENDORED_HARNESS` and excluded from the catalogue rather than counted here.
+
+The blocked entries are listed separately in the catalogue. They satisfy the
 bundle contract, but only the DeepSeek organisation can publish to the
 `@deepseek-ai` scope, so those names cannot be created by their current owners
 and `dsh plugin add @deepseek-ai/...` fails for every one of them. This is a
@@ -123,9 +157,9 @@ suite turns red.
 | `data/installability.jsonl` | npm resolution and reserved-scope verdicts |
 | `data/catalog.jsonl` | joined, classified catalogue |
 
-Search API returns at most 1000 results per query, so the sample is 999 unique
-repositories out of a reported 1064 — the shortfall is an API limit, not
-filtering.
+The search API returns at most 1000 results per query, so the sample is 999
+unique repositories out of 6081 reported — the shortfall is an API ceiling, not
+filtering. Entries are sampled by most-recently-updated.
 
 ## Related projects
 
@@ -140,26 +174,38 @@ Several catalogues already cover this ecosystem, with different tradeoffs:
 - [`wangshunnn/oh-my-dsh`](https://github.com/wangshunnn/oh-my-dsh) — registry
   refreshed every eight hours from `topic:dsh-plugin`, with schema validation.
 
-This project does not compete with those on per-repository depth.
-`omdsh-dev/dsh-plugin-check` applies **36 criteria** to a single repository —
-manifest protocol, patch structure, build layout, TypeScript imports, row-id
-registration — and its criteria are finer than the contract tiers published
-here. It has no topic search, so it cannot enumerate the ecosystem.
+This project does not compete on per-repository depth, and two of the projects
+above are ahead of it on criteria:
 
-What this project contributes instead:
+- [`awesome-dsh-plugin/awesome-dsh-plugin`](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin)
+  (6439 stars) runs a submission gate on every PR (`scripts/check-submission.mjs`):
+  `dsh.bundle` anywhere in the tree, repository age, commit count. Its tree walk
+  is **more careful than this one** — it treats a truncated tree or a manifest
+  count above its cap as *unknown* rather than absent, which this probe does not.
+  It also resolves npm publication (`scripts/probe-npm.mjs`) and guards against
+  name squatting by checking that a published package points back at the same
+  repository. Roughly 1300 submissions have passed through it.
+- [`omdsh-dev/dsh-plugin-check`](https://github.com/omdsh-dev/dsh-plugin-check)
+  applies **36 criteria** to a single repository — manifest protocol, patch
+  structure, build layout, TypeScript imports, row-id registration — far finer
+  than the three contract tiers published here.
 
-- **Census over the whole topic.** 999 repositories probed, not one.
-- **Installability.** 36 compliant plugins name themselves under a scope their
-  owner cannot publish, and 399 exist only as Git sources. No other catalogue
-  reports this, and `dsh-plugin-check` structurally cannot: its own
-  `invalid-name` rule treats `@deepseek-ai/*` as the recommended convention, so
-  it cannot detect that its own name is unpublishable.
-- **Compliance-based ordering** rather than star-based.
+What remains distinct here:
 
-A deeper per-repository audit is under development but **not published** — see
-[AUDIT-EXPERIMENTAL.md](AUDIT-EXPERIMENTAL.md). Its first implementation
-produced false positives on every repository tested, so no criterion ships
-before it passes a hand-labelled fixture suite.
+- **Unsolicited coverage.** Both projects above examine repositories that are
+  submitted to them. This one probes a topic-wide sample regardless of whether
+  anyone submitted it, so it measures the ecosystem rather than its inbox.
+- **Vendored-harness detection.** Five repositories carry `@deepseek-ai/dsh-base`
+  verbatim with `fork: false`. They pass a contract check by containing DSH's own
+  packages, and neither an owner check nor a fork check sees them.
+- **Published distributions of the whole sample** rather than a curated
+  selection: verdict shares, star-band compliance, and installability across all
+  999 probed repositories, with the probe scripts included.
+
+A deeper per-repository audit exists but is **not published** — see
+[AUDIT-EXPERIMENTAL.md](AUDIT-EXPERIMENTAL.md). Its first implementation produced
+false positives on every repository tested, so no criterion ships before it
+passes a hand-labelled fixture suite.
 
 ## License
 
