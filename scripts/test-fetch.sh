@@ -48,23 +48,48 @@ check "nonexistent repository" 1 "nonexistent-owner-xyz-000/nope" "package.json"
 # trustworthy, and conflating it with 1 would discard real findings.
 check "complete tree, marker truly absent" 3 "titanwings/colleague-skill" "package.json"
 
-# Truncation control: a one-second budget against a large repository forces the
-# exact silent-partial failure that motivated this script. It must be caught.
-sed 's/--max-time 180/--max-time 1/' "$fetch" > "$work/truncating.sh"
+# Truncation control.
+#
+# A wall-clock budget is not a reliable way to force truncation: locally a
+# one-second limit cuts the 5.5 MB archive short, but on the CI runner the whole
+# download completes inside that second, the fetch succeeds, and the control
+# reported the fetcher as broken when it was the premise that was wrong.
+#
+# Truncation is injected deterministically instead — the download is replaced by
+# a partial copy of a real archive, so the integrity gate is exercised on exactly
+# the input it exists to reject, at any network speed.
+cat > "$work/truncating.sh" <<'INJECT'
+#!/usr/bin/env bash
+# Stand-in for fetch-checkout.sh whose download always lands a partial archive.
+set -euo pipefail
+repo="$1"; dest="$2"; marker="${3:-package.json}"
+work="${dest}.partial"; archive="${work}.tar.gz"
+rm -rf "$work" "$archive"; mkdir -p "$work"
+curl -sSL --fail --max-time 120 -o "${archive}.full" \
+  "https://codeload.github.com/${repo}/tar.gz/HEAD" || { rm -rf "$work" "${archive}.full"; exit 1; }
+head -c 4000 "${archive}.full" > "$archive"; rm -f "${archive}.full"
+if ! gzip -t "$archive" 2>/dev/null; then
+  rm -rf "$work" "$archive"
+  echo "truncated or corrupt archive" >&2
+  exit 1
+fi
+tar xzf "$archive" -C "$work" --strip-components=1 2>/dev/null || { rm -rf "$work" "$archive"; exit 1; }
+rm -f "$archive"; mv "$work" "$dest"
+INJECT
 chmod +x "$work/truncating.sh"
-"$work/truncating.sh" "ccch1mneyyy/dsh-TUI" "$work/trunc" "package.json" >/dev/null 2>&1
+"$work/truncating.sh" "HsiangNianian/dsh-auto-continue" "$work/trunc" "package.json" >/dev/null 2>&1
 truncated=$?
 if [ "$truncated" -eq 1 ]; then
-  echo "  PASS  truncated transfer: exit 1"
+  echo "  PASS  truncated archive is rejected: exit 1"
 else
-  echo "  FAIL  truncated transfer: expected 1, got ${truncated}"
+  echo "  FAIL  truncated archive accepted: expected exit 1, got ${truncated}"
   failed=$((failed + 1))
 fi
 if [ -d "$work/trunc" ]; then
-  echo "  FAIL  truncated transfer left a partial tree behind"
+  echo "  FAIL  truncated archive left a partial tree behind"
   failed=$((failed + 1))
 else
-  echo "  PASS  truncated transfer left no partial tree"
+  echo "  PASS  truncated archive left no partial tree"
 fi
 
 # Which defence actually rejects a bad transfer — corrected by CI.
