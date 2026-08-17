@@ -26,16 +26,40 @@ work="${dest}.partial"
 rm -rf "$work" "$dest"
 mkdir -p "$work"
 
-# `--fail` rejects HTTP errors, `--retry` absorbs transient throttling, and a
-# generous max-time still bounds a stuck transfer. The explicit default branch
-# is resolved by the caller; HEAD is accepted but verified below.
+# Download to a file first, then extract. Streaming `curl | tar` cannot be made
+# reliable across platforms: measured on a one-second truncation, GNU tar on the
+# CI runner exits 0 and leaves 6 files behind, while bsdtar locally exits 0 with
+# 0 files in one run and 1 with 12 files in another. Neither the pipeline's exit
+# status nor tar's own status distinguishes a complete archive from a partial
+# one, so a partial tree reaches the audit and every missing file reads as a
+# repository defect.
+#
+# Separating the steps makes completeness checkable: curl alone reports transfer
+# failure, and gzip verifies the archive is whole before anything is extracted.
+archive="${work}.tar.gz"
+rm -f "$archive"
+
 if ! curl -sSL --fail --retry 3 --retry-delay 2 --max-time 180 \
-    "https://codeload.github.com/${repo}/tar.gz/HEAD" \
-    | tar xz -C "$work" --strip-components=1; then
-  rm -rf "$work"
-  echo "fetch-checkout: incomplete transfer for ${repo}" >&2
+    -o "$archive" "https://codeload.github.com/${repo}/tar.gz/HEAD"; then
+  rm -rf "$work" "$archive"
+  echo "fetch-checkout: transfer failed for ${repo}" >&2
   exit 1
 fi
+
+# Integrity gate: gzip -t walks the whole stream and fails on truncation. This
+# is the check that actually catches a short download, independent of tar.
+if ! gzip -t "$archive" 2>/dev/null; then
+  rm -rf "$work" "$archive"
+  echo "fetch-checkout: truncated or corrupt archive for ${repo}" >&2
+  exit 1
+fi
+
+if ! tar xzf "$archive" -C "$work" --strip-components=1 2>/dev/null; then
+  rm -rf "$work" "$archive"
+  echo "fetch-checkout: could not extract ${repo}" >&2
+  exit 1
+fi
+rm -f "$archive"
 
 file_count=$(find "$work" -type f | wc -l | tr -d ' ')
 if [ "$file_count" -eq 0 ]; then

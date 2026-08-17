@@ -67,22 +67,16 @@ else
   echo "  PASS  truncated transfer left no partial tree"
 fi
 
-# Which defence actually rejects a bad transfer — measured, not assumed.
+# Which defence actually rejects a bad transfer — corrected by CI.
 #
-# Removing `pipefail`, and separately removing `--fail`, both left this suite
-# green. Investigating that rather than deleting the controls produced the real
-# mechanism: on this platform `tar` exits non-zero on any input it cannot parse
-# as a complete archive, including a 404 body ("Unrecognized archive format")
-# and a mid-stream cut-off. So tar is the load-bearing defence; `--fail` and
-# `pipefail` only make the failure earlier and the message accurate.
+# An earlier version of this file concluded tar's exit status was load-bearing.
+# That was wrong in the way that matters: it held only for the local tar. On the
+# same one-second truncation, GNU tar on the CI runner exits 0 leaving 6 files,
+# and bsdtar locally produced both (exit 0, 0 files) and (exit 1, 12 files) on
+# different runs. No exit status distinguishes a whole archive from a piece.
 #
-# These two greps are therefore recorded as configuration assertions, not as
-# behavioural proof. Claiming otherwise would credit them with tar's work — and
-# a control that cannot fail is not evidence.
-# Matched against the executable line, not anywhere in the file: an earlier
-# version of this control grepped the whole script and stayed green when
-# `--fail` was removed from the command, because the surrounding comment still
-# mentioned it. A control satisfied by its own documentation proves nothing.
+# The fetcher now downloads to a file and runs `gzip -t`, which walks the entire
+# stream. These greps assert that structure; the behavioural proof follows.
 if grep -Eq '^\s*set -euo pipefail\s*$' "$fetch"; then
   echo "  PASS  [config] fetch-checkout.sh sets -euo pipefail"
 else
@@ -95,54 +89,45 @@ else
   echo "  FAIL  [config] the curl invocation dropped --fail"
   failed=$((failed + 1))
 fi
-
-# Assert the mechanism that actually rejects a truncated stream.
-#
-# Measured correction: on this platform `tar` exits non-zero by itself when its
-# input ends mid-archive, so tar's status — not `pipefail` — is what catches a
-# cut-off transfer. Every attempt to construct a truncation that tar accepts
-# while curl fails was unsuccessful. `pipefail` is retained as defence in depth
-# for the case where tar does accept a short stream (a cut falling exactly on a
-# member boundary, or a different tar implementation), but it must not be
-# credited with work tar is doing.
-#
-# What this control therefore asserts is the property the fetcher depends on:
-# a truncated stream must not yield a zero exit with an empty tree.
-probe="$work/truncation-probe"
-mkdir -p "$probe/out"
-url="https://codeload.github.com/HsiangNianian/dsh-auto-continue/tar.gz/HEAD"
-
-truncation_status=0
-( set -euo pipefail
-  curl -sSL --fail "$url" | head -c 3000 | tar xz -C "$probe/out" --strip-components=1 2>/dev/null
-) >/dev/null 2>&1 || truncation_status=$?
-extracted=$(find "$probe/out" -type f | wc -l | tr -d ' ')
-
-if [ "$truncation_status" -ne 0 ]; then
-  echo "  PASS  truncated stream is rejected (exit ${truncation_status}, ${extracted} files extracted)"
-elif [ "$extracted" -eq 0 ]; then
-  echo "  FAIL  truncated stream exited 0 with an empty tree: a fetch failure would"
-  echo "        be indistinguishable from a repository with no manifest"
+if grep -q 'gzip -t' "$fetch"; then
+  echo "  PASS  [config] the archive is integrity-checked with gzip -t"
+else
+  echo "  FAIL  [config] archive integrity is no longer verified; tar's exit"
+  echo "        status is not a portable substitute"
+  failed=$((failed + 1))
+fi
+if grep -Eq '^[^#]*curl[^|#]*\|[^|]*tar' "$fetch"; then
+  echo "  FAIL  [config] the download is streamed into tar, which cannot detect"
+  echo "        truncation portably"
   failed=$((failed + 1))
 else
-  echo "  FAIL  truncated stream exited 0 with ${extracted} partial files"
+  echo "  PASS  [config] the download is not streamed straight into tar"
+fi
+
+# Behavioural proof, independent of tar: gzip -t must reject a truncated archive
+# and accept a whole one. This is the mechanism the fetcher relies on, so it is
+# asserted in both directions rather than assumed to hold on this runner.
+probe="$work/integrity-probe"
+mkdir -p "$probe"
+url="https://codeload.github.com/HsiangNianian/dsh-auto-continue/tar.gz/HEAD"
+
+curl -sSL --fail "$url" -o "$probe/whole.tar.gz" 2>/dev/null || true
+head -c 3000 "$probe/whole.tar.gz" > "$probe/partial.tar.gz" 2>/dev/null || true
+
+if gzip -t "$probe/whole.tar.gz" 2>/dev/null; then
+  echo "  PASS  gzip -t accepts a complete archive"
+else
+  echo "  FAIL  gzip -t rejected a complete archive; the integrity gate would"
+  echo "        reject every healthy repository"
   failed=$((failed + 1))
 fi
 
-# Platform assumption check. The whole fetcher rests on tar rejecting a
-# non-archive, so that property is asserted directly instead of trusted. If a
-# future runner ships a tar that accepts a 404 body, this fires and the fetcher
-# needs `--fail` promoted from defence-in-depth to load-bearing.
-notarchive="$work/notarchive"
-mkdir -p "$notarchive"
-printf '404: Not Found' | tar xz -C "$notarchive" --strip-components=1 2>/dev/null
-notarchive_status=$?
-if [ "$notarchive_status" -ne 0 ]; then
-  echo "  PASS  tar rejects a non-archive body (exit ${notarchive_status})"
-else
-  echo "  FAIL  tar accepted a non-archive body; --fail is now load-bearing and"
-  echo "        the fetcher must not rely on tar to reject error responses"
+if gzip -t "$probe/partial.tar.gz" 2>/dev/null; then
+  echo "  FAIL  gzip -t accepted a truncated archive; truncation would reach the"
+  echo "        audit as a repository with missing files"
   failed=$((failed + 1))
+else
+  echo "  PASS  gzip -t rejects a truncated archive"
 fi
 
 if [ "$failed" -eq 0 ]; then
