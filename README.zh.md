@@ -20,12 +20,12 @@
 
 | Star | 符合插件契约的比例 |
 | --- | --- |
-| 0 | 73.4% |
-| 1-2 | 78.5% |
-| 3-9 | 75.2% |
-| 10-49 | 78.2% |
-| 50+ | **57.3%** |
-| 全部 | 74.3% |
+| 0 | 76.3% |
+| 1-2 | 79.1% |
+| 3-9 | 77.0% |
+| 10-49 | 76.2% |
+| 50+ | **52.7%** |
+| 全部 | 75.5% |
 
 只有最高那一档偏低，其构成解释了原因：带这个话题的高 star 仓库大多是这个话题
 *本身的目录项目*——`awesome-dsh-plugin`（6439）、
@@ -40,17 +40,17 @@
 
 ## 样本构成
 
-全部 999 个被探测仓库，按判定分类：
+全部 998 个被探测仓库，按判定分类：
 
 | 判定 | 数量 | 占比 |
 | --- | --- | --- |
-| `CONTRACT_OK` | 742 | 74.3% |
-| `NO_DSH_FIELD` | 101 | 10.1% |
-| `NO_PACKAGE_JSON` | 83 | 8.3% |
-| `DSH_WITHOUT_BUNDLE_PATCH` | 54 | 5.4% |
-| `PATCH_FILE_MISSING` | 10 | 1.0% |
-| `VENDORED_HARNESS` | 6 | 0.6% |
+| `CONTRACT_OK` | 753 | 75.5% |
+| `NO_DSH_FIELD` | 99 | 9.9% |
+| `NO_PACKAGE_JSON` | 78 | 7.8% |
+| `DSH_WITHOUT_BUNDLE_PATCH` | 58 | 5.8% |
+| `VENDORED_HARNESS` | 5 | 0.5% |
 | `PATCH_FILE_EMPTY_OR_INVALID` | 2 | 0.2% |
+| `PATCH_FILE_MISSING` | 2 | 0.2% |
 | `TREE_UNREADABLE` | 1 | 0.1% |
 
 `VENDORED_HARNESS` 标记的是携带了 harness 副本、而非插件的仓库：它之所以满足
@@ -99,7 +99,7 @@
 - **high** — 依赖 `@deepseek-ai/dsh-client-*`（client 侧）或
   `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧）。
 - **low** — 完全没有 `@deepseek-ai/*` 依赖，只能从名称和描述的关键词推断。
-  742 个中有 284 个（38.3%）属于此类，另有 423 个由依赖证据归因、35 个部分归因。
+  753 个中有 303 个（40.2%）属于此类，另有 414 个由依赖证据归因、36 个部分归因。
 
 低置信度的归因是猜测，并被明确标注为猜测。
 
@@ -110,8 +110,8 @@
 
 | 判定 | 含义 | 数量 |
 | --- | --- | --- |
-| `published` | 声明的包名可在 npm registry 解析 | 384 |
-| `git-only` | 不在 npm 上；只能用 Git specifier 安装 | 353 |
+| `published` | 声明的包名可在 npm registry 解析 | 385 |
+| `git-only` | 不在 npm 上；只能用 Git specifier 安装 | 363 |
 | `unpublishable-scope` | 仓库不属于该组织，却用 `@deepseek-ai/` 命名自己 | 5 |
 
 另有 6 个仓库原样携带 `@deepseek-ai/dsh-base`。它们不是命名错误的插件，而是
@@ -133,13 +133,13 @@
 `unbundled`（契约已不成立）。无法得出结论的探测被报为 `inconclusive`，
 而绝不报为失效——因为每个失效状态都会促使他人删除条目，而证据可能并不支持。
 
-全部 742 个条目：
+全部 753 个条目：
 
 | 状态 | 数量 |
 | --- | --- |
-| `live` | 738 |
-| `archived` | 3 |
-| `gone` | 1 |
+| `live` | 752 |
+| `archived` | 1 |
+| `gone` | 0 |
 | `dormant` | 0 |
 | `unbundled` | 0 |
 | `inconclusive` | 0 |
@@ -150,9 +150,7 @@
 （`shanliuling/skills-link`，187 star）。读者不应从这张表得出「生态中没有项目
 停更」的结论——只能得出「这种采样方式看不到它」。
 
-被标记的四个条目：`ChanningYuan/dsh-dingtalk` 返回 404；
-`Hanihahaha/deepseek-harness-plugins`、`haiyoucuv/dsh-model-provider-label`、
-`863683348/dsh-plugin-scorecard` 已归档。
+被标记的条目：`Hanihahaha/deepseek-harness-plugins` 已归档。
 
 ## 复现
 

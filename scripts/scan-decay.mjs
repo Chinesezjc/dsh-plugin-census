@@ -192,7 +192,27 @@ async function main() {
       process.stderr.write(`  ${record.state.padEnd(10)} ${record.repo} — ${record.detail}\n`)
     }
   }
-  if (summaryOnly) process.stdout.write(`${JSON.stringify({ scanned: results.length, dormantThresholdDays: DORMANT_DAYS, counts }, null, 2)}\n`)
+  if (summaryOnly) {
+    process.stdout.write(`${JSON.stringify({ scanned: results.length, dormantThresholdDays: DORMANT_DAYS, counts }, null, 2)}\n`)
+  }
+
+  // A scan that could not reach a conclusion for most entries describes the
+  // runner, not the catalogue. Reporting `inconclusive` honestly is necessary
+  // but not sufficient: a report where 58% of entries are unknown — measured on
+  // a CI run — carries no signal, and publishing it invites the reader to treat
+  // `live` counts as coverage they are not. The threshold is deliberately looser
+  // than attribution's, because a decay scan makes two API calls per entry and
+  // some unreadable repositories are normal.
+  const inconclusive = counts.inconclusive ?? 0
+  if (results.length > 0) {
+    const rate = inconclusive / results.length
+    process.stderr.write(`inconclusive rate: ${inconclusive}/${results.length} (${(rate * 100).toFixed(1)}%)\n`)
+    if (rate > 0.4) {
+      process.stderr.write('refusing to publish this decay scan: most entries could not be checked,'
+        + ' so neither the decay findings nor the live counts are meaningful\n')
+      process.exit(1)
+    }
+  }
 }
 
 await main()

@@ -154,13 +154,14 @@ jobs:
           node scripts/render.mjs
 
       # Decay runs after the catalogue is rebuilt, over the entries just
-      # published. It is advisory: findings are recorded for review and never
-      # remove an entry, so a decay failure must not block the refresh.
+      # published. Findings are recorded for review and never remove an entry,
+      # but the step is NOT continue-on-error: the scan refuses to publish when
+      # most entries could not be checked, and swallowing that exit would put the
+      # meaningless scan back into the commit it was written to prevent.
       - name: Scan the catalogue for decay
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RADAR_CONCURRENCY: '10'
-        continue-on-error: true
         run: |
           node scripts/scan-decay.mjs < data/catalog.jsonl > data/decay.jsonl
           jq -r '.state' data/decay.jsonl | sort | uniq -c | sort -rn

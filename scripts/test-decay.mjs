@@ -67,6 +67,23 @@ check('an unreadable manifest yields no unbundled verdict',
 check('the scan never removes an entry',
   !/\bunlink|rmSync|removeEntry|splice\(/.test(source))
 
+// A scan that could not check most entries must refuse to publish. Reporting
+// `inconclusive` honestly is necessary but not sufficient: a run measured at
+// 436 of 753 unknown carries no signal, and publishing it invites the reader to
+// read `live` counts as coverage.
+const rateMatch = source.match(/rate > ([\d.]+)/)
+check('an inconclusive-rate threshold is defined', rateMatch !== null)
+if (rateMatch !== null) {
+  const threshold = Number(rateMatch[1])
+  const wouldRefuse = (unknown, total) => total > 0 && unknown / total > threshold
+  check(`threshold is meaningful (${threshold})`, threshold > 0.1 && threshold < 0.8)
+  check('a fully unreadable scan is refused', wouldRefuse(753, 753))
+  check('the observed 436/753 run would be refused', wouldRefuse(436, 753))
+  check('a healthy scan is not refused', !wouldRefuse(0, 753))
+  check('a few unreadable repositories do not block a scan', !wouldRefuse(20, 753))
+}
+check('the refusal exits non-zero', /process\.exit\(1\)/.test(source))
+
 // Sentinel: prove the actionable set is not simply empty, which would make
 // every check above vacuous.
 assert.ok(ACTIONABLE.size === 4, 'sentinel: four actionable decay states must be tracked')
@@ -74,6 +91,6 @@ assert.ok(ACTIONABLE.has('gone') && ACTIONABLE.has('unbundled'),
   'sentinel: gone and unbundled must be actionable')
 
 process.stdout.write(failed === 0
-  ? '\nall 8 decay controls behaved as specified\n'
-  : `\n${failed} of 8 decay controls did not behave as specified\n`)
+  ? '\nall 15 decay controls behaved as specified\n'
+  : `\n${failed} of 15 decay controls did not behave as specified\n`)
 process.exit(failed === 0 ? 0 : 1)

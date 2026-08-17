@@ -23,12 +23,12 @@ Measured over a 999-repository sample (the search API's per-query ceiling):
 
 | Stars | Satisfies the plugin contract |
 | --- | --- |
-| 0 | 73.4% |
-| 1-2 | 78.5% |
-| 3-9 | 75.2% |
-| 10-49 | 78.2% |
-| 50+ | **57.3%** |
-| all | 74.3% |
+| 0 | 76.3% |
+| 1-2 | 79.1% |
+| 3-9 | 77.0% |
+| 10-49 | 76.2% |
+| 50+ | **52.7%** |
+| all | 75.5% |
 
 Only the top band is depressed, and its contents explain why: the
 highest-starred repositories carrying this topic are mostly the *catalogues* of
@@ -45,17 +45,17 @@ subpackages, which the earlier one missed.
 
 ## Sample composition
 
-All 999 probed repositories, by verdict:
+All 998 probed repositories, by verdict:
 
 | Verdict | Count | Share |
 | --- | --- | --- |
-| `CONTRACT_OK` | 742 | 74.3% |
-| `NO_DSH_FIELD` | 101 | 10.1% |
-| `NO_PACKAGE_JSON` | 83 | 8.3% |
-| `DSH_WITHOUT_BUNDLE_PATCH` | 54 | 5.4% |
-| `PATCH_FILE_MISSING` | 10 | 1.0% |
-| `VENDORED_HARNESS` | 6 | 0.6% |
+| `CONTRACT_OK` | 753 | 75.5% |
+| `NO_DSH_FIELD` | 99 | 9.9% |
+| `NO_PACKAGE_JSON` | 78 | 7.8% |
+| `DSH_WITHOUT_BUNDLE_PATCH` | 58 | 5.8% |
+| `VENDORED_HARNESS` | 5 | 0.5% |
 | `PATCH_FILE_EMPTY_OR_INVALID` | 2 | 0.2% |
+| `PATCH_FILE_MISSING` | 2 | 0.2% |
 | `TREE_UNREADABLE` | 1 | 0.1% |
 
 `VENDORED_HARNESS` marks a repository that ships a copy of the harness rather
@@ -108,8 +108,8 @@ ranked by strength and the confidence published alongside:
 - **high** — depends on `@deepseek-ai/dsh-client-*` (client) or
   `@deepseek-ai/dsh-host-*` and host-only packages (host).
 - **low** — no `@deepseek-ai/*` dependency at all; attributed from name and
-  description keywords. 284 of 742 (38.3%) fall here, against 423 attributed
-  from dependency evidence and 35 partially attributed.
+  description keywords. 303 of 753 (40.2%) fall here, against 414 attributed
+  from dependency evidence and 36 partially attributed.
 
 A low-confidence attribution is a guess and is labelled as one.
 
@@ -121,8 +121,8 @@ anything:
 
 | Verdict | Meaning | Count |
 | --- | --- | --- |
-| `published` | the declared name resolves on the npm registry | 384 |
-| `git-only` | absent from npm; installable from a Git specifier | 353 |
+| `published` | the declared name resolves on the npm registry | 385 |
+| `git-only` | absent from npm; installable from a Git specifier | 363 |
 | `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 5 |
 
 A further six repositories carry `@deepseek-ai/dsh-base` verbatim. They are not
@@ -148,13 +148,13 @@ conditions, flagging and never removing: `gone` (404), `archived`, `dormant`
 that cannot reach a conclusion is reported as `inconclusive`, never as decay,
 because every decay state invites a deletion the evidence may not support.
 
-Over all 742 entries:
+Over all 753 entries:
 
 | State | Count |
 | --- | --- |
-| `live` | 738 |
-| `archived` | 3 |
-| `gone` | 1 |
+| `live` | 752 |
+| `archived` | 1 |
+| `gone` | 0 |
 | `dormant` | 0 |
 | `unbundled` | 0 |
 | `inconclusive` | 0 |
@@ -167,9 +167,7 @@ of the same topic, real dormancy exists and reaches 95 days
 table that nothing in the ecosystem has gone quiet — only that this sampling
 method cannot see it.
 
-The four flagged entries: `ChanningYuan/dsh-dingtalk` returns 404;
-`Hanihahaha/deepseek-harness-plugins`, `haiyoucuv/dsh-model-provider-label` and
-`863683348/dsh-plugin-scorecard` are archived.
+The flagged entry: `Hanihahaha/deepseek-harness-plugins` is archived.
 
 ## Reproducing
 
