@@ -119,6 +119,9 @@ const FIRST_PARTY_PACKAGES = new Set([
  *   `complete` is false when the API truncated the listing, which means an
  *   absence of manifests below is not established.
  */
+/** Count of unreadable tree listings, reported as a data-quality signal. */
+let treeFailures = 0
+
 function listManifests(repo) {
   return new Promise((resolve) => {
     // The whole response is requested, not a `--jq` projection of it: the
@@ -129,8 +132,18 @@ function listManifests(repo) {
     // not see all of it" as "there is nothing there" turns an unreadable
     // repository into a definite rejection.
     execFile('gh', ['api', `repos/${repo}/git/trees/HEAD?recursive=1`],
-      { maxBuffer: 32 * 1024 * 1024 }, (error, stdout) => {
-        if (error || !stdout.trim()) return resolve(null)
+      { maxBuffer: 32 * 1024 * 1024 }, (error, stdout, stderr) => {
+        if (error) {
+          // The reason has to reach the log. A run where every tree was
+          // unreadable produced no diagnostic at all, which left the cause —
+          // an exhausted API allowance — to be inferred from timing instead of
+          // read from the output.
+          treeFailures += 1
+          if (treeFailures <= 5) {
+            process.stderr.write(`  tree unreadable: ${repo}: ${String(stderr).trim().slice(0, 200)}\n`)
+          }
+          return resolve(null)
+        }
         try {
           const body = JSON.parse(stdout)
           if (!Array.isArray(body?.tree)) return resolve(null)
@@ -147,6 +160,7 @@ function listManifests(repo) {
       })
   })
 }
+
 
 /**
  * Read a manifest and extract its bundle declaration.
@@ -343,6 +357,8 @@ async function main() {
   const limit = Number(process.env.RADAR_CONCURRENCY ?? 8)
   let cursor = 0
   let done = 0
+  /** Verdict tallies, used to detect a run that failed wholesale. */
+  const verdictCounts = {}
 
   async function worker() {
     while (cursor < repos.length) {
@@ -350,8 +366,10 @@ async function main() {
       try {
         const result = await probe(repo)
         result.tierName = TIER_NAME[result.tier]
+        verdictCounts[result.verdict] = (verdictCounts[result.verdict] ?? 0) + 1
         process.stdout.write(`${JSON.stringify(result)}\n`)
       } catch (error) {
+        verdictCounts.PROBE_ERROR = (verdictCounts.PROBE_ERROR ?? 0) + 1
         process.stdout.write(`${JSON.stringify({ repo, tier: 0, tierName: 'NO_CONTRACT', verdict: 'PROBE_ERROR', note: String(error) })}\n`)
       }
       done += 1
@@ -361,6 +379,30 @@ async function main() {
 
   await Promise.all(Array.from({ length: Math.min(limit, repos.length) }, worker))
   process.stderr.write(`probe complete: ${done} repositories\n`)
+
+  // An unreadable tree for most repositories means the API stopped answering,
+  // not that the ecosystem changed. Measured: a run 25 minutes after a
+  // successful one returned TREE_UNREADABLE for all 998 repositories, because
+  // GITHUB_TOKEN's hourly allowance had been spent by the previous runs — this
+  // probe alone issues one to two calls per repository. Publishing that output
+  // would replace a good catalogue with an empty one.
+  //
+  // The empty-catalogue guard downstream does catch the end result, but it
+  // catches it three steps later and attributes the failure to the wrong place,
+  // so the condition is reported where it happens.
+  const unreadable = verdictCounts.TREE_UNREADABLE ?? 0
+  if (done > 0) {
+    const rate = unreadable / done
+    if (unreadable > 0) {
+      process.stderr.write(`unreadable trees: ${unreadable}/${done} (${(rate * 100).toFixed(1)}%)\n`)
+    }
+    if (rate > 0.25) {
+      process.stderr.write('refusing this probe run: most repository trees could not be read,'
+        + ' which indicates an exhausted API allowance rather than a change in the ecosystem.'
+        + ' Check `gh api rate_limit` and re-run in the next hour window.\n')
+      process.exit(1)
+    }
+  }
 }
 
 await main()

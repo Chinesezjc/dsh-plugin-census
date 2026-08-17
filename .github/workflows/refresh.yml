@@ -91,6 +91,29 @@ jobs:
           ")
           node scripts/test-audit.mjs "$root"
 
+      # A full refresh issues on the order of a thousand API calls: one to two
+      # per repository in the probe, one per compliant plugin in attribution,
+      # and two per entry in the decay scan. GITHUB_TOKEN's allowance is per
+      # repository per hour, so a second run inside the same hour starts with a
+      # depleted budget and every tree read fails.
+      #
+      # Measured: a run 25 minutes after a successful one returned
+      # TREE_UNREADABLE for all 998 repositories. The probe now refuses that
+      # output rather than publishing it, but failing before spending what is
+      # left is better than failing after.
+      - name: Check the API allowance before spending it
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          remaining=$(gh api rate_limit --jq '.resources.core.remaining')
+          reset=$(gh api rate_limit --jq '.resources.core.reset')
+          echo "core allowance remaining: ${remaining}"
+          if [ "${remaining}" -lt 2500 ]; then
+            wait_min=$(( (reset - $(date +%s) + 59) / 60 ))
+            echo "::error::only ${remaining} core calls left; a full refresh needs roughly 2500. The allowance resets in about ${wait_min} minute(s)."
+            exit 1
+          fi
+
       - name: Collect repositories carrying the topic
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

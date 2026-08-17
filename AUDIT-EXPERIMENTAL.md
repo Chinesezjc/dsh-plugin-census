@@ -77,8 +77,41 @@ and produced exactly that. The script distinguishes three outcomes:
 | 1 | transfer failed — the verdict must **not** be trusted |
 | 3 | complete tree, marker genuinely absent — the verdict **is** trustworthy |
 
-Measured correction: on this platform `tar` rejects a non-archive by itself, so
-tar's exit status is the load-bearing defence. `--fail` and `pipefail` make the
-failure earlier and the message accurate but are not what catches truncation;
-`scripts/test-fetch.sh` labels those two as configuration assertions rather than
-behavioural proof.
+Measured correction, from CI rather than from this machine: **tar's exit status is
+not a reliable defence on either platform.** On a one-second truncation GNU tar
+on the runner exits 0 and leaves 6 files behind, and bsdtar locally produced both
+(exit 0, 0 files) and (exit 1, 12 files) on different runs of the same case. An
+earlier version of this document claimed tar was load-bearing; that held only for
+the local tar, and not even reliably there.
+
+The fetcher therefore downloads to a file and runs `gzip -t`, which walks the
+whole stream and fails on truncation, before extracting anything. `--fail` and
+`pipefail` are kept as defence in depth and asserted as configuration rather than
+credited with behaviour they do not provide. `scripts/test-fetch.sh` proves the
+integrity gate in both directions: `gzip -t` must accept a complete archive and
+reject a truncated one.
+
+A related trap: do not force truncation with a wall-clock budget. `--max-time 1`
+cuts a 5.5 MB archive short locally but completes inside the second on the
+runner, so the control was testing network speed rather than behaviour.
+Truncation is injected deterministically instead.
+
+## Silent degradation
+
+Two scripts published confident verdicts derived from a broken environment, and
+both are now guarded. The pattern is worth naming because it is the failure mode
+this repository is most exposed to: an unreadable input degrades to a value that
+is indistinguishable from a real finding about someone else's repository.
+
+| Script | Degraded to | Guard |
+| --- | --- | --- |
+| `attribute.mjs` | `confidence: none`, empty evidence — 395 of 527 entries on one run | fails above a 25% fetch-failure rate |
+| `scan-decay.mjs` | `inconclusive` for 436 of 753 entries, published anyway | fails above a 40% inconclusive rate |
+
+The decay step was additionally `continue-on-error`, so an exit code would have
+been swallowed even had the scan produced one. That is removed: a guard behind
+`continue-on-error` is not a guard.
+
+Both thresholds are asserted by controls that include the rates actually
+observed, so a regression that reintroduces either incident turns the suite red.
+
