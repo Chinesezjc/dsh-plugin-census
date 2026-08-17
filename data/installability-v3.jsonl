@@ -764,3 +764,5 @@
 {"repo":"zjcdkj/dsh-plugins","packageName":"dsh-plugin-qwen-image","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
 {"repo":"zhuiyueya/dsh-im-gateway","packageName":"dsh-im-gateway","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
 {"repo":"zhu1090093659/dsh-web-ui","packageName":"@linxin666/dsh-client-ui-aionui-panel","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}
+{"repo":"songoao25/dsh-plugin-guardian","packageName":"dsh-plugin-guardian","installable":"git-only","reason":"not on the npm registry; installable only from a Git specifier","registry":"absent"}
+{"repo":"xinyuehtx/dsh-plugin-hooks-ordering","packageName":"@tengxiaohtx/dsh-plugin-hooks-ordering","installable":"published","reason":"resolvable by name from the npm registry","registry":"published"}

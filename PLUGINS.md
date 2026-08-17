@@ -1,6 +1,6 @@
 # DSH Plugin Catalogue
 
-Generated 2026-08-17 from 761 contract-verified repositories.
+Generated 2026-08-17 from 763 contract-verified repositories.
 
 Every entry below satisfies all three tiers of the bundle contract DSH enforces
 in `packages/boot/app-boot/src/profile.ts:388-397`. Contract verification is
@@ -529,7 +529,7 @@ Depends on `@deepseek-ai/*` packages, but none that identify a surface.
 | [wwumit/dsh-compliancehub](https://github.com/wwumit/dsh-compliancehub) | Unattributed | `@wwumit/dsh-compliancehub` | Git only | 0 | Remote skill provider for DeepSeek Harness: install skills from a JSON catalog via ctx.skills |
 | [wwumit/dsh-plugin-tools](https://github.com/wwumit/dsh-plugin-tools) | Unattributed | `@wwumit/dsh-plugin-tools` | Git only | 0 | Plugin tools provider for DeepSeek Harness: expert2skill, skill-compliance, dependency-scan (dsh.bundle) |
 
-## Unverified attribution (270)
+## Unverified attribution (272)
 
 No `@deepseek-ai/*` dependency. Surface inferred from name and description
 keywords only — **these are guesses**, listed for completeness.
@@ -631,6 +631,7 @@ keywords only — **these are guesses**, listed for completeness.
 | [a903067276-rgb/dsh-file-upload](https://github.com/a903067276-rgb/dsh-file-upload) | Unattributed | `dsh-file-upload` | npm | 1 | DSH 文件上传小插件（web 客户端插件） |
 | [qinyre/dsh-plugin-install](https://github.com/qinyre/dsh-plugin-install) | Unattributed | `dsh-plugin-install` | npm | 1 | 给 dsh 设置页加「安装」标签页，按包名安装任意第三方插件。 |
 | [uluckystar/dsh-plugin-market](https://github.com/uluckystar/dsh-plugin-market) | Unattributed | `dsh-plugin-market` | npm | 1 | DSH 插件市场：在设置页浏览 mydsh.dev 插件大全（5596 候选 / 4876 有效），分类/AI 搜索、一键安装启用停用卸载、安全评估与自动重启。非官方社区 mydsh.dev 出品 |
+| [xinyuehtx/dsh-plugin-hooks-ordering](https://github.com/xinyuehtx/dsh-plugin-hooks-ordering) | Unattributed | `@tengxiaohtx/dsh-plugin-hooks-ordering` | npm | 1 | 为 deepseek harness 的 waterfall 和 serial 进行确定性 hooks 监听排序 |
 | [xun404/dsh-pihuo-plugins](https://github.com/xun404/dsh-pihuo-plugins) | Unattributed | `@pihuo/dsh-pihuo` | npm | 1 | PiHuo: DeepSeek Harness plugins that run local ACP processes as chat workers |
 | [1797833970/dsh-data-analysis-plugin](https://github.com/1797833970/dsh-data-analysis-plugin) | Unattributed | `@andy1797833970/dsh-bundle-data-analysis` | npm | 0 | DeepSeek Harness data-analysis agent plugin (Python code runtime + analysis tools + skill + bundle) |
 | [940842546/dsh-permissions](https://github.com/940842546/dsh-permissions) | Unattributed | `dsh-permissions` | npm | 0 |  |
@@ -682,6 +683,7 @@ keywords only — **these are guesses**, listed for completeness.
 | [kobenfang/Eyes](https://github.com/kobenfang/Eyes) | Host | `@kobenfang/dsh-eyes` | Git only | 1 | openclaw - skills : Eyes · 大眼看世界（全球热点·国际新闻·市场分析）- Global News Monitor |
 | [ljsysfurryACE/dsh-aura-scheduler](https://github.com/ljsysfurryACE/dsh-aura-scheduler) | Host | `@agentframe/dsh-aura-scheduler` | Git only | 1 | Proactive scheduling for DeepSeek Harness: Aura heartbeat + value network (official is model-driven only) |
 | [rxa3c/chat2skill](https://github.com/rxa3c/chat2skill) | Host | `chat2skill-plugin-runtime` | Git only | 1 | Extracting and iterating skills from daily conversations with AI |
+| [songoao25/dsh-plugin-guardian](https://github.com/songoao25/dsh-plugin-guardian) | Client (Web UI) | `dsh-plugin-guardian` | Git only | 1 | Safe uninstall with snapshot rollback for DeepSeek Harness plugins — clean residue, health check, no command l |
 | [supersealwqas/dsh-custom-provider-settings](https://github.com/supersealwqas/dsh-custom-provider-settings) | Host | `dsh-custom-provider-settings` | Git only | 1 | DeepSeek Harness 第三方 API 与自定义模型设置插件：支持请求头、User-Agent、模型列表、图像输入和思考等级 \| WebUI plugin for third-party APIs and c |
 | [tiantyu/dsh-skin-toggle](https://github.com/tiantyu/dsh-skin-toggle) | Client (Web UI) | `dsh-skin-toggle` | Git only | 1 | Instant on/off 🐋 toggle button for the maid-atelier skin in the DeepSeek Harness (DSH) web GUI. Pure client-s |
 | [ymh0000123/dsh-theme-endfield](https://github.com/ymh0000123/dsh-theme-endfield) | Client (Web UI) | `dsh-theme-endfield` | Git only | 1 | 终末地官网风格的 DSH Web 主题：奶油纸底、墨黑文字、信号黄强调、全直角工业编辑风。 |

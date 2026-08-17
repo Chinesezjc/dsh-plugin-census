@@ -115,20 +115,32 @@ const FIRST_PARTY_PACKAGES = new Set([
 /**
  * List every `package.json` path in a repository's default-branch tree.
  * @param repo - `owner/name`.
- * @returns manifest paths, nearest the root first, or null when unreadable.
+ * @returns `{ paths, complete }`, or null when the tree could not be read.
+ *   `complete` is false when the API truncated the listing, which means an
+ *   absence of manifests below is not established.
  */
 function listManifests(repo) {
   return new Promise((resolve) => {
-    execFile('gh', ['api', `repos/${repo}/git/trees/HEAD?recursive=1`, '--jq',
-      '[.tree[]?|select(.path|endswith("package.json"))|.path]'],
-      { maxBuffer: 16 * 1024 * 1024 }, (error, stdout) => {
+    // The whole response is requested, not a `--jq` projection of it: the
+    // `truncated` flag lives at the top level, and filtering it away in the
+    // request is what makes a partial listing indistinguishable from a complete
+    // one. The upstream catalogue fixed this same confusion twice — once in its
+    // submission gate and again in its decay scan — because reporting "we could
+    // not see all of it" as "there is nothing there" turns an unreadable
+    // repository into a definite rejection.
+    execFile('gh', ['api', `repos/${repo}/git/trees/HEAD?recursive=1`],
+      { maxBuffer: 32 * 1024 * 1024 }, (error, stdout) => {
         if (error || !stdout.trim()) return resolve(null)
         try {
-          const paths = JSON.parse(stdout)
-          if (!Array.isArray(paths)) return resolve(null)
-          // Shallow paths first: a root or top-level workspace manifest is more
-          // likely to be the plugin than something nested in a test fixture.
-          resolve(paths.sort((a, b) => a.split('/').length - b.split('/').length))
+          const body = JSON.parse(stdout)
+          if (!Array.isArray(body?.tree)) return resolve(null)
+          const paths = body.tree
+            .filter((entry) => typeof entry.path === 'string' && entry.path.endsWith('package.json'))
+            .map((entry) => entry.path)
+            // Shallow paths first: a root or top-level workspace manifest is
+            // more likely to be the plugin than something nested deeper.
+            .sort((a, b) => a.split('/').length - b.split('/').length)
+          resolve({ paths, complete: body.truncated !== true })
         } catch {
           resolve(null)
         }
@@ -195,15 +207,25 @@ async function probe(repo) {
   // Only walk the tree when the root does not already satisfy the contract:
   // the tree call is an extra request per repository and most plugins are
   // single-package.
+  let listingComplete = true
+  let candidatesTruncatedByCap = false
   if (!candidates.some((entry) => typeof entry.declared === 'string' && entry.declared.length > 0)) {
-    const paths = await listManifests(repo)
-    if (paths === null && rootManifest === null) {
-      return { repo, tier: TIER.NONE, verdict: 'NO_PACKAGE_JSON', patch: null, note: 'no readable package.json in the tree' }
+    const listing = await listManifests(repo)
+    if (listing === null && rootManifest === null) {
+      return {
+        repo,
+        tier: TIER.NONE,
+        verdict: 'TREE_UNREADABLE',
+        patch: null,
+        note: 'the repository tree could not be read; no conclusion about a bundle is possible',
+      }
     }
-    const workspacePaths = (paths ?? [])
+    listingComplete = listing === null ? false : listing.complete
+    const eligible = (listing?.paths ?? [])
       .filter((path) => path !== 'package.json')
       .filter(isPluginCandidate)
-      .slice(0, MAX_MANIFESTS)
+    const workspacePaths = eligible.slice(0, MAX_MANIFESTS)
+    candidatesTruncatedByCap = eligible.length > workspacePaths.length
     for (const path of workspacePaths) {
       const entry = await readManifest(repo, path)
       if (entry === null || entry.malformed) continue
@@ -212,9 +234,26 @@ async function probe(repo) {
     }
   }
 
+  // An absence is only reportable when the whole tree was actually examined.
+  // With a truncated listing or manifests left unread past the cap, the honest
+  // verdict is "not established", not "no bundle".
+  const searchExhaustive = listingComplete && !candidatesTruncatedByCap
+  const inconclusive = (why) => ({
+    repo,
+    tier: TIER.NONE,
+    verdict: 'BUNDLE_UNDETERMINED',
+    patch: null,
+    note: why,
+  })
+
   if (candidates.length === 0) {
     if (rootManifest?.malformed === true) {
       return { repo, tier: TIER.NONE, verdict: 'MALFORMED_PACKAGE_JSON', patch: null, note: 'package.json is not valid JSON' }
+    }
+    if (!searchExhaustive) {
+      return inconclusive(listingComplete
+        ? `more candidate manifests than the ${MAX_MANIFESTS} this probe reads`
+        : 'the repository tree listing was truncated by the API')
     }
     return { repo, tier: TIER.NONE, verdict: 'NO_PACKAGE_JSON', patch: null, note: 'not an npm package' }
   }
@@ -237,6 +276,13 @@ async function probe(repo) {
   }
 
   if (bundle === undefined) {
+    // Same reasoning as an empty candidate list: with part of the tree unread,
+    // "no bundle in what we saw" is not "no bundle".
+    if (!searchExhaustive) {
+      return inconclusive(listingComplete
+        ? `no bundle in the ${candidates.length} manifest(s) read, but more exist past the ${MAX_MANIFESTS} cap`
+        : `no bundle in the ${candidates.length} manifest(s) read, and the tree listing was truncated`)
+    }
     const anyDsh = candidates.find((entry) => entry.hasDsh)
     const source = anyDsh ?? candidates[0]
     return {

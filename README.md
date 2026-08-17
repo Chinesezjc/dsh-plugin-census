@@ -22,11 +22,11 @@ Measured over a 999-repository sample (the search API's per-query ceiling):
 | Stars | Satisfies the plugin contract |
 | --- | --- |
 | 0 | 78.6% |
-| 1–2 | 75.3% |
-| 3–9 | 77.2% |
-| 10–49 | 81.4% |
+| 1-2 | 76.0% |
+| 3-9 | 77.2% |
+| 10-49 | 81.4% |
 | 50+ | **55.9%** |
-| all | 76.2% |
+| all | 76.4% |
 
 Only the top band is depressed, and its contents explain why: the
 highest-starred repositories carrying this topic are mostly the *catalogues* of
@@ -47,8 +47,8 @@ All 999 probed repositories, by verdict:
 
 | Verdict | Count | Share |
 | --- | --- | --- |
-| `CONTRACT_OK` | 761 | 76.2% |
-| `NO_DSH_FIELD` | 97 | 9.7% |
+| `CONTRACT_OK` | 763 | 76.4% |
+| `NO_DSH_FIELD` | 95 | 9.5% |
 | `NO_PACKAGE_JSON` | 72 | 7.2% |
 | `DSH_WITHOUT_BUNDLE_PATCH` | 53 | 5.3% |
 | `PATCH_FILE_MISSING` | 8 | 0.8% |
@@ -60,6 +60,18 @@ than a plugin: it satisfies the contract because it *contains* DSH's own bundle
 packages. All five have `fork: false`, so they are source copies that neither an
 owner check nor a fork check detects; they are identified by first-party package
 name. One has 203 stars.
+
+## Shelf life
+
+These figures describe one sample at one moment, and the moment is short. All 169
+repositories judged non-compliant were re-probed a few hours after the first
+pass: two had become compliant because their authors added `dsh.bundle` in the
+interval — `songoao25/dsh-plugin-guardian` at 08:58 and
+`xinyuehtx/dsh-plugin-hooks-ordering` at 07:54 on the same day. Neither change
+came from a probe fix; the authors simply shipped.
+
+Treat any number here as a reading with a timestamp, not a standing fact. The
+scripts are included so the reading can be retaken rather than trusted.
 
 ## What "contract-verified" means
 
@@ -88,7 +100,7 @@ ranked by strength and the confidence published alongside:
 - **high** — depends on `@deepseek-ai/dsh-client-*` (client) or
   `@deepseek-ai/dsh-host-*` and host-only packages (host).
 - **low** — no `@deepseek-ai/*` dependency at all; attributed from name and
-  description keywords. 271 of 761 (35.6%) fall here, against 448 attributed
+  description keywords. 273 of 763 (35.8%) fall here, against 448 attributed
   from dependency evidence and 42 partially attributed.
 
 A low-confidence attribution is a guess and is labelled as one.
@@ -101,8 +113,8 @@ anything:
 
 | Verdict | Meaning | Count |
 | --- | --- | --- |
-| `published` | the declared name resolves on the npm registry | 387 |
-| `git-only` | absent from npm; installable from a Git specifier | 372 |
+| `published` | the declared name resolves on the npm registry | 388 |
+| `git-only` | absent from npm; installable from a Git specifier | 373 |
 | `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 2 |
 
 A further five repositories carry `@deepseek-ai/dsh-base` verbatim. They are not

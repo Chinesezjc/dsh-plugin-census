@@ -764,3 +764,5 @@
 {"repo":"zjcdkj/dsh-plugins","packageName":"dsh-plugin-qwen-image","surface":"host","confidence":"high","evidence":["dsh-llm","dsh-tools"]}
 {"repo":"zuorn/Tydora","packageName":"tydora","surface":"indeterminate","confidence":"none","evidence":[]}
 {"repo":"zhu1090093659/dsh-web-ui","packageName":"@linxin666/dsh-client-ui-aionui-panel","surface":"both","confidence":"high","evidence":["dsh-client-locale","dsh-client-runtime","dsh-client-ui-conversation","dsh-client-ui-primitives","dsh-client-ui-settings","dsh-client-ui-slots"]}
+{"repo":"xinyuehtx/dsh-plugin-hooks-ordering","packageName":"@tengxiaohtx/dsh-plugin-hooks-ordering","surface":"indeterminate","confidence":"none","evidence":[]}
+{"repo":"songoao25/dsh-plugin-guardian","packageName":"dsh-plugin-guardian","surface":"client","confidence":"low","evidence":["keyword"]}
