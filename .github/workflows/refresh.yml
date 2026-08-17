@@ -116,7 +116,7 @@ jobs:
           RADAR_CONCURRENCY: '6'
         run: |
           node scripts/attribute.mjs < data/contract-v3.jsonl > data/surface-v3.jsonl
-          jq -r '"\(.surface) \(.confidence)"' data/surface.jsonl | sort | uniq -c | sort -rn
+          jq -r '"\(.surface) \(.confidence)"' data/surface-v3.jsonl | sort | uniq -c | sort -rn
 
       - name: Assess installability
         env:

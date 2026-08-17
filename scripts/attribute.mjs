@@ -37,8 +37,17 @@ const NEUTRAL_PACKAGES = new Set([
   'dsh-api', 'dsh-core', 'dsh-identity', 'dsh-context',
 ])
 
+/** Count of failed manifest fetches, reported at the end as a data-quality signal. */
+let fetchFailures = 0
+
 /**
  * Fetch and decode one repository file.
+ *
+ * A failure is reported, not swallowed. Returning null silently made a fetch
+ * failure indistinguishable from a package with no dependencies, so a CI run
+ * where every fetch failed published 395 entries as `confidence: none` — a
+ * verdict that looks like a finding about those packages and is actually a
+ * finding about the runner.
  * @param repo - `owner/name`.
  * @param path - repository-relative path.
  * @returns decoded text, or null when unavailable.
@@ -46,16 +55,33 @@ const NEUTRAL_PACKAGES = new Set([
 function fetchFile(repo, path) {
   return new Promise((resolve) => {
     execFile('gh', ['api', `repos/${repo}/contents/${path}`, '--jq', '.content'],
-      { maxBuffer: 8 * 1024 * 1024 }, (error, stdout) => {
-        if (error || !stdout.trim()) return resolve(null)
+      { maxBuffer: 8 * 1024 * 1024 }, (error, stdout, stderr) => {
+        if (error) {
+          fetchFailures += 1
+          if (fetchFailures <= 5) {
+            process.stderr.write(`  fetch failed: ${repo}/${path}: ${String(stderr).trim().slice(0, 160)}\n`)
+          }
+          return resolve(null)
+        }
+        if (!stdout.trim()) {
+          fetchFailures += 1
+          if (fetchFailures <= 5) process.stderr.write(`  fetch empty: ${repo}/${path}\n`)
+          return resolve(null)
+        }
         try {
           resolve(Buffer.from(stdout.trim(), 'base64').toString('utf8'))
-        } catch {
+        } catch (decodeError) {
+          fetchFailures += 1
+          if (fetchFailures <= 5) {
+            process.stderr.write(`  decode failed: ${repo}/${path}: ${String(decodeError).slice(0, 120)}\n`)
+          }
           resolve(null)
         }
       })
   })
 }
+
+
 
 /**
  * Attribute a surface from dependency names.
@@ -155,6 +181,20 @@ async function main() {
 
   await Promise.all(Array.from({ length: Math.min(limit, targets.length) }, worker))
   process.stderr.write(`attribution complete: ${done}\n`)
+
+  // A high fetch-failure rate means the output describes the runner, not the
+  // ecosystem. Publishing it would put 'no dependency evidence' against packages
+  // that have plenty — measured once at 395 of 527 entries — so the step fails
+  // instead, leaving the previous attribution in place.
+  if (done > 0) {
+    const failureRate = fetchFailures / done
+    process.stderr.write(`manifest fetch failures: ${fetchFailures}/${done} (${(failureRate * 100).toFixed(1)}%)\n`)
+    if (failureRate > 0.25) {
+      process.stderr.write('refusing to publish attribution: over 25% of manifest fetches failed,'
+        + ' so a "no evidence" verdict cannot be distinguished from a broken fetch\n')
+      process.exit(1)
+    }
+  }
 }
 
 await main()
