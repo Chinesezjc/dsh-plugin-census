@@ -40,6 +40,16 @@ jobs:
       - name: Verify contract gates reject invalid input
         run: node scripts/test-gates.mjs
 
+      # Both of these decide published verdicts: monorepo discovery decides
+      # whether 104 subpackage plugins are seen at all, and the partial-evidence
+      # rule decides whether an unread tree is published as "no bundle". Neither
+      # may regress silently.
+      - name: Verify monorepo bundle discovery
+        run: node scripts/test-monorepo.mjs
+
+      - name: Verify partial evidence yields no verdict
+        run: node scripts/test-inconclusive.mjs
+
       - name: Verify the checkout fetcher rejects incomplete transfers
         run: ./scripts/test-fetch.sh
 
@@ -94,35 +104,35 @@ jobs:
           RADAR_CONCURRENCY: '6'
         run: |
           jq -r -s 'unique_by(.full_name) | .[] | .full_name' data/repos-raw.jsonl > /tmp/repos.txt
-          node scripts/probe-contract.mjs < /tmp/repos.txt > data/contract-v2.jsonl
-          jq -r '.verdict' data/contract-v2.jsonl | sort | uniq -c | sort -rn
+          node scripts/probe-contract.mjs < /tmp/repos.txt > data/contract-v3.jsonl
+          jq -r '.verdict' data/contract-v3.jsonl | sort | uniq -c | sort -rn
 
       - name: Attribute plugin surfaces
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RADAR_CONCURRENCY: '6'
         run: |
-          node scripts/attribute.mjs < data/contract-v2.jsonl > data/surface.jsonl
+          node scripts/attribute.mjs < data/contract-v3.jsonl > data/surface-v3.jsonl
           jq -r '"\(.surface) \(.confidence)"' data/surface.jsonl | sort | uniq -c | sort -rn
 
       - name: Assess installability
         env:
           RADAR_CONCURRENCY: '6'
         run: |
-          node scripts/installability.mjs < data/contract-v2.jsonl > data/installability.jsonl
-          jq -r '.installable' data/installability.jsonl | sort | uniq -c | sort -rn
+          node scripts/installability.mjs < data/contract-v3.jsonl > data/installability-v3.jsonl
+          jq -r '.installable' data/installability-v3.jsonl | sort | uniq -c | sort -rn
 
       - name: Join and render
         run: |
-          jq -s '.' data/surface.jsonl > /tmp/surf.json
-          jq -s '.' data/installability.jsonl > /tmp/inst.json
+          jq -s 'unique_by(.repo)' data/surface-v3.jsonl > /tmp/surf.json
+          jq -s 'unique_by(.repo)' data/installability-v3.jsonl > /tmp/inst.json
           jq -s 'unique_by(.full_name)' data/repos-raw.jsonl > /tmp/raw.json
           jq -s -c --slurpfile S /tmp/surf.json --slurpfile I /tmp/inst.json --slurpfile R /tmp/raw.json '
             ($S[0] | map({key:.repo, value:.}) | from_entries) as $s
             | ($I[0] | map({key:.repo, value:.}) | from_entries) as $i
             | ($R[0] | map({key:.full_name, value:.}) | from_entries) as $r
             | map(select(.verdict=="CONTRACT_OK") | {
-                repo, package: .name,
+                repo, package: .name, manifestPath,
                 surface: ($s[.repo].surface // "unknown"),
                 confidence: ($s[.repo].confidence // "none"),
                 evidence: ($s[.repo].evidence // []),
@@ -134,7 +144,7 @@ jobs:
             | sort_by([(if .installable=="published" then 0 elif .installable=="git-only" then 1 else 2 end),
                        (if .confidence=="high" then 0 elif .confidence=="medium" then 1
                         elif .confidence=="low" then 2 else 3 end), -.stars])
-            | .[]' data/contract-v2.jsonl > data/catalog.jsonl
+            | .[]' data/contract-v3.jsonl > data/catalog.jsonl
           node scripts/render.mjs
 
       # A refresh that produces an empty catalogue means the search or probe
