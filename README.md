@@ -1,5 +1,7 @@
 # DSH Plugin Census
 
+English | [中文](README.zh.md)
+
 A reproducible census of the DeepSeek Harness plugin ecosystem: what the
 `dsh-plugin` topic actually contains, and which entries can actually be
 installed.
@@ -58,9 +60,9 @@ All 999 probed repositories, by verdict:
 
 `VENDORED_HARNESS` marks a repository that ships a copy of the harness rather
 than a plugin: it satisfies the contract because it *contains* DSH's own bundle
-packages. All five have `fork: false`, so they are source copies that neither an
+packages. All six have `fork: false`, so they are source copies that neither an
 owner check nor a fork check detects; they are identified by first-party package
-name. One has 203 stars.
+name. The largest is `fufankeji/deepseek-harness-studio` at 208 stars.
 
 ## Shelf life
 
@@ -123,7 +125,7 @@ anything:
 | `git-only` | absent from npm; installable from a Git specifier | 353 |
 | `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 5 |
 
-A further five repositories carry `@deepseek-ai/dsh-base` verbatim. They are not
+A further six repositories carry `@deepseek-ai/dsh-base` verbatim. They are not
 misnamed plugins but **vendored copies of the harness**, so they are classified
 `VENDORED_HARNESS` and excluded from the catalogue rather than counted here.
 
@@ -137,6 +139,37 @@ The check deliberately does **not** flag lookalike scopes such as
 `@deepseek-ai-community`. Those are separate, independently registrable scopes
 whose owners can publish normally, so they are installable — confusing branding
 is a different concern this catalogue does not adjudicate.
+
+## Decay
+
+`scripts/scan-decay.mjs` re-checks every catalogued entry and reports four
+conditions, flagging and never removing: `gone` (404), `archived`, `dormant`
+(no push within 30 days) and `unbundled` (the contract no longer holds). A probe
+that cannot reach a conclusion is reported as `inconclusive`, never as decay,
+because every decay state invites a deletion the evidence may not support.
+
+Over all 742 entries:
+
+| State | Count |
+| --- | --- |
+| `live` | 738 |
+| `archived` | 3 |
+| `gone` | 1 |
+| `dormant` | 0 |
+| `unbundled` | 0 |
+| `inconclusive` | 0 |
+
+**`dormant: 0` is a sampling artefact, not a healthy ecosystem.** The census
+samples the topic by most-recently-updated, so every entry in it was pushed
+within hours and dormancy is definitionally absent. Against a star-sorted sample
+of the same topic, real dormancy exists and reaches 95 days
+(`shanliuling/skills-link`, 187 stars). A reader should not conclude from this
+table that nothing in the ecosystem has gone quiet — only that this sampling
+method cannot see it.
+
+The four flagged entries: `ChanningYuan/dsh-dingtalk` returns 404;
+`Hanihahaha/deepseek-harness-plugins`, `haiyoucuv/dsh-model-provider-label` and
+`863683348/dsh-plugin-scorecard` are archived.
 
 ## Reproducing
 
@@ -153,8 +186,15 @@ node scripts/attribute.mjs < data/contract.jsonl > data/surface.jsonl
 # 4. installability (npm registry + reserved-scope check)
 node scripts/installability.mjs < data/contract.jsonl > data/installability.jsonl
 
-# 5. negative controls for every gate
+# 5. decay scan over the catalogue
+node scripts/scan-decay.mjs < data/catalog.jsonl > data/decay.jsonl
+
+# 6. negative controls for every gate
 node scripts/test-gates.mjs
+node scripts/test-monorepo.mjs
+node scripts/test-inconclusive.mjs
+node scripts/test-decay.mjs
+./scripts/test-fetch.sh
 ```
 
 `scripts/test-gates.mjs` exists because a gate that cannot fail is not a gate.
@@ -170,10 +210,11 @@ suite turns red.
 | File | Contents |
 | --- | --- |
 | `data/repos-raw.jsonl` | repository metadata as returned by the search API |
-| `data/contract-v2.jsonl` | three-tier contract verdicts |
-| `data/surface.jsonl` | surface attribution with confidence |
-| `data/installability.jsonl` | npm resolution and reserved-scope verdicts |
+| `data/contract-v3.jsonl` | three-tier contract verdicts |
+| `data/surface-v3.jsonl` | surface attribution with confidence |
+| `data/installability-v3.jsonl` | npm resolution and reserved-scope verdicts |
 | `data/catalog.jsonl` | joined, classified catalogue |
+| `data/decay.jsonl` | per-entry decay state |
 
 The search API returns at most 1000 results per query, so the sample is 999
 unique repositories out of 6081 reported — the shortfall is an API ceiling, not
@@ -213,9 +254,13 @@ What remains distinct here:
 - **Unsolicited coverage.** Both projects above examine repositories that are
   submitted to them. This one probes a topic-wide sample regardless of whether
   anyone submitted it, so it measures the ecosystem rather than its inbox.
-- **Vendored-harness detection.** Five repositories carry `@deepseek-ai/dsh-base`
+- **Vendored-harness detection.** Six repositories carry `@deepseek-ai/dsh-base`
   verbatim with `fork: false`. They pass a contract check by containing DSH's own
   packages, and neither an owner check nor a fork check sees them.
+- **Decay scanning that refuses to guess.** `scripts/scan-decay.mjs` reports
+  `gone`, `archived`, `dormant` and `unbundled`, and reports an unreadable probe
+  as `inconclusive` rather than as decay, because every decay state invites a
+  deletion the evidence may not support.
 - **Published distributions of the whole sample** rather than a curated
   selection: verdict shares, star-band compliance, and installability across all
   999 probed repositories, with the probe scripts included.

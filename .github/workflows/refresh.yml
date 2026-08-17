@@ -50,6 +50,9 @@ jobs:
       - name: Verify partial evidence yields no verdict
         run: node scripts/test-inconclusive.mjs
 
+      - name: Verify decay never reports doubt as decay
+        run: node scripts/test-decay.mjs
+
       - name: Verify the checkout fetcher rejects incomplete transfers
         run: ./scripts/test-fetch.sh
 
@@ -147,6 +150,18 @@ jobs:
             | .[]' data/contract-v3.jsonl > data/catalog.jsonl
           node scripts/render.mjs
 
+      # Decay runs after the catalogue is rebuilt, over the entries just
+      # published. It is advisory: findings are recorded for review and never
+      # remove an entry, so a decay failure must not block the refresh.
+      - name: Scan the catalogue for decay
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RADAR_CONCURRENCY: '10'
+        continue-on-error: true
+        run: |
+          node scripts/scan-decay.mjs < data/catalog.jsonl > data/decay.jsonl
+          jq -r '.state' data/decay.jsonl | sort | uniq -c | sort -rn
+
       # A refresh that produces an empty catalogue means the search or probe
       # step failed without a non-zero exit, so it must not be committed over
       # a good one.
@@ -167,6 +182,6 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/ PLUGINS.md
+          git add data/ PLUGINS.md README.md README.zh.md
           git commit -m 'Refresh the contract-verified plugin catalogue'
           git push
