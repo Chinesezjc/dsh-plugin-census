@@ -269,6 +269,43 @@ jobs:
             exit 1
           fi
 
+      # Quality review runs after the catalogue is known good, and deliberately
+      # cannot fail the job: the census is decidable evidence, the review is a
+      # model's opinion, and a model outage must not stop the former from
+      # publishing. `continue-on-error` keeps a failed review out of the data
+      # while leaving the run green — the reviewer itself already refuses to
+      # publish a score it did not obtain.
+      #
+      # The seed changes every run, so draws overlap partially: new entries widen
+      # coverage and re-drawn entries accumulate a second sample to average.
+      # Skipped entirely when no key is configured, so a fork without the secret
+      # still gets a full census.
+      - name: Review catalogued plugins with a model
+        id: review
+        continue-on-error: true
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+          CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
+          CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}
+        run: |
+          # The `secrets` context is not available in a step-level `if`, so the
+          # skip is decided here instead. Using `if: secrets.X != ''` would make
+          # this step skip unconditionally and silently.
+          if [ -z "${CENSUS_API_KEY}" ]; then
+            echo "no CENSUS_API_KEY configured; skipping the model review"
+            exit 0
+          fi
+          seed=$(date -u +%Y%m%d%H)
+          echo "review seed: ${seed}"
+          if node scripts/ai-review.mjs --limit 20 --seed "${seed}" \
+              --existing data/reviews.jsonl \
+              < data/catalog.jsonl > /tmp/reviews.jsonl; then
+            mv /tmp/reviews.jsonl data/reviews.jsonl
+            echo "reviews: $(wc -l < data/reviews.jsonl)"
+          else
+            echo "::warning::review run refused its own output; data/reviews.jsonl left unchanged"
+          fi
+
       - name: Commit regenerated catalogue
         run: |
           if git diff --quiet; then

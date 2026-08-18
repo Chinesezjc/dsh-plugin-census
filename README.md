@@ -256,9 +256,17 @@ overlap by 0.34 entries on average, so a usable figure needs on the order of 60
 runs. Until then, treat a single-run score (`runs: 1`) as one sample of a noisy
 judgement, and prefer entries with a higher `runs` count.
 
-Coverage is 79 of 1167. A failed review is recorded with `reviewed: false` and no
-score, and a run in which more than 30% of reviews fail exits non-zero rather
-than publishing a transport failure as an opinion about someone's code.
+Coverage is 79 of 1167 and grows with each scheduled run, which reviews 20
+entries under a seed derived from the hour. A failed review is recorded with
+`reviewed: false` and no score, and a run in which more than 30% of reviews fail
+exits non-zero rather than publishing a transport failure as an opinion about
+someone's code.
+
+The reviewer calls the Messages API directly when `CENSUS_API_KEY` is set, and
+falls back to a local model CLI otherwise. The scheduled workflow uses the API
+path and **cannot fail the job**: the census is decidable evidence and the review
+is an opinion, so a model outage leaves `data/reviews.jsonl` untouched rather than
+blocking the catalogue from publishing.
 
 ## Reproducing
 

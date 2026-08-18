@@ -49,8 +49,33 @@ import { createInterface } from 'node:readline'
 /** Prompt version. Bump whenever RUBRIC or buildPrompt changes; invalidates reuse. */
 const PROMPT_VERSION = 'v1'
 
-/** Model CLI. Defaults to the Claude Code binary when it is on PATH. */
+/**
+ * Model CLI, used when no API key is configured.
+ *
+ * The CLI is convenient interactively because it already holds a credential, but
+ * it cannot run unattended: it is a 289 MB platform binary that reads its token
+ * from a local settings file. CI uses the HTTP backend below instead.
+ */
 const MODEL_CLI = process.env.CENSUS_MODEL_CLI ?? process.env.MODEL_CLI ?? 'claude'
+
+/**
+ * API credentials. When a key is present the reviewer calls the Messages API
+ * directly and never shells out, which is what makes an unattended run possible.
+ */
+const API_KEY = process.env.CENSUS_API_KEY ?? process.env.ANTHROPIC_AUTH_TOKEN ?? process.env.ANTHROPIC_API_KEY ?? ''
+const API_BASE = (process.env.CENSUS_API_BASE ?? process.env.ANTHROPIC_BASE_URL ?? 'https://api.anthropic.com').replace(/\/+$/, '')
+const API_MODEL = process.env.CENSUS_API_MODEL ?? process.env.ANTHROPIC_MODEL ?? 'deepseek-v4-flash'
+
+/**
+ * Response tokens allowed per review.
+ *
+ * A verdict plus three reasons is a few hundred tokens, but this endpoint emits a
+ * `thinking` block first and that block counts against the budget. Measured on
+ * `Totoro-qaq/dsh-plugin-bridge`: 4094 characters of thinking exhausted a 1024
+ * budget and the answer never arrived, which surfaced as unparseable output. The
+ * budget has to cover the reasoning, not just the answer.
+ */
+const MAX_TOKENS = Number(process.env.CENSUS_MAX_TOKENS ?? 4096)
 
 /** Fraction of attempted reviews that may fail before the run is refused. */
 const MAX_UNREVIEWED_SHARE = 0.3
@@ -94,6 +119,80 @@ function run(cmd, args, input) {
       child.stdin.end(input)
     }
   })
+}
+
+/**
+ * Ask the model for a verdict over the Messages API.
+ *
+ * @param prompt - the full prompt.
+ * @returns assistant text, or null when the call failed.
+ */
+async function askApi(prompt) {
+  let response
+  try {
+    response = await fetch(`${API_BASE}/v1/messages`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: API_MODEL,
+        max_tokens: MAX_TOKENS,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+      signal: AbortSignal.timeout(180_000),
+    })
+  } catch (error) {
+    // Report the transport failure. Swallowing it silently made a
+    // misconfigured endpoint look identical to a model that refused to answer.
+    process.stderr.write(`  api request failed: ${error?.message ?? error}${
+      error?.cause?.message ? ` (${error.cause.message})` : ''
+    }\n`)
+    return null
+  }
+  if (!response.ok) {
+    process.stderr.write(`  api ${response.status}: ${(await response.text()).slice(0, 160)}\n`)
+    return null
+  }
+  let body
+  try {
+    body = await response.json()
+  } catch {
+    return null
+  }
+  // Distinguish "ran out of budget mid-thought" from "answered something we could
+  // not parse". Both yield no verdict, but only the first is fixed by raising
+  // MAX_TOKENS, and calling it unparseable output sends a reader after the prompt.
+  if (body?.stop_reason === 'max_tokens') {
+    process.stderr.write(`  api stopped at the ${MAX_TOKENS}-token ceiling before answering\n`)
+    return { truncated: true }
+  }
+  // Concatenate every text block and ignore the rest. This endpoint returns a
+  // `thinking` block before the answer, so reading `content[0].text` yields
+  // undefined and would be indistinguishable from a refusal.
+  const blocks = Array.isArray(body?.content) ? body.content : []
+  const text = blocks
+    .filter((block) => block?.type === 'text' && typeof block.text === 'string')
+    .map((block) => block.text)
+    .join('\n')
+    .trim()
+  return text === '' ? null : text
+}
+
+/**
+ * Ask for a verdict through whichever backend is configured.
+ * @param prompt - the full prompt.
+ * @returns assistant text, or null when the call failed.
+ */
+async function ask(prompt) {
+  return API_KEY ? askApi(prompt) : run(MODEL_CLI, ['-p', prompt])
+}
+
+/** @returns true when the backend reported it never finished answering. */
+function isTruncated(raw) {
+  return typeof raw === 'object' && raw !== null && raw.truncated === true
 }
 
 /**
@@ -313,8 +412,9 @@ async function review(entry) {
     readmeText,
     truncated: treeInfo.truncated,
   })
-  const raw = await run(MODEL_CLI, ['-p', prompt])
-  const verdict = parseVerdict(raw)
+  const raw = await ask(prompt)
+  const truncated = isTruncated(raw)
+  const verdict = truncated ? null : parseVerdict(raw)
   const base = {
     repo: entry.repo,
     commitSha: head.sha,
@@ -326,7 +426,10 @@ async function review(entry) {
     reviewedAt: new Date().toISOString(),
   }
   if (!verdict) {
-    return { ...base, reviewed: false, failure: raw === null ? 'MODEL_CALL_FAILED' : 'UNPARSEABLE_OUTPUT' }
+    const failure = truncated
+      ? 'ANSWER_TRUNCATED'
+      : raw === null ? 'MODEL_CALL_FAILED' : 'UNPARSEABLE_OUTPUT'
+    return { ...base, reviewed: false, failure }
   }
   return { ...base, reviewed: true, score: verdict.score, reasons: verdict.reasons }
 }

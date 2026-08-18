@@ -11,7 +11,7 @@
  *   node scripts/test-review.mjs
  */
 
-import { spawnSync } from 'node:child_process'
+import { execFileSync, spawn, spawnSync } from 'node:child_process'
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -329,6 +329,150 @@ check(
   'the sample is not the star-sorted head',
   overlap < 8,
   `selected ${idx.join(',')} — ${overlap}/10 were the ten highest-star entries`,
+)
+
+// ---------------------------------------------------------------------------
+// HTTP backend. CI has no model CLI, so the unattended path is the Messages API.
+// These controls run it against a local stub server: no network, no credential.
+// ---------------------------------------------------------------------------
+
+/**
+ * Serve one canned Messages API response and run the reviewer against it.
+ *
+ * The stub server runs in its OWN process. An in-process server cannot work here:
+ * `spawnSync` blocks this process's event loop for the child's whole lifetime, so
+ * the server never accepts the connection and the child hangs until its timeout.
+ * That deadlock looked exactly like a broken reviewer for several iterations.
+ *
+ * @param body - the JSON body to return.
+ * @param status - HTTP status.
+ * @returns the reviewer result plus the request count the stub recorded.
+ */
+function runWithApi(body, status = 200) {
+  const stubDir = mkdtempSync(join(tmpdir(), 'api-'))
+  const portFile = join(stubDir, 'port')
+  const countFile = join(stubDir, 'count')
+  const serverPath = join(stubDir, 'server.mjs')
+  writeFileSync(
+    serverPath,
+    `import { createServer } from 'node:http'
+import { writeFileSync } from 'node:fs'
+let requests = 0
+const server = createServer((req, res) => {
+  requests += 1
+  writeFileSync(${JSON.stringify(countFile)}, String(requests))
+  res.writeHead(${status}, { 'content-type': 'application/json' })
+  res.end(${JSON.stringify(JSON.stringify(body))})
+})
+server.listen(0, '127.0.0.1', () => {
+  writeFileSync(${JSON.stringify(portFile)}, String(server.address().port))
+})
+`,
+  )
+  writeFileSync(countFile, '0')
+  const server = spawn(process.execPath, [serverPath], { stdio: 'ignore', detached: false })
+  try {
+    // Wait for the port file rather than sleeping a guessed interval.
+    const deadline = Date.now() + 10_000
+    let port = ''
+    while (Date.now() < deadline) {
+      try {
+        port = readFileSync(portFile, 'utf8').trim()
+        if (port) break
+      } catch {
+        /* not written yet */
+      }
+      execFileSync(process.execPath, ['-e', 'setTimeout(()=>{},50)'])
+    }
+    if (!port) throw new Error('stub API server did not report a port')
+    const result = spawnSync(process.execPath, [SCRIPT, '--limit', '1'], {
+      input: oneRepo,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: `${dir}:${process.env.PATH}`,
+        CENSUS_API_KEY: 'test-key',
+        CENSUS_API_BASE: `http://127.0.0.1:${port}`,
+        CENSUS_API_MODEL: 'test-model',
+        CENSUS_MODEL_CLI: '/nonexistent/cli-must-not-be-used',
+      },
+      timeout: 120_000,
+    })
+    const requests = Number(readFileSync(countFile, 'utf8')) || 0
+    const records = String(result.stdout || '')
+      .split('\n')
+      .filter((l) => l.trim())
+      .map((l) => JSON.parse(l))
+    return { ...result, records, requests }
+  } finally {
+    server.kill()
+  }
+}
+
+// A `thinking` block precedes the answer on this endpoint. Reading content[0]
+// yields undefined, which is indistinguishable from a refusal.
+const thinking = runWithApi({
+  stop_reason: 'end_turn',
+  content: [
+    { type: 'thinking', thinking: 'weighing the evidence' },
+    { type: 'text', text: '{"score": 4, "reasons": ["has tests"]}' },
+  ],
+})
+check(
+  'the API backend reads text past a leading thinking block',
+  thinking.records[0]?.reviewed === true && thinking.records[0]?.score === 4,
+  JSON.stringify(thinking.records[0] ?? thinking.stderr),
+)
+check(
+  'a configured API key means the CLI is never invoked',
+  thinking.requests === 1 && !/ENOENT|cli-must-not-be-used/.test(String(thinking.stderr)),
+  `requests=${thinking.requests} stderr=${String(thinking.stderr).slice(0, 160)}`,
+)
+
+// Budget exhaustion is its own failure. Measured on a real repository: 4094
+// characters of thinking spent a 1024-token budget and no answer was emitted.
+const truncated = runWithApi({
+  stop_reason: 'max_tokens',
+  content: [{ type: 'thinking', thinking: 'x'.repeat(4000) }],
+})
+check(
+  'budget exhaustion produces no score',
+  truncated.records[0]?.reviewed === false && truncated.records[0]?.score === undefined,
+  JSON.stringify(truncated.records[0] ?? truncated.stderr),
+)
+check(
+  'budget exhaustion is labelled ANSWER_TRUNCATED, not UNPARSEABLE_OUTPUT',
+  truncated.records[0]?.failure === 'ANSWER_TRUNCATED',
+  `got ${truncated.records[0]?.failure}`,
+)
+
+// The body deliberately carries a well-formed verdict, so only the status check
+// can reject it. An error-shaped body would be unparseable anyway and the control
+// would pass even with the status check removed — which it did, until this case
+// replaced it.
+const apiError = runWithApi(
+  { stop_reason: 'end_turn', content: [{ type: 'text', text: '{"score": 5, "reasons": ["should not count"]}' }] },
+  500,
+)
+check(
+  'a non-200 status is rejected even when the body parses',
+  apiError.records[0]?.reviewed === false && apiError.records[0]?.score === undefined,
+  JSON.stringify(apiError.records[0] ?? ''),
+)
+check(
+  'an API error is labelled MODEL_CALL_FAILED',
+  apiError.records[0]?.failure === 'MODEL_CALL_FAILED',
+  `got ${apiError.records[0]?.failure}`,
+)
+
+const emptyText = runWithApi({
+  stop_reason: 'end_turn',
+  content: [{ type: 'thinking', thinking: 'thought only' }],
+})
+check(
+  'a response with no text block produces no score',
+  emptyText.records[0]?.reviewed === false && emptyText.records[0]?.score === undefined,
+  JSON.stringify(emptyText.records[0] ?? ''),
 )
 
 process.stdout.write(
