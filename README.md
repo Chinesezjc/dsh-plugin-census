@@ -15,55 +15,63 @@ installed.
 
 ## Why this exists
 
-The [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic held **6081**
-repositories on 2026-08-17, up from 1064 three days earlier. GitHub sorts topic
+The [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic held **6923**
+repositories on 2026-08-18, up from 1064 four days earlier. GitHub sorts topic
 pages by stars, and the most-starred entries are the least likely to be plugins.
 
-Measured over a 998-repository sample (the search API returns at most 1000 rows
-per query; 2 were duplicates):
+The topic is enumerated in full rather than sampled: 6929 unique repositories,
+100% of the reported total, by sharding around the search API's 1000-result
+per-query ceiling. Contract probing then accumulates across runs, so the
+verdict figures below cover the 1681 repositories probed so far:
 
 | Stars | Satisfies the plugin contract |
 | --- | --- |
-| 0 | 76.3% |
-| 1-2 | 79.1% |
-| 3-9 | 77.0% |
-| 10-49 | 76.3% |
-| 50+ | **52.7%** |
-| all | 75.5% |
+| 0 | 72.8% |
+| 1-2 | 70.9% |
+| 3-9 | 70.4% |
+| 10-49 | 71.3% |
+| 50+ | **44.6%** |
+| all | 68.7% |
 
 Only the top band is depressed, and its contents explain why: the
 highest-starred repositories carrying this topic are mostly the *catalogues* of
-it — `awesome-dsh-plugin` (6439), `AdamPlatin123/awesome-dsh-plugins` (1098),
-`0xsline/awesome-deepseek-harness` (649) — plus adjacent tooling such as
-`Tencent/BrowserSkill` (1089). None is a plugin, none claims to be, and all sort
-above the plugins a visitor is looking for.
+it — `awesome-dsh-plugin` (7773), `AdamPlatin123/awesome-dsh-plugins` (1158) —
+plus adjacent tooling. None is a plugin, none claims to be, and all sort above
+the plugins a visitor is looking for.
 
 An earlier measurement (2026-08-14, n=999) found compliance falling
 monotonically with stars, from 64.5% at zero to 36.4% above fifty. **That
 pattern no longer holds** and the earlier figures should not be cited: the
-ecosystem grew 5.7x in three days, and this probe now finds bundles in
+ecosystem grew 6.5x in four days, and this probe now finds bundles in
 subpackages, which the earlier one missed.
 
 ## Sample composition
 
-All 998 probed repositories, by verdict:
+All 1698 probed repositories, by verdict:
 
 | Verdict | Count | Share |
 | --- | --- | --- |
-| `CONTRACT_OK` | 753 | 75.5% |
-| `NO_DSH_FIELD` | 99 | 9.9% |
-| `NO_PACKAGE_JSON` | 78 | 7.8% |
-| `DSH_WITHOUT_BUNDLE_PATCH` | 58 | 5.8% |
-| `VENDORED_HARNESS` | 5 | 0.5% |
-| `PATCH_FILE_EMPTY_OR_INVALID` | 2 | 0.2% |
-| `PATCH_FILE_MISSING` | 2 | 0.2% |
-| `TREE_UNREADABLE` | 1 | 0.1% |
+| `CONTRACT_OK` | 1167 | 68.7% |
+| `NO_DSH_FIELD` | 243 | 14.3% |
+| `NO_PACKAGE_JSON` | 187 | 11.0% |
+| `DSH_WITHOUT_BUNDLE_PATCH` | 83 | 4.9% |
+| `VENDORED_HARNESS` | 7 | 0.4% |
+| `PATCH_FILE_MISSING` | 3 | 0.2% |
+| `PATCH_FILE_EMPTY_OR_INVALID` | 2 | 0.1% |
+| `TREE_UNREADABLE` | 2 | 0.1% |
+| `BUNDLE_UNDETERMINED` | 2 | 0.1% |
+| `FIRST_PARTY_HARNESS` | 1 | 0.1% |
+| `MALFORMED_PACKAGE_JSON` | 1 | 0.1% |
+
+Probing accumulates: each run spends its API allowance on repositories never
+probed, then on the stalest, so this table covers a growing share of the 6929
+enumerated repositories rather than a fresh sample each time.
 
 `VENDORED_HARNESS` marks a repository that ships a copy of the harness rather
 than a plugin: it satisfies the contract because it *contains* DSH's own bundle
-packages. All five have `fork: false`, so they are source copies that neither an
+packages. All seven have `fork: false`, so they are source copies that neither an
 owner check nor a fork check detects; they are identified by first-party package
-name. The largest is `fufankeji/deepseek-harness-studio` at 208 stars.
+name. The largest is `fufankeji/deepseek-harness-studio` at 260 stars.
 
 ## Shelf life
 
@@ -77,10 +85,12 @@ came from a probe fix; the authors simply shipped.
 Treat any number here as a reading with a timestamp, not a standing fact. The
 scripts are included so the reading can be retaken rather than trusted.
 
-The scheduled workflow demonstrates this directly: a run a few hours after the
-figures above were written produced a catalogue of 742 rather than 763 entries
-from the same per-query ceiling. Nothing in the probe changed between them —
-the topic's most-recently-updated page was simply a different set.
+Earlier revisions of this README reported catalogue sizes that moved by tens of
+entries between runs hours apart. That variation was an artefact of sampling one
+page of the topic: each run drew a different set. Enumeration now covers the
+whole topic, so a change between runs reflects the ecosystem rather than which
+repositories happened to be sampled — but the timestamp still matters, because
+the topic grew 6.5x in four days.
 
 ## What "contract-verified" means
 
@@ -96,8 +106,8 @@ failure the loader would raise:
 
 Only `PARSED` entries are listed as plugins.
 
-**Honest limit:** tiers 2 and 3 reject little in practice — 4 of the 757
-repositories that declare a patch fail them (2 at `RESOLVED`, 2 at `PARSED`).
+**Honest limit:** tiers 2 and 3 reject little in practice — 5 of the 1172
+repositories that declare a patch fail them.
 Static verification is close to exhausted at tier 1, and the remaining
 uncertainty can only be resolved by installing a plugin. Install verification is
 not implemented; nothing here claims a plugin runs.
@@ -109,12 +119,12 @@ ranked by strength and the confidence published alongside:
 
 | Confidence | Basis | Count | Share |
 | --- | --- | --- | --- |
-| `high` | depends on `@deepseek-ai/dsh-client-*` (client) or `@deepseek-ai/dsh-host-*` and host-only packages (host) | 414 | 55.0% |
-| `medium` | depends on `@deepseek-ai/*`, but no dependency distinguishes client from host — surface `indeterminate` | 36 | 4.8% |
-| `low` | no `@deepseek-ai/*` dependency; surface guessed from a name or description keyword | 210 | 27.9% |
-| `none` | no dependency evidence and no keyword match — **not attributed at all** | 93 | 12.4% |
+| `high` | depends on `@deepseek-ai/dsh-client-*` (client) or `@deepseek-ai/dsh-host-*` and host-only packages (host) | 678 | 58.1% |
+| `medium` | depends on `@deepseek-ai/*`, but no dependency distinguishes client from host — surface `indeterminate` | 51 | 4.4% |
+| `low` | no `@deepseek-ai/*` dependency; surface guessed from a name or description keyword | 309 | 26.5% |
+| `none` | no dependency evidence and no keyword match — **not attributed at all** | 129 | 11.1% |
 
-Only the 450 `high` and `medium` rows rest on dependency evidence. A `low`
+Only the 729 `high` and `medium` rows rest on dependency evidence. A `low`
 attribution is a guess from a word in the repository name and is labelled as
 one. A `none` row carries surface `indeterminate` and empty evidence: it is an
 absence of attribution, not a weak attribution, and it should not be read as a
@@ -128,15 +138,14 @@ anything:
 
 | Verdict | Meaning | Count |
 | --- | --- | --- |
-| `published` | the declared name resolves on the npm registry | 385 |
-| `git-only` | absent from npm; installable from a Git specifier | 363 |
-| `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 5 |
+| `published` | the declared name resolves on the npm registry | 581 |
+| `git-only` | absent from npm; installable from a Git specifier | 543 |
+| `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 43 |
 
-A further five repositories in this sample carry `@deepseek-ai/dsh-base`
-verbatim (at least two more exist outside it: `my-dsh/oh-my-dsh` and
-`BenHuHuan/dhs-tuicode`). They are not misnamed plugins but **vendored copies of
-the harness**, so they are classified `VENDORED_HARNESS` and excluded from the
-catalogue rather than counted here.
+A further seven repositories carry `@deepseek-ai/dsh-base` verbatim. They are
+not misnamed plugins but **vendored copies of the harness**, so they are
+classified `VENDORED_HARNESS` and excluded from the catalogue rather than
+counted here.
 
 The blocked entries are listed separately in the catalogue. They satisfy the
 bundle contract, but only the DeepSeek organisation can publish to the
@@ -157,26 +166,33 @@ conditions, flagging and never removing: `gone` (404), `archived`, `dormant`
 that cannot reach a conclusion is reported as `inconclusive`, never as decay,
 because every decay state invites a deletion the evidence may not support.
 
-Over all 753 entries:
+Over all 1167 entries:
 
 | State | Count |
 | --- | --- |
-| `live` | 752 |
-| `archived` | 1 |
-| `gone` | 0 |
+| `live` | 1162 |
+| `archived` | 3 |
+| `gone` | 1 |
+| `unbundled` | 1 |
 | `dormant` | 0 |
-| `unbundled` | 0 |
 | `inconclusive` | 0 |
 
-**`dormant: 0` is a sampling artefact, not a healthy ecosystem.** The census
-samples the topic by most-recently-updated, so every entry in it was pushed
-within hours and dormancy is definitionally absent. Against a star-sorted sample
-of the same topic, real dormancy exists and reaches 95 days
-(`shanliuling/skills-link`, 187 stars). A reader should not conclude from this
-table that nothing in the ecosystem has gone quiet — only that this sampling
-method cannot see it.
+**`dormant: 0` reflects the topic's age, not its health.** The oldest push among
+all 1167 catalogued entries is 8 days old, so a 30-day dormancy threshold cannot
+fire yet. This is no longer the sampling artefact it once was — the enumeration
+covers the whole topic rather than its most-recently-updated page — but the
+figure still says nothing about long-term maintenance, because nothing in this
+ecosystem has had time to go quiet.
 
-The flagged entry: `Hanihahaha/deepseek-harness-plugins` is archived.
+The five flagged entries:
+
+| Entry | State |
+| --- | --- |
+| `ccch1mneyyy/dsh-working-activity` | archived |
+| `Hanihahaha/deepseek-harness-plugins` | archived |
+| `ccq1/dsh-side-panel` | archived |
+| `omdsh-plugins/omdsh-base` | gone (404) |
+| `ghbhiee/dsh-plugins` | unbundled — no `dsh.bundle.patch`, previously at `packages/cli-session/package.json` |
 
 ## Quality review
 
@@ -222,7 +238,7 @@ Selection is now a seeded shuffle over repository names. The published sample ha
 median 1 star against the catalogue's median 1, includes 14 zero-star entries of
 40, and correlates with stars at Spearman 0.22.
 
-Coverage is 40 of 753. A failed review is recorded with `reviewed: false` and no
+Coverage is 40 of 1167. A failed review is recorded with `reviewed: false` and no
 score, and a run in which more than 30% of reviews fail exits non-zero rather
 than publishing a transport failure as an opinion about someone's code.
 
@@ -279,10 +295,11 @@ suite turns red.
 | `data/decay.jsonl` | per-entry decay state |
 | `data/reviews.jsonl` | model quality scores, pinned to a commit and prompt version |
 
-The search API returns at most 1000 results per query, and 2 of the 1000 rows
-returned were duplicates, so the sample is 998 unique repositories out of 6081
-reported — the shortfall is an API ceiling, not filtering. Entries are sampled by
-most-recently-updated.
+The search API returns at most 1000 results per query. `scripts/enumerate-topic.mjs`
+shards around that ceiling by star bucket and then by creation day, reaching
+6929 unique repositories against 6923 reported — the whole topic, not a sample.
+Day boundaries come from result counts rather than sort order, because this
+search backend does not order by creation date.
 
 ## Related projects
 
@@ -328,7 +345,7 @@ What remains distinct here:
   deletion the evidence may not support.
 - **Published distributions of the whole sample** rather than a curated
   selection: verdict shares, star-band compliance, and installability across all
-  998 probed repositories, with the probe scripts included.
+  1698 probed repositories, with the probe scripts included.
 
 A deeper per-repository audit exists but is **not published** — see
 [AUDIT-EXPERIMENTAL.md](AUDIT-EXPERIMENTAL.md). Its first implementation produced

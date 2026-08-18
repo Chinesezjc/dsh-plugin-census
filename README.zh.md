@@ -12,20 +12,22 @@
 
 ## 为什么做这个
 
-[`dsh-plugin`](https://github.com/topics/dsh-plugin) 话题在 2026-08-17 有
-**6081** 个仓库，三天前是 1064 个。GitHub 的话题页按 star 排序，而 star 最高的
+[`dsh-plugin`](https://github.com/topics/dsh-plugin) 话题在 2026-08-18 有
+**6923** 个仓库，四天前是 1064 个。GitHub 的话题页按 star 排序，而 star 最高的
 条目恰恰最不可能是插件。
 
-在 998 个仓库的样本上实测（搜索 API 单次查询最多返回 1000 条，其中 2 条重复）：
+话题是被完整枚举的，不是采样：6929 个唯一仓库，占报告总数的 100%，做法是围绕搜索
+API 单次查询 1000 条的上限做分片。契约探测则跨运行累积，所以下表覆盖的是目前已
+探测的 1681 个仓库：
 
 | Star | 符合插件契约的比例 |
 | --- | --- |
-| 0 | 76.3% |
-| 1-2 | 79.1% |
-| 3-9 | 77.0% |
-| 10-49 | 76.3% |
-| 50+ | **52.7%** |
-| 全部 | 75.5% |
+| 0 | 72.8% |
+| 1-2 | 70.9% |
+| 3-9 | 70.4% |
+| 10-49 | 71.3% |
+| 50+ | **44.6%** |
+| 全部 | 68.7% |
 
 只有最高那一档偏低，其构成解释了原因：带这个话题的高 star 仓库大多是这个话题
 *本身的目录项目*——`awesome-dsh-plugin`（6439）、
@@ -40,24 +42,30 @@
 
 ## 样本构成
 
-全部 998 个被探测仓库，按判定分类：
+全部 1698 个被探测仓库，按判定分类：
 
 | 判定 | 数量 | 占比 |
 | --- | --- | --- |
-| `CONTRACT_OK` | 753 | 75.5% |
-| `NO_DSH_FIELD` | 99 | 9.9% |
-| `NO_PACKAGE_JSON` | 78 | 7.8% |
-| `DSH_WITHOUT_BUNDLE_PATCH` | 58 | 5.8% |
-| `VENDORED_HARNESS` | 5 | 0.5% |
-| `PATCH_FILE_EMPTY_OR_INVALID` | 2 | 0.2% |
-| `PATCH_FILE_MISSING` | 2 | 0.2% |
-| `TREE_UNREADABLE` | 1 | 0.1% |
+| `CONTRACT_OK` | 1167 | 68.7% |
+| `NO_DSH_FIELD` | 243 | 14.3% |
+| `NO_PACKAGE_JSON` | 187 | 11.0% |
+| `DSH_WITHOUT_BUNDLE_PATCH` | 83 | 4.9% |
+| `VENDORED_HARNESS` | 7 | 0.4% |
+| `PATCH_FILE_MISSING` | 3 | 0.2% |
+| `PATCH_FILE_EMPTY_OR_INVALID` | 2 | 0.1% |
+| `TREE_UNREADABLE` | 2 | 0.1% |
+| `BUNDLE_UNDETERMINED` | 2 | 0.1% |
+| `FIRST_PARTY_HARNESS` | 1 | 0.1% |
+| `MALFORMED_PACKAGE_JSON` | 1 | 0.1% |
+
+探测是累积的：每次运行把 API 配额先花在从未探测过的仓库上，然后是最陈旧的，所以
+这张表覆盖的是 6929 个已枚举仓库中不断增长的一部分，而不是每次重新采样。
 
 `VENDORED_HARNESS` 标记的是携带了 harness 副本、而非插件的仓库：它之所以满足
-契约，是因为它*内含* DSH 自己的 bundle 包。本样本中这 5 个的 `fork` 全部为 false，
+契约，是因为它*内含* DSH 自己的 bundle 包。这 7 个的 `fork` 全部为 false，
 即源码复制而非 GitHub fork，所以按 owner 查或按 fork 状态查都发现不了它们；
 它们只能按第一方包名识别。其中最大的是
-`fufankeji/deepseek-harness-studio`，208 star。
+`fufankeji/deepseek-harness-studio`，260 star。
 
 ## 数据保鲜期
 
@@ -88,9 +96,8 @@
 
 只有达到 `PARSED` 的条目才被列为插件。
 
-**如实说明的局限：** 第 2、3 级在实践中拦下的很少——757 个声明了 patch 的仓库中只有
-4 个在这两级失败（2 个卡在 `RESOLVED`，2 个卡在 `PARSED`）。静态验证在第 1 级就基本
-到顶了，剩余的不确定性只能靠实际安装
+**如实说明的局限：** 第 2、3 级在实践中拦下的很少——1172 个声明了 patch 的仓库中只有
+5 个在这两级失败。静态验证在第 1 级就基本到顶了，剩余的不确定性只能靠实际安装
 插件来消除。安装验证尚未实现；本仓库不声称任何插件能运行。
 
 ## Surface 归因
@@ -99,12 +106,12 @@
 
 | 置信度 | 依据 | 数量 | 占比 |
 | --- | --- | --- | --- |
-| `high` | 依赖 `@deepseek-ai/dsh-client-*`（client 侧）或 `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧） | 414 | 55.0% |
-| `medium` | 有 `@deepseek-ai/*` 依赖，但没有一个依赖能区分 client 与 host，surface 记为 `indeterminate` | 36 | 4.8% |
-| `low` | 没有 `@deepseek-ai/*` 依赖，surface 由名称或描述中的关键词猜测 | 210 | 27.9% |
-| `none` | 既无依赖证据也无关键词命中——**根本没有归因** | 93 | 12.4% |
+| `high` | 依赖 `@deepseek-ai/dsh-client-*`（client 侧）或 `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧） | 678 | 58.1% |
+| `medium` | 有 `@deepseek-ai/*` 依赖，但没有一个依赖能区分 client 与 host，surface 记为 `indeterminate` | 51 | 4.4% |
+| `low` | 没有 `@deepseek-ai/*` 依赖，surface 由名称或描述中的关键词猜测 | 309 | 26.5% |
+| `none` | 既无依赖证据也无关键词命中——**根本没有归因** | 129 | 11.1% |
 
-只有 `high` 与 `medium` 这 450 行基于依赖证据。`low` 是从仓库名里的一个词做出的
+只有 `high` 与 `medium` 这 729 行基于依赖证据。`low` 是从仓库名里的一个词做出的
 猜测，并被如实标注。`none` 行的 surface 是 `indeterminate`、证据为空：它是归因的
 缺失，不是弱归因，不应被读成对该插件的任何判断。
 
@@ -115,9 +122,9 @@
 
 | 判定 | 含义 | 数量 |
 | --- | --- | --- |
-| `published` | 声明的包名可在 npm registry 解析 | 385 |
-| `git-only` | 不在 npm 上；只能用 Git specifier 安装 | 363 |
-| `unpublishable-scope` | 仓库不属于该组织，却用 `@deepseek-ai/` 命名自己 | 5 |
+| `published` | 声明的包名可在 npm registry 解析 | 581 |
+| `git-only` | 不在 npm 上；只能用 Git specifier 安装 | 543 |
+| `unpublishable-scope` | 仓库不属于该组织，却用 `@deepseek-ai/` 命名自己 | 43 |
 
 本样本中另有 5 个仓库原样携带 `@deepseek-ai/dsh-base`（样本外至少还有两个：
 `my-dsh/oh-my-dsh` 与 `BenHuHuan/dhs-tuicode`）。它们不是命名错误的插件，而是
@@ -139,24 +146,31 @@
 `unbundled`（契约已不成立）。无法得出结论的探测被报为 `inconclusive`，
 而绝不报为失效——因为每个失效状态都会促使他人删除条目，而证据可能并不支持。
 
-全部 753 个条目：
+全部 1167 个条目：
 
 | 状态 | 数量 |
 | --- | --- |
-| `live` | 752 |
-| `archived` | 1 |
-| `gone` | 0 |
+| `live` | 1162 |
+| `archived` | 3 |
+| `gone` | 1 |
+| `unbundled` | 1 |
 | `dormant` | 0 |
-| `unbundled` | 0 |
 | `inconclusive` | 0 |
 
-**`dormant: 0` 是采样偏差的产物，不代表生态健康。** 本普查按最近更新排序采样，
-所以样本内每个条目都在数小时内有过 push，休眠在定义上就不可能出现。在同一话题
-按 star 排序的样本上，真实的休眠是存在的，最久达 95 天
-（`shanliuling/skills-link`，187 star）。读者不应从这张表得出「生态中没有项目
-停更」的结论——只能得出「这种采样方式看不到它」。
+**`dormant: 0` 反映的是话题的年龄，不是它的健康度。** 全部 1167 个目录条目中最久
+的一次 push 距今 8 天，所以 30 天的休眠阈值根本还触发不了。这已经不再是过去那种
+采样偏差——枚举现在覆盖整个话题，而不是「最近更新的那一页」——但这个数字仍然说明
+不了长期维护情况，因为这个生态里还没有任何项目有时间沉寂下来。
 
-被标记的条目：`Hanihahaha/deepseek-harness-plugins` 已归档。
+被标记的 5 个条目：
+
+| 条目 | 状态 |
+| --- | --- |
+| `ccch1mneyyy/dsh-working-activity` | 已归档 |
+| `Hanihahaha/deepseek-harness-plugins` | 已归档 |
+| `ccq1/dsh-side-panel` | 已归档 |
+| `omdsh-plugins/omdsh-base` | 已消失（404） |
+| `ghbhiee/dsh-plugins` | 契约失效——找不到 `dsh.bundle.patch`，此前在 `packages/cli-session/package.json` |
 
 ## 质量评审
 
@@ -197,7 +211,7 @@ SHA、它看到的 README 字节的 SHA、以及产生该评分的 prompt 版本
 现在的选择方式是对仓库名做带种子的洗牌。已公布的样本 star 中位数为 1，目录中位数
 同为 1；40 个中有 14 个是零 star；与 star 的 Spearman 相关系数为 0.22。
 
-覆盖率是 753 中的 40。评审失败的条目记为 `reviewed: false` 且不带任何分数；一次
+覆盖率是 1167 中的 40。评审失败的条目记为 `reviewed: false` 且不带任何分数；一次
 运行中若超过 30% 的评审失败，脚本以非零状态退出，而不是把一次传输失败当成对别人
 代码的评价发布出去。
 
@@ -248,9 +262,10 @@ owner、同时不误伤有权发布者、无关 scope 和形近 scope。两个�
 | `data/decay.jsonl` | 每个条目的失效状态 |
 | `data/reviews.jsonl` | 模型质量评分，固定到 commit 与 prompt 版本 |
 
-搜索 API 单次查询最多返回 1000 条结果，且返回的 1000 条中有 2 条重复，所以样本是
-6081 个中的 998 个唯一仓库——这个差额是 API 上限造成的，不是筛选造成的。条目按
-最近更新排序采样。
+搜索 API 单次查询最多返回 1000 条结果。`scripts/enumerate-topic.mjs` 先按 star 桶、
+再按创建日期分片绕过这个上限，最终枚举到 6929 个唯一仓库，而报告总数是 6923——
+即整个话题，不是样本。日期边界取自结果计数而非排序，因为这个搜索后端根本不支持
+按创建时间排序。
 
 ## 相关项目
 
@@ -287,7 +302,7 @@ owner、同时不误伤有权发布者、无关 scope 和形近 scope。两个�
   `dormant` 和 `unbundled`，并把探测不成功的情况报为 `inconclusive` 而不是失效，
   因为每一个失效状态都会促使他人删除条目，而证据可能并不支持这个删除。
 - **公布整个样本的分布**而非精选列表：判定占比、按 star 档的合格率、以及全部
-  998 个被探测仓库的可安装性，探针脚本一并提供。
+  1698 个被探测仓库的可安装性，探针脚本一并提供。
 
 更深入的单仓库审计已经存在，但**未发布**——见
 [AUDIT-EXPERIMENTAL.md](AUDIT-EXPERIMENTAL.md)。它的首个实现在每一个被测仓库上
