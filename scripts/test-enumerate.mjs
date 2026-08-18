@@ -120,6 +120,9 @@ function run(options, argv = []) {
       // Pacing is real behaviour and is asserted separately; without this the
       // whole suite would sleep 2.2 s per stubbed call.
       CENSUS_SEARCH_INTERVAL_MS: options.intervalMs ?? '0',
+      // A narrow window keeps stubbed runs to a handful of shards; the real
+      // default would plan one shard per day of a fabricated topic.
+      CENSUS_RECENT_DAYS: options.recentDays ?? '2',
     },
     timeout: 180_000,
   })
@@ -170,7 +173,7 @@ check(
 
 // A healthy run that genuinely under-covers must still be refused, and must be
 // attributed to coverage rather than to the allowance.
-const thin = run({ reported: 100000, perQuery: 1 })
+const thin = run({ reported: 100000, perQuery: 1, recentDays: '1' })
 check('genuine under-coverage exits non-zero', thin.status !== 0, `status=${thin.status}`)
 check(
   'genuine under-coverage is attributed to sharding',
@@ -205,36 +208,64 @@ check(
   planned.lines.slice(0, 2).join(' | '),
 )
 
-// Hour-window splitting. A day-resolution split cannot divide a bucket whose
-// repositories were all created on one day, and this topic puts thousands into
-// single days. The six windows must partition the day exactly: a gap loses
-// repositories, an overlap inflates the `total` that decides whether to publish.
-const hourSpans = (() => {
-  const match = SOURCE.match(/function hourSpans\(day\) \{[\s\S]*?\n\}/)
+// Day splitting is planned from counts, never from result order. This search
+// backend does not sort by creation date: `sort=created` with order=asc and
+// order=desc return the same repository, while `sort=updated` with those orders
+// returns different ones. Relying on that order made every bucket look like it
+// spanned one day.
+const CODE = SOURCE.split('\n')
+  .filter((line) => !/^\s*(\/\/|\*|\/\*)/.test(line))
+  .join('\n')
+check(
+  'the splitter does not rely on a created sort qualifier',
+  !/sort:created-(asc|desc)/.test(CODE),
+  'sort:created-* is inert because the URL sets sort=updated. Matching SOURCE '
+    + 'would let the comment that explains its removal satisfy this assertion.',
+)
+check(
+  'day boundaries come from counts',
+  /async function populatedDays\(/.test(SOURCE) && /created:<\$\{cutoff\}/.test(SOURCE),
+)
+check(
+  'a finer created qualifier replaces the coarser one',
+  /function stripCreated\(/.test(SOURCE) && /\$\{stem\} \$\{span\}/.test(SOURCE),
+  'appending two created: qualifiers yields a query GitHub does not intersect',
+)
+
+const stripCreated = (() => {
+  const match = SOURCE.match(/function stripCreated\(query\) \{[\s\S]*?\n\}/)
   if (!match) return null
   // eslint-disable-next-line no-eval
-  return eval(`(${match[0].replace('function hourSpans', 'function')})`)
+  return eval(`(${match[0].replace('function stripCreated', 'function')})`)
 })()
-check('hourSpans is defined', typeof hourSpans === 'function')
-if (typeof hourSpans === 'function') {
-  const spans = hourSpans('2026-08-17')
-  check('a day splits into six windows', spans.length === 6, `${spans.length}`)
-  const bounds = spans.map((x) => {
-    const g = x.match(/created:(.+)\.\.(.+)$/)
-    return [Date.parse(g[1]), Date.parse(g[2])]
-  })
+check('stripCreated is defined', typeof stripCreated === 'function')
+if (typeof stripCreated === 'function') {
   check(
-    'the windows partition the day with no gap and no overlap',
-    bounds.every(([, end], i) => i === 0 || end === undefined || bounds[i][0] - bounds[i - 1][1] === 1000),
-    bounds.map(([a2, b2], i) => (i === 0 ? '' : `${(bounds[i][0] - bounds[i - 1][1]) / 1000}s`)).join(','),
+    'stripCreated removes a day qualifier',
+    stripCreated('topic:t stars:0 created:2026-08-17') === 'topic:t stars:0',
+    stripCreated('topic:t stars:0 created:2026-08-17'),
   )
   check(
-    'the windows cover the whole day',
-    bounds[0][0] === Date.parse('2026-08-17T00:00:00Z')
-      && bounds[5][1] === Date.parse('2026-08-17T23:59:59Z'),
-    `${spans[0]} .. ${spans[5]}`,
+    'stripCreated removes an open-ended qualifier',
+    stripCreated('topic:t stars:0 created:<2026-08-17') === 'topic:t stars:0',
+    stripCreated('topic:t stars:0 created:<2026-08-17'),
+  )
+  // stars:2..3 contains `..` exactly like a date range, so a careless pattern
+  // would strip the star bucket and silently widen the shard.
+  check(
+    'stripCreated preserves a star range',
+    stripCreated('topic:t stars:2..3 created:2026-08-17') === 'topic:t stars:2..3',
+    stripCreated('topic:t stars:2..3 created:2026-08-17'),
   )
 }
+
+// A failed count is not an oversized bucket, and reporting it as one tells a
+// reader repositories were dropped for exceeding the cap when the request simply
+// failed.
+check(
+  'unreadable buckets are reported separately from oversized ones',
+  /could not be counted/.test(SOURCE) && /unreadable: \[\{ query: base \}\]/.test(SOURCE),
+)
 
 // An unsplittable oversized bucket must still be read up to the cap rather than
 // dropped: dropping two 2131-repository shards is what refused run 32098089814

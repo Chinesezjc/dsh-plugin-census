@@ -46,7 +46,17 @@ const STAR_BUCKETS = ['stars:0', 'stars:1', 'stars:2..3', 'stars:4..10', 'stars:
  * `stars:0` held 2131 repositories created on a *single day*, which a date split
  * cannot divide any further at day resolution.
  */
-const MAX_SHARD_DEPTH = 3
+const MAX_SHARD_DEPTH = 2
+
+/**
+ * How many days back the day-by-day split enumerates before falling back to a
+ * single `created:<cutoff` catch-all shard.
+ *
+ * The topic is days old and its population is concentrated in that span, so a
+ * bounded window keeps the plan small. Widening it costs one count per extra
+ * day; the catch-all keeps coverage complete either way.
+ */
+const RECENT_DAYS = Number(process.env.CENSUS_RECENT_DAYS ?? 21)
 
 /**
  * Set when a search call fails because the allowance is spent, so the shard loop
@@ -89,11 +99,17 @@ async function paceSearch() {
  * Run one `gh api` search call.
  * @param query - the full `q=` value, already URL-safe.
  * @param page - 1-based page number.
+ * @param sort - sort field for this call; `updated` unless a caller needs order.
+ * @param order - `asc` or `desc`, only meaningful with an explicit sort.
  * @returns `{ total, items }`, or null when the call failed.
  */
-async function search(query, page = 1) {
+async function search(query, page = 1, sort = 'updated', order = null) {
   await paceSearch()
-  const path = `search/repositories?q=${encodeURIComponent(query)}&sort=updated&per_page=${PAGE_SIZE}&page=${page}`
+  // Sorting is a URL parameter. A `sort:` qualifier inside `q` is inert here,
+  // because this parameter overrides it — which made both boundary probes return
+  // the same repository and collapsed every date split to a single day.
+  const orderParam = order === null ? '' : `&order=${order}`
+  const path = `search/repositories?q=${encodeURIComponent(query)}&sort=${sort}${orderParam}&per_page=${PAGE_SIZE}&page=${page}`
   return new Promise((resolve) => {
     execFile('gh', ['api', path], { maxBuffer: 32 * 1024 * 1024 }, (error, stdout, stderr) => {
       if (error) {
@@ -141,83 +157,106 @@ async function count(query) {
  */
 async function shard(base, depth = 0) {
   const total = await count(base)
-  if (total === null) return { queries: [], oversized: [{ query: base, total: null }] }
-  if (total === 0) return { queries: [], oversized: [] }
-  if (total <= RESULT_CAP) return { queries: [{ query: base, total }], oversized: [] }
+  // An unreadable count is not an oversized bucket. Reporting it as one told a
+  // reader that repositories were dropped for exceeding the cap when the real
+  // cause was a failed request, which is a different problem with a different
+  // fix. The two are counted and reported separately.
+  if (total === null) return { queries: [], oversized: [], unreadable: [{ query: base }] }
+  if (total === 0) return { queries: [], oversized: [], unreadable: [] }
+  if (total <= RESULT_CAP) return { queries: [{ query: base, total }], oversized: [], unreadable: [] }
   if (depth >= MAX_SHARD_DEPTH) {
     // Still over the cap with no split left to try. Keep the query anyway: it
     // reaches RESULT_CAP of its `total`, and dropping it discarded those results
     // entirely. Run 32098089814 refused at 47.1% coverage because two `stars:0`
     // shards of 2131 each were dropped rather than partially read — about 2000
     // reachable repositories discarded to avoid reporting a partial bucket.
-    return { queries: [{ query: base, total, capped: true }], oversized: [{ query: base, total }] }
+    return { queries: [{ query: base, total, capped: true }], oversized: [{ query: base, total }], unreadable: [] }
   }
 
-  // Find the date span this bucket actually occupies, then split it.
-  const oldest = await search(`${base} sort:created-asc`, 1)
-  const newest = await search(`${base} sort:created-desc`, 1)
-  const first = oldest?.items?.[0]?.created_at?.slice(0, 10)
-  const last = newest?.items?.[0]?.created_at?.slice(0, 10)
-  if (first === undefined || last === undefined) {
-    return { queries: [], oversized: [{ query: base, total }] }
+  // Split by creation day. The day boundaries come from counts, never from the
+  // order of results: this search backend does not sort by creation date at all.
+  // Measured — `sort=created&order=asc` and `order=desc` return the *same*
+  // repository, while `sort=updated` with the two orders returns different ones.
+  // The `sort:created-asc` qualifier this used to rely on was therefore inert,
+  // both boundary probes read the same repository, and every bucket looked like
+  // it occupied a single day.
+  const stem = stripCreated(base)
+  const days = await populatedDays(stem)
+  if (days === null || days.length === 0) {
+    // The split could not be planned, so this bucket is unread rather than
+    // over-large; its `total` is known but none of it was enumerated.
+    return { queries: [], oversized: [], unreadable: [{ query: base, total }] }
   }
 
-  // A bucket already narrowed to one day cannot be divided by date again, and
-  // this topic puts thousands of repositories into single days. GitHub accepts a
-  // full timestamp in a range, so split that day into hour windows instead.
-  const spans = first === last && /created:/.test(base)
-    ? hourSpans(first)
-    : daySpans(first, last)
-
+  // Each qualifier REPLACES the previous one. Appending produced queries with
+  // two disjoint `created:` ranges, which GitHub does not intersect: a query
+  // holding both 00:00..03:59 and 04:00..07:59 reports 259 rather than 0, so
+  // those shards carried meaningless totals and inflated one plan to 152856
+  // repositories for a 6933-repository topic.
   const queries = []
   const oversized = []
-  for (const span of spans) {
-    const nested = await shard(`${base} ${span}`, depth + 1)
+  const unreadable = []
+  for (const span of days) {
+    const nested = await shard(`${stem} ${span}`, depth + 1)
     queries.push(...nested.queries)
     oversized.push(...nested.oversized)
+    unreadable.push(...nested.unreadable)
   }
-  return { queries, oversized }
+  return { queries, oversized, unreadable }
 }
 
 /**
- * Build day-resolution creation spans covering `first` through `last`.
- * @param first - earliest observed creation date, `YYYY-MM-DD`.
- * @param last - latest observed creation date, `YYYY-MM-DD`.
- * @returns qualifier strings.
+ * Remove every `created:` qualifier from a query.
+ *
+ * Each split narrows the same dimension, so a finer qualifier must replace the
+ * coarser one. Two `created:` qualifiers in one query is always a bug.
+ *
+ * @param query - a search query.
+ * @returns the query with no `created:` qualifier and no repeated spaces.
  */
-function daySpans(first, last) {
-  const days = []
-  for (let day = new Date(first); day <= new Date(last); day.setUTCDate(day.getUTCDate() + 1)) {
-    days.push(day.toISOString().slice(0, 10))
-  }
-  // Everything before the first observed day, so nothing falls outside the plan.
-  return [`created:<${first}`, ...days.map((day) => `created:${day}`)]
+function stripCreated(query) {
+  return query
+    .replace(/\s*created:\S+/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/** Add `days` to a `YYYY-MM-DD` string, in UTC. */
+function addDays(day, days) {
+  const date = new Date(`${day}T00:00:00Z`)
+  date.setUTCDate(date.getUTCDate() + days)
+  return date.toISOString().slice(0, 10)
 }
 
 /**
- * Build six four-hour creation windows covering one UTC day.
+ * Build day qualifiers covering everything a query can match.
  *
- * Four hours rather than one keeps the query count down: a single day of this
- * topic splits into six shards instead of twenty-four, and each is well under
- * the cap at the observed density.
+ * The window is bounded rather than derived from the earliest repository: this
+ * topic was created days before the census and its population is concentrated in
+ * that span (measured over `stars:0`: 126 repositories before 2026-08-14 and
+ * 2741 after it). A `created:<cutoff` catch-all carries the older tail, so the
+ * union of the returned qualifiers is the whole query with no gap.
  *
- * GitHub's `created:a..b` range is inclusive at both ends, so each window ends
- * one second before the next begins rather than on the shared hour. Using the
- * hour itself at both ends would return repositories created exactly on the
- * boundary twice; the enumerator deduplicates by name, but a double-counted
- * `total` would inflate the coverage figure that decides whether to publish.
+ * Days with no repositories are skipped, which keeps the shard count and the
+ * search spend proportional to the days that actually hold data.
  *
- * @param day - the day to split, `YYYY-MM-DD`.
- * @returns six qualifier strings whose union is exactly that day.
+ * @param stem - query with no `created:` qualifier.
+ * @returns qualifier strings, or null when a count failed.
  */
-function hourSpans(day) {
-  const at = (hour, minute, second) =>
-    `${day}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}Z`
-  const spans = []
-  for (let hour = 0; hour < 24; hour += 4) {
-    const endHour = hour + 4
-    const end = endHour >= 24 ? at(23, 59, 59) : at(endHour - 1, 59, 59)
-    spans.push(`created:${at(hour, 0, 0)}..${end}`)
+async function populatedDays(stem) {
+  const today = new Date().toISOString().slice(0, 10)
+  const cutoff = addDays(today, -RECENT_DAYS)
+
+  const older = await count(`${stem} created:<${cutoff}`)
+  if (older === null) return null
+
+  const spans = older > 0 ? [`created:<${cutoff}`] : []
+  for (let offset = 0; offset <= RECENT_DAYS; offset += 1) {
+    const day = addDays(cutoff, offset)
+    if (day > today) break
+    const onDay = await count(`${stem} created:${day}`)
+    if (onDay === null) return null
+    if (onDay > 0) spans.push(`created:${day}`)
   }
   return spans
 }
@@ -247,10 +286,12 @@ async function main() {
 
   const plan = []
   const oversized = []
+  const unreadable = []
   for (const bucket of STAR_BUCKETS) {
     const nested = await shard(`${topic} ${bucket}`)
     plan.push(...nested.queries)
     oversized.push(...nested.oversized)
+    unreadable.push(...nested.unreadable)
     process.stderr.write(`  ${bucket}: ${nested.queries.length} shard(s)\n`)
   }
 
@@ -262,9 +303,20 @@ async function main() {
   if (oversized.length > 0) {
     process.stderr.write(`\nWARNING: ${oversized.length} bucket(s) exceed the ${RESULT_CAP} cap after splitting:\n`)
     for (const entry of oversized) {
-      process.stderr.write(`  ${entry.query} (${entry.total ?? 'unreadable'})\n`)
+      process.stderr.write(`  ${entry.query} (${entry.total})\n`)
     }
     process.stderr.write('Repositories in these buckets beyond the cap are NOT enumerated.\n')
+  }
+
+  // Reported separately from the cap warning: a failed count means the bucket
+  // was never read, which a reader must not confuse with a bucket too large to
+  // read. Both shrink coverage; only one is a property of the topic.
+  if (unreadable.length > 0) {
+    process.stderr.write(`\nWARNING: ${unreadable.length} bucket(s) could not be counted:\n`)
+    for (const entry of unreadable) {
+      process.stderr.write(`  ${entry.query}${entry.total === undefined ? '' : ` (${entry.total} reported)`}\n`)
+    }
+    process.stderr.write('These are request failures, not cap overflows; re-running may resolve them.\n')
   }
 
   if (planOnly) {
