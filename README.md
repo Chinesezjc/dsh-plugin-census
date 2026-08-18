@@ -215,13 +215,13 @@ once scored 4 and 3 on an identical commit SHA and identical README bytes, and
 the first entry to be drawn twice under the new mechanism
 (`wangzhuo-coding/geo-content-optimizer`) scored 5 then 4 on unchanged bytes.
 
-Over 79 reviewed entries, by mean score:
+Over 93 reviewed entries, by mean score:
 
 | Score | Meaning | Count | Share |
 | --- | --- | --- | --- |
-| 5 | substantial, documented, tested | 46 | 58.2% |
-| 4 | solid and usable | 31 | 39.2% |
-| 3 | ordinary, thin, undocumented | 2 | 2.5% |
+| 5 | substantial, documented, tested | 52 | 55.9% |
+| 4 | solid and usable | 38 | 40.9% |
+| 3 | ordinary, thin, undocumented | 3 | 3.2% |
 | 2 | barely a plugin | 0 | 0% |
 | 1 | empty or broken | 0 | 0% |
 
@@ -249,14 +249,14 @@ from a catalogue averaging 26 and containing none of its 326 zero-star entries.
 Selection is now a seeded shuffle over repository names, re-drawn per run. The
 published sample has median 2 stars and includes 21 zero-star entries of 79.
 
-**How far these scores drift is not yet known.** Both entries ever sampled twice
-disagreed by one point, which is a direction rather than a measurement. Drift
-data accumulates only where two draws collide, and two 20-entry draws from 1167
-overlap by 0.34 entries on average, so a usable figure needs on the order of 60
-runs. Until then, treat a single-run score (`runs: 1`) as one sample of a noisy
-judgement, and prefer entries with a higher `runs` count.
+**How far these scores drift is not yet known.** Of the two entries sampled
+twice, one repeated its score exactly and one moved by a point — too few to be a
+measurement. Drift data accumulates only where two draws collide, and two
+20-entry draws from 1167 overlap by 0.34 entries on average, so a usable figure
+needs on the order of 60 runs. Until then, treat a single-run score (`runs: 1`)
+as one sample of a noisy judgement, and prefer entries with a higher `runs` count.
 
-Coverage is 79 of 1167 and grows with each scheduled run, which reviews 20
+Coverage is 93 of 1167 and grows with each scheduled run, which reviews 20
 entries under a seed derived from the hour. A failed review is recorded with
 `reviewed: false` and no score, and a run in which more than 30% of reviews fail
 exits non-zero rather than publishing a transport failure as an opinion about
