@@ -56,6 +56,17 @@ jobs:
       - name: Verify attribution refuses to publish a broken fetch
         run: node scripts/test-attribution.mjs
 
+      - name: Verify the probe queue never orders work by stars
+        run: node scripts/test-queue.mjs
+
+      # The review run itself needs model credentials and does not execute here.
+      # These controls drive the reviewer against a stub model and a stub `gh`,
+      # so they check the guarantees that do not depend on a live model: a failed
+      # review never becomes a score, out-of-range scores are rejected, reuse is
+      # keyed on commit SHA and prompt version, and sampling is star-neutral.
+      - name: Verify the quality reviewer never publishes a failure as a score
+        run: node scripts/test-review.mjs
+
       - name: Verify the checkout fetcher rejects incomplete transfers
         run: ./scripts/test-fetch.sh
 
@@ -114,26 +125,49 @@ jobs:
             exit 1
           fi
 
-      - name: Collect repositories carrying the topic
+      # Enumerate by sharding around the search API's 1000-result cap. A single
+      # query reports 6081 repositories and returns 1000, so the census covered
+      # 16.4% of the topic while claiming to measure it — and that 16.4% was the
+      # most-recently-updated slice, which excludes dormant repositories by
+      # construction. Sharding by star bucket, then by creation date where a
+      # bucket still exceeds the cap, reached 96.5% when measured.
+      - name: Enumerate the whole topic
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          : > data/repos-raw.jsonl
-          for page in 1 2 3 4 5 6 7 8 9 10; do
-            gh api "search/repositories?q=topic:dsh-plugin&sort=updated&per_page=100&page=${page}" \
-              --jq '.items[] | {full_name, stars: .stargazers_count, pushed_at, created_at, archived, fork, desc: .description, lang: .language, topics}' \
-              >> data/repos-raw.jsonl
-            sleep 2
-          done
+          node scripts/enumerate-topic.mjs > /tmp/enumerated.jsonl
+          mv /tmp/enumerated.jsonl data/repos-raw.jsonl
           wc -l data/repos-raw.jsonl
 
-      - name: Probe the bundle contract
+      # Probing every enumerated repository costs more API calls than one hourly
+      # allowance provides, so verdicts accumulate across runs instead of being
+      # recomputed. The queue takes never-probed repositories first, oldest
+      # enumeration first — deliberately not by stars, which is the ordering that
+      # left the quiet majority of the topic unexamined to begin with.
+      - name: Probe the bundle contract for a batch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RADAR_CONCURRENCY: '6'
+          CENSUS_BATCH: '700'
         run: |
-          jq -r -s 'unique_by(.full_name) | .[] | .full_name' data/repos-raw.jsonl > /tmp/repos.txt
-          node scripts/probe-contract.mjs < /tmp/repos.txt > data/contract-v3.jsonl
+          node scripts/probe-queue.mjs --stats
+          node scripts/probe-queue.mjs --limit "${CENSUS_BATCH}" > /tmp/batch.txt
+          if [ ! -s /tmp/batch.txt ]; then
+            echo "every enumerated repository has a fresh verdict; nothing to probe"
+          else
+            node scripts/probe-contract.mjs < /tmp/batch.txt > /tmp/batch-verdicts.jsonl
+            node -e '
+              const fs = require("node:fs")
+              const load = (p) => fs.existsSync(p)
+                ? fs.readFileSync(p, "utf8").split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l))
+                : []
+              const merged = new Map(load("data/contract-v3.jsonl").map((r) => [r.repo, r]))
+              for (const r of load("/tmp/batch-verdicts.jsonl")) merged.set(r.repo, r)
+              fs.writeFileSync("data/contract-v3.jsonl",
+                [...merged.values()].map((r) => JSON.stringify(r)).join("\n") + "\n")
+              process.stderr.write(`verdicts on file: ${merged.size}\n`)
+            '
+          fi
           jq -r '.verdict' data/contract-v3.jsonl | sort | uniq -c | sort -rn
 
       - name: Attribute plugin surfaces
@@ -141,7 +175,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RADAR_CONCURRENCY: '6'
         run: |
-          node scripts/attribute.mjs < data/contract-v3.jsonl > data/surface-v3.jsonl
+          # Reuses existing high/medium attributions so the step costs one call
+          # per newly compliant plugin rather than one per plugin in the whole
+          # catalogue. Writes via a temp file: reading and writing the same path
+          # in one pipeline would truncate the reuse source before it is read.
+          node scripts/attribute.mjs --existing data/surface-v3.jsonl \
+            < data/contract-v3.jsonl > /tmp/surface-next.jsonl
+          mv /tmp/surface-next.jsonl data/surface-v3.jsonl
           jq -r '"\(.surface) \(.confidence)"' data/surface-v3.jsonl | sort | uniq -c | sort -rn
 
       - name: Assess installability

@@ -158,6 +158,49 @@
 
 被标记的条目：`Hanihahaha/deepseek-harness-plugins` 已归档。
 
+## 质量评审
+
+以上所有内容都是可判定的，这一节不是：`scripts/ai-review.mjs` 让模型按 1-5 分
+评价「一个熟练的 DSH 用户会有多信任并使用这个插件」，并把结果当作它本来的样子
+——主观判断——公布出来。评分标准写在脚本源码里；每条评审都记录它读取的 commit
+SHA、它看到的 README 字节的 SHA、以及产生该评分的 prompt 版本，因此任何评分都能
+从那个确切的 commit 重新推导出来。
+
+前 40 条评审（种子 `20260817`）：
+
+| 分数 | 含义 | 数量 | 占比 |
+| --- | --- | --- | --- |
+| 5 | 扎实、有文档、有测试 | 23 | 57.5% |
+| 4 | 可用，文档足以让人采用 | 17 | 42.5% |
+| 3 | 一般，实现单薄、缺文档 | 0 | 0% |
+| 2 | 勉强算插件 | 0 | 0% |
+| 1 | 空的或坏的 | 0 | 0% |
+
+**这个分布本身就是结论，而它让这个分数几乎无法用作筛选条件。** 没有任何一个低于
+4 分。对此测试了两种解释，只有一种成立：
+
+- *评分标准到不了低分。* 不成立。给同一个 prompt 一个虚构的 3 文件插件、18 字节
+  README、零依赖，它返回 2。
+- *样本本身已经被筛过了。* 成立。这里每个条目都通过了 bundle 契约的全部三级，
+  而这一步在评审开始之前就已经排除了空壳。
+
+两次人工核对支持的是评分本身，而不是引发怀疑的那个直觉。
+`fengs2021/dsh-plugin-catalog` 只有 5 个文件、没有测试，看起来很单薄——直到把
+文件打开：`lib/index.js` 与 `lib/client.js` 合计 30 KB 实现、两个有文档的 HTTP
+端点、以及它唯一那处写操作的回滚路径。它得 4 分，是对的。
+`AngelosZou/dsh-python-env` 的 GitHub 描述是空的——但它有 42 个文件、21 个
+`lib/` 模块、12 个测试文件、CHANGELOG 和双语文档。它得 5 分，也是对的。
+**文件数量和描述长度都不是实现深度的好代理指标**，这正是要问模型的原因。
+
+采样在构造上是 star 中立的，因为这个功能的早期版本不是：直接取目录头部会得到一个
+均值 1055 star 的样本，而目录均值是 26，且其中 326 个零 star 条目一个都没被选中。
+现在的选择方式是对仓库名做带种子的洗牌。已公布的样本 star 中位数为 1，目录中位数
+同为 1；40 个中有 14 个是零 star；与 star 的 Spearman 相关系数为 0.22。
+
+覆盖率是 753 中的 40。评审失败的条目记为 `reviewed: false` 且不带任何分数；一次
+运行中若超过 30% 的评审失败，脚本以非零状态退出，而不是把一次传输失败当成对别人
+代码的评价发布出去。
+
 ## 复现
 
 ```sh
@@ -175,6 +218,10 @@ node scripts/installability.mjs < data/contract.jsonl > data/installability.json
 
 # 5. 对目录做失效扫描
 node scripts/scan-decay.mjs < data/catalog.jsonl > data/decay.jsonl
+
+# 6. 模型质量评审（需要模型 CLI；CENSUS_MODEL_CLI 可覆盖默认的 `claude`）
+node scripts/ai-review.mjs --limit 40 --seed 20260817 \
+  --existing data/reviews.jsonl < data/catalog.jsonl > data/reviews.next.jsonl
 
 # 6. 每个门禁的负例控制
 node scripts/test-gates.mjs
@@ -199,6 +246,7 @@ owner、同时不误伤有权发布者、无关 scope 和形近 scope。两个�
 | `data/installability-v3.jsonl` | npm 解析与保留 scope 判定 |
 | `data/catalog.jsonl` | 合并、分类后的目录 |
 | `data/decay.jsonl` | 每个条目的失效状态 |
+| `data/reviews.jsonl` | 模型质量评分，固定到 commit 与 prompt 版本 |
 
 搜索 API 单次查询最多返回 1000 条结果，且返回的 1000 条中有 2 条重复，所以样本是
 6081 个中的 998 个唯一仓库——这个差额是 API 上限造成的，不是筛选造成的。条目按

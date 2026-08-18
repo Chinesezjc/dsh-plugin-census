@@ -22,6 +22,7 @@
  */
 
 import { execFile } from 'node:child_process'
+import { existsSync, readFileSync } from 'node:fs'
 import { createInterface } from 'node:readline'
 
 /** Host-only DSH packages that do not carry a `host-` name prefix. */
@@ -123,15 +124,47 @@ function fromKeywords(packageName, description) {
 }
 
 async function main() {
+  // Attribution costs one API call per compliant plugin, and a fully enumerated
+  // topic holds thousands — more than one hourly allowance. Existing
+  // attributions are reused unless --refresh is passed, so coverage accumulates
+  // across runs the same way contract verdicts do.
+  const reuse = !process.argv.includes('--refresh')
+  const existingIndex = process.argv.indexOf('--existing')
+  const existingPath = existingIndex === -1 ? 'data/surface-v3.jsonl' : process.argv[existingIndex + 1]
+  const existing = new Map()
+  if (reuse && existsSync(existingPath)) {
+    for (const line of readFileSync(existingPath, 'utf8').split('\n')) {
+      if (line.trim().length === 0) continue
+      try {
+        const record = JSON.parse(line)
+        // A previous inconclusive result is not worth carrying: it may have come
+        // from a failed fetch rather than from the package itself, and reusing it
+        // would make a transient failure permanent.
+        if (record.confidence === 'high' || record.confidence === 'medium') {
+          existing.set(record.repo, record)
+        }
+      } catch { /* skip unparseable rows */ }
+    }
+  }
+
   const targets = []
+  const carried = []
   for await (const line of createInterface({ input: process.stdin })) {
     if (line.trim().length === 0) continue
     try {
       const record = JSON.parse(line)
-      if (record.verdict === 'CONTRACT_OK') targets.push(record)
+      if (record.verdict !== 'CONTRACT_OK') continue
+      const previous = existing.get(record.repo)
+      if (previous !== undefined) carried.push(previous)
+      else targets.push(record)
     } catch {
       continue
     }
+  }
+
+  for (const record of carried) process.stdout.write(`${JSON.stringify(record)}\n`)
+  if (carried.length > 0) {
+    process.stderr.write(`reused ${carried.length} existing attribution(s); ${targets.length} to fetch\n`)
   }
 
   const limit = Number(process.env.RADAR_CONCURRENCY ?? 10)

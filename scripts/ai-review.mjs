@@ -1,0 +1,447 @@
+#!/usr/bin/env node
+/**
+ * Score catalogued plugins 1-5 on overall quality, using a model.
+ *
+ * This is a subjective judgement and is published as one. There is no ground
+ * truth to validate a score against, so what this script guarantees is not
+ * correctness but *auditability*: every review records the exact commit it read,
+ * the SHA of the README bytes it was shown, and the version of the prompt that
+ * produced it. A reader can fetch that commit and re-run the same prompt.
+ *
+ * Three properties matter more than the scores themselves.
+ *
+ * 1. A failed review is never a score. When the model call fails, returns
+ *    unparseable output, or returns a score outside 1-5, the record is written
+ *    with `reviewed: false` and *no* score field. Silently emitting a default
+ *    would make a transport failure indistinguishable from a real opinion about
+ *    someone's repository — the failure mode this repository has hit before.
+ *
+ * 2. Sampling is star-neutral. An earlier version reviewed the head of the
+ *    catalogue, which is star-sorted; it drew a sample averaging 1055 stars from
+ *    a catalogue averaging 26, containing none of the 324 zero-star plugins, and
+ *    produced a distribution skewed high. Selection here is a seeded shuffle, so
+ *    it is reproducible, independent of popularity, and changes with the seed.
+ *
+ * 3. Reuse is keyed on content, not on repository. A stored review is reused
+ *    only when the commit SHA, the README SHA and the prompt version all match.
+ *    Any change to the code being judged or to the question being asked forces a
+ *    fresh review.
+ *
+ *   node scripts/ai-review.mjs --limit 40 --seed 20260817 \
+ *     --existing data/reviews.jsonl < data/catalog.jsonl > data/reviews.next.jsonl
+ */
+
+import { execFile } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import { existsSync, readFileSync } from 'node:fs'
+import { createInterface } from 'node:readline'
+
+/** Prompt version. Bump whenever RUBRIC or buildPrompt changes; invalidates reuse. */
+const PROMPT_VERSION = 'v1'
+
+/** Model CLI. Defaults to the Claude Code binary when it is on PATH. */
+const MODEL_CLI = process.env.CENSUS_MODEL_CLI ?? process.env.MODEL_CLI ?? 'claude'
+
+/** Fraction of attempted reviews that may fail before the run is refused. */
+const MAX_UNREVIEWED_SHARE = 0.3
+
+/** Bytes of README shown to the model. */
+const README_LIMIT = 6000
+
+/**
+ * The rubric. Kept in source rather than in a data file so that a review can be
+ * reproduced from a commit of this repository alone.
+ */
+const RUBRIC = `Score the plugin 1-5 on how much a competent DSH user would trust and use it.
+
+5  Substantial, documented, tested. Clear purpose, real implementation depth.
+4  Solid and usable. Works, documented well enough to adopt, some rough edges.
+3  Ordinary. Real but thin implementation, minimal docs, no tests.
+2  Barely a plugin. Skeleton, placeholder, or template with little of its own.
+1  Empty, broken, or a stub that does nothing.
+
+Judge only the evidence given. Do not reward or penalise star count, author,
+language of the documentation, or how recently it was pushed. A small plugin
+that does one thing properly is a 4, not a 2 — score depth of execution, not
+size of scope.`
+
+/**
+ * Run a command and capture stdout.
+ * @param cmd - executable.
+ * @param args - arguments.
+ * @param input - optional stdin payload.
+ * @returns stdout on success, or null on any failure.
+ */
+function run(cmd, args, input) {
+  return new Promise((resolve) => {
+    const child = execFile(
+      cmd,
+      args,
+      { maxBuffer: 32 * 1024 * 1024, timeout: 180_000 },
+      (error, stdout) => resolve(error ? null : String(stdout)),
+    )
+    if (input !== undefined && child.stdin) {
+      child.stdin.end(input)
+    }
+  })
+}
+
+/**
+ * Call `gh api` and parse the JSON body.
+ * @param path - API path.
+ * @returns parsed body, or null on failure.
+ */
+async function api(path) {
+  const out = await run('gh', ['api', path])
+  if (out === null) return null
+  try {
+    return JSON.parse(out)
+  } catch {
+    return null
+  }
+}
+
+/** @returns hex sha256 of a string. */
+function sha256(text) {
+  return createHash('sha256').update(text).digest('hex')
+}
+
+/**
+ * Deterministic 32-bit hash of a string, used to seed a per-repo shuffle key.
+ * @param text - input.
+ * @returns unsigned 32-bit integer.
+ */
+function hash32(text) {
+  let h = 2166136261
+  for (let i = 0; i < text.length; i += 1) {
+    h ^= text.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  return h >>> 0
+}
+
+/**
+ * Order entries reproducibly and independently of stars.
+ *
+ * Sorting by a seeded hash of the repository name gives the same order for the
+ * same seed, a different order for a different seed, and an order uncorrelated
+ * with star count — the property the star-sorted head lacked.
+ *
+ * @param entries - catalogue rows.
+ * @param seed - integer seed.
+ * @returns new array in shuffled order.
+ */
+function seededShuffle(entries, seed) {
+  return entries
+    .map((entry) => ({ entry, key: hash32(`${seed}:${entry.repo}`) }))
+    .sort((a, b) => a.key - b.key || (a.entry.repo < b.entry.repo ? -1 : 1))
+    .map((row) => row.entry)
+}
+
+/**
+ * Fetch the head commit SHA and its date for a repository's default branch.
+ * @param repo - `owner/name`.
+ * @returns `{ sha, committedAt }`, or null when unreadable.
+ */
+async function headCommit(repo) {
+  const body = await api(`repos/${repo}/commits?per_page=1`)
+  if (!Array.isArray(body) || body.length === 0) return null
+  const sha = body[0]?.sha
+  const committedAt = body[0]?.commit?.committer?.date ?? body[0]?.commit?.author?.date
+  return typeof sha === 'string' ? { sha, committedAt: committedAt ?? null } : null
+}
+
+/**
+ * Fetch a repository's README as text at a pinned commit.
+ * @param repo - `owner/name`.
+ * @param ref - commit SHA.
+ * @returns README text (possibly empty), or null when the request failed.
+ */
+async function readme(repo, ref) {
+  const body = await api(`repos/${repo}/readme?ref=${ref}`)
+  if (body === null) return null
+  if (body.missing || typeof body.content !== 'string') return ''
+  try {
+    return Buffer.from(body.content, 'base64').toString('utf8')
+  } catch {
+    return ''
+  }
+}
+
+/**
+ * Fetch the manifest of the catalogued package at a pinned commit.
+ * @param repo - `owner/name`.
+ * @param path - manifest path recorded in the catalogue.
+ * @param ref - commit SHA.
+ * @returns parsed manifest, or null when unreadable.
+ */
+async function manifest(repo, path, ref) {
+  if (!path) return null
+  const body = await api(`repos/${repo}/contents/${path}?ref=${ref}`)
+  if (body === null || typeof body?.content !== 'string') return null
+  try {
+    return JSON.parse(Buffer.from(body.content, 'base64').toString('utf8'))
+  } catch {
+    return null
+  }
+}
+
+/**
+ * List the file paths of a repository at a pinned commit.
+ * @param repo - `owner/name`.
+ * @param ref - commit SHA.
+ * @returns `{ paths, truncated }`, or null when unreadable.
+ */
+async function tree(repo, ref) {
+  const body = await api(`repos/${repo}/git/trees/${ref}?recursive=1`)
+  if (body === null || !Array.isArray(body?.tree)) return null
+  return {
+    paths: body.tree.filter((n) => n.type === 'blob').map((n) => n.path),
+    truncated: body.truncated === true,
+  }
+}
+
+/**
+ * Build the prompt shown to the model.
+ *
+ * Star count, owner and push date are deliberately withheld: the rubric forbids
+ * using them, and the cheapest way to enforce that is not to supply them.
+ *
+ * @param context - gathered evidence.
+ * @returns prompt text.
+ */
+function buildPrompt(context) {
+  const { entry, files, pkg, readmeText, truncated } = context
+  const interesting = files
+    .filter((p) => !/^(\.git|node_modules|dist|build)\//.test(p))
+    .slice(0, 120)
+  const scripts = pkg?.scripts ? Object.keys(pkg.scripts).join(', ') : '(none)'
+  const deps = Object.keys({ ...(pkg?.dependencies ?? {}), ...(pkg?.peerDependencies ?? {}) })
+  return `${RUBRIC}
+
+## Plugin
+
+package: ${entry.package ?? '(unknown)'}
+declared surface: ${entry.surface ?? 'indeterminate'}
+description: ${entry.description ?? '(none)'}
+
+## package.json
+
+scripts: ${scripts}
+dependencies (${deps.length}): ${deps.slice(0, 40).join(', ') || '(none)'}
+
+## Files (${files.length} total${truncated ? ', listing truncated by the API' : ''})
+
+${interesting.join('\n') || '(none)'}
+
+## README (${Buffer.byteLength(readmeText)} bytes${readmeText.length > README_LIMIT ? ', truncated' : ''})
+
+${readmeText.slice(0, README_LIMIT) || '(empty)'}
+
+## Output
+
+Respond with ONLY a JSON object, no prose and no code fence:
+{"score": <integer 1-5>, "reasons": ["<specific, checkable>", "..."]}
+
+Each reason must cite something above — a path, a script, a dependency, a README
+fact. Give two or three reasons. Do not restate the rubric.`
+}
+
+/**
+ * Extract the JSON object from model output.
+ * @param text - raw stdout.
+ * @returns `{ score, reasons }` when valid, else null.
+ */
+function parseVerdict(text) {
+  if (typeof text !== 'string') return null
+  const fenced = text.replace(/```(?:json)?/g, '')
+  const start = fenced.indexOf('{')
+  const end = fenced.lastIndexOf('}')
+  if (start < 0 || end <= start) return null
+  let parsed
+  try {
+    parsed = JSON.parse(fenced.slice(start, end + 1))
+  } catch {
+    return null
+  }
+  const score = parsed?.score
+  if (!Number.isInteger(score) || score < 1 || score > 5) return null
+  const reasons = Array.isArray(parsed?.reasons)
+    ? parsed.reasons.filter((r) => typeof r === 'string' && r.trim()).slice(0, 4)
+    : []
+  return { score, reasons }
+}
+
+/**
+ * Review one catalogue entry.
+ * @param entry - catalogue row.
+ * @returns a review record; `reviewed` is false when no score was obtained.
+ */
+async function review(entry) {
+  const head = await headCommit(entry.repo)
+  if (!head) {
+    return { repo: entry.repo, reviewed: false, failure: 'HEAD_UNREADABLE', promptVersion: PROMPT_VERSION }
+  }
+  const [readmeText, pkg, treeInfo] = await Promise.all([
+    readme(entry.repo, head.sha),
+    manifest(entry.repo, entry.manifestPath, head.sha),
+    tree(entry.repo, head.sha),
+  ])
+  if (readmeText === null || treeInfo === null) {
+    return {
+      repo: entry.repo,
+      reviewed: false,
+      failure: readmeText === null ? 'README_UNREADABLE' : 'TREE_UNREADABLE',
+      commitSha: head.sha,
+      promptVersion: PROMPT_VERSION,
+    }
+  }
+  const prompt = buildPrompt({
+    entry,
+    files: treeInfo.paths,
+    pkg,
+    readmeText,
+    truncated: treeInfo.truncated,
+  })
+  const raw = await run(MODEL_CLI, ['-p', prompt])
+  const verdict = parseVerdict(raw)
+  const base = {
+    repo: entry.repo,
+    commitSha: head.sha,
+    committedAt: head.committedAt,
+    readmeSha: sha256(readmeText),
+    readmeBytes: Buffer.byteLength(readmeText),
+    fileCount: treeInfo.paths.length,
+    promptVersion: PROMPT_VERSION,
+    reviewedAt: new Date().toISOString(),
+  }
+  if (!verdict) {
+    return { ...base, reviewed: false, failure: raw === null ? 'MODEL_CALL_FAILED' : 'UNPARSEABLE_OUTPUT' }
+  }
+  return { ...base, reviewed: true, score: verdict.score, reasons: verdict.reasons }
+}
+
+/**
+ * Read stored reviews, keyed for content-sensitive reuse.
+ * @param path - JSONL path.
+ * @returns map from repo to stored record.
+ */
+function loadExisting(path) {
+  const stored = new Map()
+  if (!path || !existsSync(path)) return stored
+  for (const line of readFileSync(path, 'utf8').split('\n')) {
+    if (!line.trim()) continue
+    try {
+      const record = JSON.parse(line)
+      if (record?.repo) stored.set(record.repo, record)
+    } catch {
+      /* ignore malformed stored line */
+    }
+  }
+  return stored
+}
+
+/** @returns parsed argv flags. */
+function options(argv) {
+  const get = (name, fallback) => {
+    const i = argv.indexOf(name)
+    return i >= 0 && argv[i + 1] !== undefined ? argv[i + 1] : fallback
+  }
+  return {
+    limit: Number(get('--limit', '40')),
+    seed: Number(get('--seed', '20260817')),
+    existing: get('--existing', ''),
+  }
+}
+
+async function main() {
+  const opts = options(process.argv.slice(2))
+  if (!Number.isFinite(opts.limit) || opts.limit <= 0) {
+    process.stderr.write('--limit must be a positive number\n')
+    process.exit(2)
+  }
+  const entries = []
+  for await (const line of createInterface({ input: process.stdin, crlfDelay: Infinity })) {
+    if (!line.trim()) continue
+    try {
+      const entry = JSON.parse(line)
+      if (entry?.repo) entries.push(entry)
+    } catch {
+      /* ignore malformed catalogue line */
+    }
+  }
+
+  // Deduplicate by repository. Reusing this script's own output as --existing
+  // previously multiplied rows, producing two different scores for one commit.
+  const byRepo = new Map()
+  for (const entry of entries) if (!byRepo.has(entry.repo)) byRepo.set(entry.repo, entry)
+  const dropped = entries.length - byRepo.size
+  if (dropped > 0) process.stderr.write(`dropped ${dropped} duplicate input row(s)\n`)
+
+  const stored = loadExisting(opts.existing)
+  const ordered = seededShuffle([...byRepo.values()], opts.seed)
+
+  // Prefer entries with no usable stored review, so repeated runs widen coverage
+  // instead of re-reviewing the same head of the shuffle.
+  const fresh = []
+  const reusable = []
+  for (const entry of ordered) {
+    const prior = stored.get(entry.repo)
+    if (prior?.reviewed && prior.promptVersion === PROMPT_VERSION) reusable.push({ entry, prior })
+    else fresh.push(entry)
+  }
+
+  const results = []
+  let attempted = 0
+  let unreviewed = 0
+  let reused = 0
+
+  for (const entry of fresh.slice(0, opts.limit)) {
+    attempted += 1
+    const record = await review(entry)
+    if (!record.reviewed) unreviewed += 1
+    results.push(record)
+    process.stderr.write(
+      `${record.reviewed ? `score ${record.score}` : `FAILED ${record.failure}`}  ${entry.repo}\n`,
+    )
+  }
+
+  // Carry forward stored reviews whose pinned content still matches.
+  for (const { entry, prior } of reusable) {
+    const head = await headCommit(entry.repo)
+    if (head && head.sha === prior.commitSha) {
+      results.push(prior)
+      reused += 1
+      continue
+    }
+    attempted += 1
+    const record = await review(entry)
+    if (!record.reviewed) unreviewed += 1
+    results.push(record)
+    process.stderr.write(
+      `${record.reviewed ? `rescored ${record.score}` : `FAILED ${record.failure}`}  ${entry.repo} (moved)\n`,
+    )
+  }
+
+  for (const record of results) process.stdout.write(`${JSON.stringify(record)}\n`)
+
+  const scored = results.filter((r) => r.reviewed)
+  const mean = scored.length
+    ? (scored.reduce((sum, r) => sum + r.score, 0) / scored.length).toFixed(2)
+    : 'n/a'
+  process.stderr.write(
+    `\nreviewed ${scored.length}, reused ${reused}, failed ${unreviewed} of ${attempted} attempted; mean ${mean}\n`,
+  )
+
+  // A run that mostly failed describes the runner, not the ecosystem.
+  if (attempted > 0 && unreviewed / attempted > MAX_UNREVIEWED_SHARE) {
+    process.stderr.write(
+      `refusing: ${unreviewed}/${attempted} reviews failed, above the ${Math.round(
+        MAX_UNREVIEWED_SHARE * 100,
+      )}% ceiling\n`,
+    )
+    process.exit(1)
+  }
+}
+
+await main()

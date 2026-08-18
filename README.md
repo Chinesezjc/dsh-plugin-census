@@ -178,6 +178,54 @@ method cannot see it.
 
 The flagged entry: `Hanihahaha/deepseek-harness-plugins` is archived.
 
+## Quality review
+
+Everything above is decidable. This section is not: `scripts/ai-review.mjs`
+asks a model to score a plugin 1-5 on how much a competent DSH user would trust
+it, and publishes the result as the subjective judgement it is. The rubric lives
+in the script, and every review records the commit SHA it read, the SHA of the
+README bytes it was shown, and the prompt version that produced it, so any score
+can be re-derived from that exact commit.
+
+Over the first 40 reviews (seed `20260817`):
+
+| Score | Meaning | Count | Share |
+| --- | --- | --- | --- |
+| 5 | substantial, documented, tested | 23 | 57.5% |
+| 4 | solid and usable | 17 | 42.5% |
+| 3 | ordinary, thin, undocumented | 0 | 0% |
+| 2 | barely a plugin | 0 | 0% |
+| 1 | empty or broken | 0 | 0% |
+
+**This distribution is the finding, and it makes the score nearly useless as a
+filter.** Nothing scored below 4. Two explanations were tested and only one
+survived:
+
+- *The rubric cannot reach low scores.* False. Given a synthetic 3-file plugin
+  with an 18-byte README and no dependencies, the same prompt returns 2.
+- *The population is already filtered.* Supported. Every entry here cleared all
+  three tiers of the bundle contract, which excludes stubs before review begins.
+
+Two hand-checks confirmed the scores rather than the suspicion that produced
+them. `fengs2021/dsh-plugin-catalog` has 5 files and no tests, which looks thin
+until the files are opened: 30 KB of implementation across `lib/index.js` and
+`lib/client.js`, two documented HTTP endpoints, and a rollback path for its only
+write. It scored 4, correctly. `AngelosZou/dsh-python-env` has a null GitHub
+description — and 42 files, 21 `lib/` modules, 12 test files, a CHANGELOG and
+bilingual docs. It scored 5, correctly. **File count and description length are
+bad proxies for depth**, which is the reason a model is asked at all.
+
+Sampling is star-neutral by construction, because an earlier version of this
+feature was not: selecting the catalogue head drew a sample averaging 1055 stars
+from a catalogue averaging 26 and containing none of its 326 zero-star entries.
+Selection is now a seeded shuffle over repository names. The published sample has
+median 1 star against the catalogue's median 1, includes 14 zero-star entries of
+40, and correlates with stars at Spearman 0.22.
+
+Coverage is 40 of 753. A failed review is recorded with `reviewed: false` and no
+score, and a run in which more than 30% of reviews fail exits non-zero rather
+than publishing a transport failure as an opinion about someone's code.
+
 ## Reproducing
 
 ```sh
@@ -196,11 +244,18 @@ node scripts/installability.mjs < data/contract.jsonl > data/installability.json
 # 5. decay scan over the catalogue
 node scripts/scan-decay.mjs < data/catalog.jsonl > data/decay.jsonl
 
-# 6. negative controls for every gate
+# 6. model quality review (needs a model CLI; CENSUS_MODEL_CLI overrides `claude`)
+node scripts/ai-review.mjs --limit 40 --seed 20260817 \
+  --existing data/reviews.jsonl < data/catalog.jsonl > data/reviews.next.jsonl
+
+# 7. negative controls for every gate
 node scripts/test-gates.mjs
 node scripts/test-monorepo.mjs
 node scripts/test-inconclusive.mjs
 node scripts/test-decay.mjs
+node scripts/test-attribution.mjs
+node scripts/test-queue.mjs
+node scripts/test-review.mjs
 ./scripts/test-fetch.sh
 ```
 
@@ -222,6 +277,7 @@ suite turns red.
 | `data/installability-v3.jsonl` | npm resolution and reserved-scope verdicts |
 | `data/catalog.jsonl` | joined, classified catalogue |
 | `data/decay.jsonl` | per-entry decay state |
+| `data/reviews.jsonl` | model quality scores, pinned to a commit and prompt version |
 
 The search API returns at most 1000 results per query, and 2 of the 1000 rows
 returned were duplicates, so the sample is 998 unique repositories out of 6081
