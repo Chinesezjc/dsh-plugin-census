@@ -113,8 +113,15 @@ function run(options, argv = []) {
   writeFileSync(join(stubDir, 'gh'), ghStub(options), { mode: 0o755 })
   const result = spawnSync(process.execPath, [SCRIPT, ...argv], {
     encoding: 'utf8',
-    env: { ...process.env, PATH: `${stubDir}:${process.env.PATH}`, STUB_COUNT_FILE: counter },
-    timeout: 120_000,
+    env: {
+      ...process.env,
+      PATH: `${stubDir}:${process.env.PATH}`,
+      STUB_COUNT_FILE: counter,
+      // Pacing is real behaviour and is asserted separately; without this the
+      // whole suite would sleep 2.2 s per stubbed call.
+      CENSUS_SEARCH_INTERVAL_MS: options.intervalMs ?? '0',
+    },
+    timeout: 180_000,
   })
   return {
     status: result.status,
@@ -196,6 +203,22 @@ check(
   '--plan prints a shard plan without emitting repository records',
   planned.lines.length > 0 && planned.lines.every((l) => /^\d+\t/.test(l)),
   planned.lines.slice(0, 2).join(' | '),
+)
+
+// Pacing: with a real interval, consecutive search calls must be separated by
+// roughly that interval. The search API allows 30 per minute and nothing paced
+// these calls before, which is what actually spent the pool in every failed run.
+check(
+  'the pacing interval is read from the environment',
+  /CENSUS_SEARCH_INTERVAL_MS/.test(SOURCE),
+)
+const pacedStart = Date.now()
+const paced = run({ reported: 300, perQuery: 100, intervalMs: '400' }, ['--plan'])
+const pacedMs = Date.now() - pacedStart
+check(
+  'a real interval spaces out consecutive search calls',
+  paced.calls >= 3 && pacedMs >= (paced.calls - 1) * 400 * 0.6,
+  `${paced.calls} calls in ${pacedMs} ms with a 400 ms interval`,
 )
 
 process.stdout.write(

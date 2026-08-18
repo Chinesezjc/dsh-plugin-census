@@ -48,12 +48,42 @@ const STAR_BUCKETS = ['stars:0', 'stars:1', 'stars:2..3', 'stars:4..10', 'stars:
 let rateLimited = false
 
 /**
+ * Minimum gap between search calls, in milliseconds.
+ *
+ * The search API allows 30 requests per minute, which is 2000 ms per request.
+ * Nothing paced these calls before, so all three CI runs spent the whole minute
+ * budget in seconds: run 32097808000 passed a pre-check reading search 30/30 and
+ * was then refused because *planning alone* issued about 24 count() queries
+ * before the shard loop started. Checking a per-minute pool once cannot make a
+ * burst fit inside it; the calls have to be spread out.
+ *
+ * 2200 ms leaves a margin over the exact quotient, since the window is measured
+ * server-side and a run competes with nothing else in this repository.
+ */
+const SEARCH_INTERVAL_MS = Number(process.env.CENSUS_SEARCH_INTERVAL_MS ?? 2200)
+
+/** Timestamp of the last search call, used to pace the next one. */
+let lastSearchAt = 0
+
+/**
+ * Wait until issuing another search call stays within the per-minute rate.
+ * @returns a promise resolving when the caller may proceed.
+ */
+async function paceSearch() {
+  if (SEARCH_INTERVAL_MS <= 0) return
+  const wait = lastSearchAt + SEARCH_INTERVAL_MS - Date.now()
+  if (wait > 0) await new Promise((resolve) => { setTimeout(resolve, wait) })
+  lastSearchAt = Date.now()
+}
+
+/**
  * Run one `gh api` search call.
  * @param query - the full `q=` value, already URL-safe.
  * @param page - 1-based page number.
  * @returns `{ total, items }`, or null when the call failed.
  */
-function search(query, page = 1) {
+async function search(query, page = 1) {
+  await paceSearch()
   const path = `search/repositories?q=${encodeURIComponent(query)}&sort=updated&per_page=${PAGE_SIZE}&page=${page}`
   return new Promise((resolve) => {
     execFile('gh', ['api', path], { maxBuffer: 32 * 1024 * 1024 }, (error, stdout, stderr) => {

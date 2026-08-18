@@ -119,11 +119,15 @@ jobs:
       # left is better than failing after.
       #
       # `core` and `search` are separate pools and both are load-bearing here:
-      # enumeration spends `search` (30/minute, and the sharded enumeration
-      # issues ~26 queries back to back), while probing and attribution spend
-      # `core`. Checking only `core` let run 32097129800 pass this step and then
-      # fail enumeration with "API rate limit exceeded" on 8 of 9 shards,
-      # enumerating 100 of 6842 repositories. Both are checked now.
+      # enumeration spends `search` (30 per minute), while probing and
+      # attribution spend `core`. Checking only `core` let run 32097129800 pass
+      # this step and then fail enumeration with "API rate limit exceeded".
+      #
+      # A per-minute pool cannot be secured by one reading, though: run
+      # 32097808000 saw search 30/30 here and was still refused, because planning
+      # alone burst about 24 queries before the shard loop began. The enumerator
+      # now paces its own calls to stay inside the rate, so this check is only a
+      # guard against starting with an already-depleted window.
       - name: Check the API allowance before spending it
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -140,13 +144,12 @@ jobs:
             echo "::error::only ${core} core calls left; a full refresh needs roughly 2500. The allowance resets in about ${wait_min} minute(s)."
             exit 1
           fi
-          # Sharded enumeration issues roughly 26 search queries; refuse below a
-          # margin over that rather than discovering the shortfall mid-shard,
-          # where the result is a partial sample that looks like a real one.
-          if [ "${search}" -lt 20 ]; then
+          # The enumerator paces itself, so it only needs the window to be
+          # substantially open at the start rather than to hold every query.
+          if [ "${search}" -lt 10 ]; then
             wait_sec=$(( search_reset - $(date +%s) ))
             [ "${wait_sec}" -lt 0 ] && wait_sec=0
-            echo "::error::only ${search} search calls left; sharded enumeration needs about 26. The search allowance resets in about ${wait_sec} second(s)."
+            echo "::error::only ${search} search calls left; the paced enumeration needs an open window. The search allowance resets in about ${wait_sec} second(s)."
             exit 1
           fi
 
