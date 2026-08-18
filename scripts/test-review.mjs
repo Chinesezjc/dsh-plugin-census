@@ -475,6 +475,28 @@ check(
   JSON.stringify(emptyText.records[0] ?? ''),
 )
 
+// A failing `gh` must say why. Without this, an unauthenticated CI run reported
+// every entry as HEAD_UNREADABLE and the log named no cause.
+const brokenGh = (() => {
+  const badDir = mkdtempSync(join(tmpdir(), 'badgh-'))
+  writeFileSync(
+    join(badDir, 'gh'),
+    '#!/usr/bin/env node\nprocess.stderr.write("gh: authentication required")\nprocess.exit(1)\n',
+    { mode: 0o755 },
+  )
+  return spawnSync(process.execPath, [SCRIPT, '--limit', '1'], {
+    input: oneRepo,
+    encoding: 'utf8',
+    env: { ...process.env, PATH: `${badDir}:${process.env.PATH}`, CENSUS_MODEL_CLI: '/nonexistent' },
+    timeout: 60_000,
+  })
+})()
+check(
+  'a failing gh command reports its stderr',
+  /gh failed: .*authentication required/.test(String(brokenGh.stderr)),
+  String(brokenGh.stderr).split('\n').slice(0, 3).join(' | '),
+)
+
 process.stdout.write(
   failures === 0
     ? `\nall ${checks} review controls behaved as specified\n`

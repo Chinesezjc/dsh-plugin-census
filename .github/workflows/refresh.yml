@@ -284,6 +284,11 @@ jobs:
         id: review
         continue-on-error: true
         env:
+          # The reviewer reads each repository's head commit, README and tree
+          # through `gh api`, so it needs the same token as every other step.
+          # Without it every review failed as HEAD_UNREADABLE in 0.7 seconds,
+          # which looked like a model problem and was an auth problem.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
           CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
           CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}

@@ -100,6 +100,9 @@ language of the documentation, or how recently it was pushed. A small plugin
 that does one thing properly is a 4, not a 2 — score depth of execution, not
 size of scope.`
 
+/** Reported command failures, capped so one broken run does not flood the log. */
+let commandFailures = 0
+
 /**
  * Run a command and capture stdout.
  * @param cmd - executable.
@@ -113,7 +116,17 @@ function run(cmd, args, input) {
       cmd,
       args,
       { maxBuffer: 32 * 1024 * 1024, timeout: 180_000 },
-      (error, stdout) => resolve(error ? null : String(stdout)),
+      (error, stdout, stderr) => {
+        // Report the first few failures. Discarding stderr made an unauthenticated
+        // `gh` indistinguishable from a repository that had genuinely vanished:
+        // a CI run failed all 20 reviews as HEAD_UNREADABLE in 0.7 seconds and
+        // the log said nothing about the missing token.
+        if (error && commandFailures < 3) {
+          commandFailures += 1
+          process.stderr.write(`  ${cmd} failed: ${String(stderr).trim().slice(0, 200)}\n`)
+        }
+        resolve(error ? null : String(stdout))
+      },
     )
     if (input !== undefined && child.stdin) {
       child.stdin.end(input)
