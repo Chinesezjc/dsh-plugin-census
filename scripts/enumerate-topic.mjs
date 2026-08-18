@@ -40,6 +40,15 @@ const PAGE_SIZE = 100
 const STAR_BUCKETS = ['stars:0', 'stars:1', 'stars:2..3', 'stars:4..10', 'stars:11..50', 'stars:>50']
 
 /**
+ * How many times a bucket may be split before its remainder is read capped.
+ *
+ * Star bucket -> creation day -> creation hour. The third level exists because
+ * `stars:0` held 2131 repositories created on a *single day*, which a date split
+ * cannot divide any further at day resolution.
+ */
+const MAX_SHARD_DEPTH = 3
+
+/**
  * Set when a search call fails because the allowance is spent, so the shard loop
  * can stop instead of failing every remaining shard identically. Declared before
  * `search` reads it: a `let` used above its declaration passes `node --check`
@@ -135,7 +144,14 @@ async function shard(base, depth = 0) {
   if (total === null) return { queries: [], oversized: [{ query: base, total: null }] }
   if (total === 0) return { queries: [], oversized: [] }
   if (total <= RESULT_CAP) return { queries: [{ query: base, total }], oversized: [] }
-  if (depth >= 2) return { queries: [], oversized: [{ query: base, total }] }
+  if (depth >= MAX_SHARD_DEPTH) {
+    // Still over the cap with no split left to try. Keep the query anyway: it
+    // reaches RESULT_CAP of its `total`, and dropping it discarded those results
+    // entirely. Run 32098089814 refused at 47.1% coverage because two `stars:0`
+    // shards of 2131 each were dropped rather than partially read — about 2000
+    // reachable repositories discarded to avoid reporting a partial bucket.
+    return { queries: [{ query: base, total, capped: true }], oversized: [{ query: base, total }] }
+  }
 
   // Find the date span this bucket actually occupies, then split it.
   const oldest = await search(`${base} sort:created-asc`, 1)
@@ -146,12 +162,12 @@ async function shard(base, depth = 0) {
     return { queries: [], oversized: [{ query: base, total }] }
   }
 
-  const days = []
-  for (let day = new Date(first); day <= new Date(last); day.setUTCDate(day.getUTCDate() + 1)) {
-    days.push(day.toISOString().slice(0, 10))
-  }
-  // Everything before the first observed day, so nothing falls outside the plan.
-  const spans = [`created:<${first}`, ...days.map((day) => `created:${day}`)]
+  // A bucket already narrowed to one day cannot be divided by date again, and
+  // this topic puts thousands of repositories into single days. GitHub accepts a
+  // full timestamp in a range, so split that day into hour windows instead.
+  const spans = first === last && /created:/.test(base)
+    ? hourSpans(first)
+    : daySpans(first, last)
 
   const queries = []
   const oversized = []
@@ -161,6 +177,49 @@ async function shard(base, depth = 0) {
     oversized.push(...nested.oversized)
   }
   return { queries, oversized }
+}
+
+/**
+ * Build day-resolution creation spans covering `first` through `last`.
+ * @param first - earliest observed creation date, `YYYY-MM-DD`.
+ * @param last - latest observed creation date, `YYYY-MM-DD`.
+ * @returns qualifier strings.
+ */
+function daySpans(first, last) {
+  const days = []
+  for (let day = new Date(first); day <= new Date(last); day.setUTCDate(day.getUTCDate() + 1)) {
+    days.push(day.toISOString().slice(0, 10))
+  }
+  // Everything before the first observed day, so nothing falls outside the plan.
+  return [`created:<${first}`, ...days.map((day) => `created:${day}`)]
+}
+
+/**
+ * Build six four-hour creation windows covering one UTC day.
+ *
+ * Four hours rather than one keeps the query count down: a single day of this
+ * topic splits into six shards instead of twenty-four, and each is well under
+ * the cap at the observed density.
+ *
+ * GitHub's `created:a..b` range is inclusive at both ends, so each window ends
+ * one second before the next begins rather than on the shared hour. Using the
+ * hour itself at both ends would return repositories created exactly on the
+ * boundary twice; the enumerator deduplicates by name, but a double-counted
+ * `total` would inflate the coverage figure that decides whether to publish.
+ *
+ * @param day - the day to split, `YYYY-MM-DD`.
+ * @returns six qualifier strings whose union is exactly that day.
+ */
+function hourSpans(day) {
+  const at = (hour, minute, second) =>
+    `${day}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}Z`
+  const spans = []
+  for (let hour = 0; hour < 24; hour += 4) {
+    const endHour = hour + 4
+    const end = endHour >= 24 ? at(23, 59, 59) : at(endHour - 1, 59, 59)
+    spans.push(`created:${at(hour, 0, 0)}..${end}`)
+  }
+  return spans
 }
 
 /**

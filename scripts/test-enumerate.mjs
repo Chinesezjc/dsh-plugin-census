@@ -205,6 +205,46 @@ check(
   planned.lines.slice(0, 2).join(' | '),
 )
 
+// Hour-window splitting. A day-resolution split cannot divide a bucket whose
+// repositories were all created on one day, and this topic puts thousands into
+// single days. The six windows must partition the day exactly: a gap loses
+// repositories, an overlap inflates the `total` that decides whether to publish.
+const hourSpans = (() => {
+  const match = SOURCE.match(/function hourSpans\(day\) \{[\s\S]*?\n\}/)
+  if (!match) return null
+  // eslint-disable-next-line no-eval
+  return eval(`(${match[0].replace('function hourSpans', 'function')})`)
+})()
+check('hourSpans is defined', typeof hourSpans === 'function')
+if (typeof hourSpans === 'function') {
+  const spans = hourSpans('2026-08-17')
+  check('a day splits into six windows', spans.length === 6, `${spans.length}`)
+  const bounds = spans.map((x) => {
+    const g = x.match(/created:(.+)\.\.(.+)$/)
+    return [Date.parse(g[1]), Date.parse(g[2])]
+  })
+  check(
+    'the windows partition the day with no gap and no overlap',
+    bounds.every(([, end], i) => i === 0 || end === undefined || bounds[i][0] - bounds[i - 1][1] === 1000),
+    bounds.map(([a2, b2], i) => (i === 0 ? '' : `${(bounds[i][0] - bounds[i - 1][1]) / 1000}s`)).join(','),
+  )
+  check(
+    'the windows cover the whole day',
+    bounds[0][0] === Date.parse('2026-08-17T00:00:00Z')
+      && bounds[5][1] === Date.parse('2026-08-17T23:59:59Z'),
+    `${spans[0]} .. ${spans[5]}`,
+  )
+}
+
+// An unsplittable oversized bucket must still be read up to the cap rather than
+// dropped: dropping two 2131-repository shards is what refused run 32098089814
+// at 47.1% coverage.
+check(
+  'a bucket that cannot be split further is still queried',
+  /capped: true/.test(SOURCE) && !/if \(depth >= MAX_SHARD_DEPTH\) return \{ queries: \[\]/.test(SOURCE),
+  'the depth limit must keep the query, not discard it',
+)
+
 // Pacing: with a real interval, consecutive search calls must be separated by
 // roughly that interval. The search API allows 30 per minute and nothing paced
 // these calls before, which is what actually spent the pool in every failed run.
