@@ -40,6 +40,14 @@ const PAGE_SIZE = 100
 const STAR_BUCKETS = ['stars:0', 'stars:1', 'stars:2..3', 'stars:4..10', 'stars:11..50', 'stars:>50']
 
 /**
+ * Set when a search call fails because the allowance is spent, so the shard loop
+ * can stop instead of failing every remaining shard identically. Declared before
+ * `search` reads it: a `let` used above its declaration passes `node --check`
+ * and throws only at runtime, which has already happened twice in this project.
+ */
+let rateLimited = false
+
+/**
  * Run one `gh api` search call.
  * @param query - the full `q=` value, already URL-safe.
  * @param page - 1-based page number.
@@ -50,7 +58,16 @@ function search(query, page = 1) {
   return new Promise((resolve) => {
     execFile('gh', ['api', path], { maxBuffer: 32 * 1024 * 1024 }, (error, stdout, stderr) => {
       if (error) {
-        process.stderr.write(`  search failed (${query} p${page}): ${String(stderr).trim().slice(0, 160)}\n`)
+        const message = String(stderr).trim()
+        process.stderr.write(`  search failed (${query} p${page}): ${message.slice(0, 160)}\n`)
+        // A spent search allowance fails every remaining shard the same way, so
+        // continuing turns one exhausted pool into a sample that looks like a
+        // deliberate one. Run 32097129800 kept going through 8 of 9 shards and
+        // enumerated 100 of 6842 repositories before the coverage check caught
+        // it. Recording the cause lets the caller stop at the first occurrence.
+        if (/rate limit|secondary rate|abuse detection/i.test(message)) {
+          rateLimited = true
+        }
         return resolve(null)
       }
       try {
@@ -187,6 +204,13 @@ async function main() {
       emitted += 1
     }
     process.stderr.write(`  [${index + 1}/${plan.length}] ${entry.query} -> ${records.length} fetched, ${emitted} unique so far\n`)
+    if (rateLimited) {
+      process.stderr.write(
+        `\nstopping after shard ${index + 1} of ${plan.length}: the search allowance is spent,`
+        + ' so every remaining shard would fail the same way. Re-run once it resets.\n',
+      )
+      break
+    }
   }
 
   const coverage = reported === null || reported === 0 ? null : emitted / reported
@@ -196,8 +220,14 @@ async function main() {
   // The point of sharding is coverage; a run that quietly collapses back toward
   // the single-query cap has failed at its only job.
   if (coverage !== null && coverage < 0.5) {
-    process.stderr.write('refusing this enumeration: coverage below 50% means sharding did not work,'
-      + ' and publishing it would repeat the single-query sample under a new name\n')
+    process.stderr.write(
+      rateLimited
+        ? 'refusing this enumeration: the search allowance was spent partway through, so this is'
+          + ' a fragment of the topic rather than a sample of it. This is an allowance failure,'
+          + ' not an ecosystem change — re-run once the search pool resets.\n'
+        : 'refusing this enumeration: coverage below 50% means sharding did not work,'
+          + ' and publishing it would repeat the single-query sample under a new name\n',
+    )
     process.exit(1)
   }
 }

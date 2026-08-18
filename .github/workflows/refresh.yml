@@ -59,6 +59,11 @@ jobs:
       - name: Verify the probe queue never orders work by stars
         run: node scripts/test-queue.mjs
 
+      # An exhausted search allowance fails every shard identically, so a
+      # fragment of the topic comes out shaped like a deliberate sample.
+      - name: Verify enumeration refuses a fragment of the topic
+        run: node scripts/test-enumerate.mjs
+
       # The review run itself needs model credentials and does not execute here.
       # These controls drive the reviewer against a stub model and a stub `gh`,
       # so they check the guarantees that do not depend on a live model: a failed
@@ -112,16 +117,36 @@ jobs:
       # TREE_UNREADABLE for all 998 repositories. The probe now refuses that
       # output rather than publishing it, but failing before spending what is
       # left is better than failing after.
+      #
+      # `core` and `search` are separate pools and both are load-bearing here:
+      # enumeration spends `search` (30/minute, and the sharded enumeration
+      # issues ~26 queries back to back), while probing and attribution spend
+      # `core`. Checking only `core` let run 32097129800 pass this step and then
+      # fail enumeration with "API rate limit exceeded" on 8 of 9 shards,
+      # enumerating 100 of 6842 repositories. Both are checked now.
       - name: Check the API allowance before spending it
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          remaining=$(gh api rate_limit --jq '.resources.core.remaining')
-          reset=$(gh api rate_limit --jq '.resources.core.reset')
-          echo "core allowance remaining: ${remaining}"
-          if [ "${remaining}" -lt 2500 ]; then
-            wait_min=$(( (reset - $(date +%s) + 59) / 60 ))
-            echo "::error::only ${remaining} core calls left; a full refresh needs roughly 2500. The allowance resets in about ${wait_min} minute(s)."
+          limits=$(gh api rate_limit)
+          core=$(printf '%s' "${limits}" | jq -r '.resources.core.remaining')
+          core_reset=$(printf '%s' "${limits}" | jq -r '.resources.core.reset')
+          search=$(printf '%s' "${limits}" | jq -r '.resources.search.remaining')
+          search_reset=$(printf '%s' "${limits}" | jq -r '.resources.search.reset')
+          echo "core allowance remaining:   ${core}"
+          echo "search allowance remaining: ${search}"
+          if [ "${core}" -lt 2500 ]; then
+            wait_min=$(( (core_reset - $(date +%s) + 59) / 60 ))
+            echo "::error::only ${core} core calls left; a full refresh needs roughly 2500. The allowance resets in about ${wait_min} minute(s)."
+            exit 1
+          fi
+          # Sharded enumeration issues roughly 26 search queries; refuse below a
+          # margin over that rather than discovering the shortfall mid-shard,
+          # where the result is a partial sample that looks like a real one.
+          if [ "${search}" -lt 20 ]; then
+            wait_sec=$(( search_reset - $(date +%s) ))
+            [ "${wait_sec}" -lt 0 ] && wait_sec=0
+            echo "::error::only ${search} search calls left; sharded enumeration needs about 26. The search allowance resets in about ${wait_sec} second(s)."
             exit 1
           fi
 
