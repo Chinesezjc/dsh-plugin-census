@@ -203,19 +203,31 @@ in the script, and every review records the commit SHA it read, the SHA of the
 README bytes it was shown, and the prompt version that produced it, so any score
 can be re-derived from that exact commit.
 
-Over the first 40 reviews (seed `20260817`):
+A published score is the **mean of repeated samples**, not a single verdict. Each
+run re-draws its sample, so an entry drawn again is scored again and the scores
+accumulate; the record carries the mean, the number of runs, and every raw score.
+Samples taken under a different prompt version or against a different commit are
+discarded rather than averaged in.
+
+This is a correction, not a refinement. Scoring once and never re-asking assumed
+the verdict is a function of the content. It is not: `dsh-toolkit` and `dsh-TUI`
+once scored 4 and 3 on an identical commit SHA and identical README bytes, and
+the first entry to be drawn twice under the new mechanism
+(`wangzhuo-coding/geo-content-optimizer`) scored 5 then 4 on unchanged bytes.
+
+Over 79 reviewed entries, by mean score:
 
 | Score | Meaning | Count | Share |
 | --- | --- | --- | --- |
-| 5 | substantial, documented, tested | 23 | 57.5% |
-| 4 | solid and usable | 17 | 42.5% |
-| 3 | ordinary, thin, undocumented | 0 | 0% |
+| 5 | substantial, documented, tested | 46 | 58.2% |
+| 4 | solid and usable | 31 | 39.2% |
+| 3 | ordinary, thin, undocumented | 2 | 2.5% |
 | 2 | barely a plugin | 0 | 0% |
 | 1 | empty or broken | 0 | 0% |
 
 **This distribution is the finding, and it makes the score nearly useless as a
-filter.** Nothing scored below 4. Two explanations were tested and only one
-survived:
+filter.** Almost nothing scores below 4. Two explanations were tested and only
+one survived:
 
 - *The rubric cannot reach low scores.* False. Given a synthetic 3-file plugin
   with an 18-byte README and no dependencies, the same prompt returns 2.
@@ -234,11 +246,17 @@ bad proxies for depth**, which is the reason a model is asked at all.
 Sampling is star-neutral by construction, because an earlier version of this
 feature was not: selecting the catalogue head drew a sample averaging 1055 stars
 from a catalogue averaging 26 and containing none of its 326 zero-star entries.
-Selection is now a seeded shuffle over repository names. The published sample has
-median 1 star against the catalogue's median 1, includes 14 zero-star entries of
-40, and correlates with stars at Spearman 0.22.
+Selection is now a seeded shuffle over repository names, re-drawn per run. The
+published sample has median 2 stars and includes 21 zero-star entries of 79.
 
-Coverage is 40 of 1167. A failed review is recorded with `reviewed: false` and no
+**How far these scores drift is not yet known.** Both entries ever sampled twice
+disagreed by one point, which is a direction rather than a measurement. Drift
+data accumulates only where two draws collide, and two 20-entry draws from 1167
+overlap by 0.34 entries on average, so a usable figure needs on the order of 60
+runs. Until then, treat a single-run score (`runs: 1`) as one sample of a noisy
+judgement, and prefer entries with a higher `runs` count.
+
+Coverage is 79 of 1167. A failed review is recorded with `reviewed: false` and no
 score, and a run in which more than 30% of reviews fail exits non-zero rather
 than publishing a transport failure as an opinion about someone's code.
 
@@ -261,7 +279,8 @@ node scripts/installability.mjs < data/contract.jsonl > data/installability.json
 node scripts/scan-decay.mjs < data/catalog.jsonl > data/decay.jsonl
 
 # 6. model quality review (needs a model CLI; CENSUS_MODEL_CLI overrides `claude`)
-node scripts/ai-review.mjs --limit 40 --seed 20260817 \
+# change the seed between runs: draws overlap, and overlapping entries average
+node scripts/ai-review.mjs --limit 20 --seed 1 \
   --existing data/reviews.jsonl < data/catalog.jsonl > data/reviews.next.jsonl
 
 # 7. negative controls for every gate
@@ -293,7 +312,7 @@ suite turns red.
 | `data/installability-v3.jsonl` | npm resolution and reserved-scope verdicts |
 | `data/catalog.jsonl` | joined, classified catalogue |
 | `data/decay.jsonl` | per-entry decay state |
-| `data/reviews.jsonl` | model quality scores, pinned to a commit and prompt version |
+| `data/reviews.jsonl` | model quality scores (mean, run count, raw samples), pinned to a commit and prompt version |
 
 The search API returns at most 1000 results per query. `scripts/enumerate-topic.mjs`
 shards around that ceiling by star bucket and then by creation day, reaching

@@ -22,12 +22,22 @@
  *    produced a distribution skewed high. Selection here is a seeded shuffle, so
  *    it is reproducible, independent of popularity, and changes with the seed.
  *
- * 3. Reuse is keyed on content, not on repository. A stored review is reused
- *    only when the commit SHA, the README SHA and the prompt version all match.
- *    Any change to the code being judged or to the question being asked forces a
- *    fresh review.
+ * 3. A score is an average of repeated samples, not a single verdict. Every run
+ *    re-draws its sample, so a repository drawn again is scored again and the
+ *    scores accumulate. This is the correction to a real defect: `dsh-toolkit`
+ *    and `dsh-TUI` once scored 4 and 3 on an identical commit SHA and identical
+ *    README bytes, so one sample of this judgement is not the judgement. Each
+ *    record publishes the mean, the number of runs, and every raw score, so a
+ *    reader can see which entries are stable and which are one guess.
  *
- *   node scripts/ai-review.mjs --limit 40 --seed 20260817 \
+ *    Samples taken under a different prompt version, or against a different
+ *    commit, are discarded rather than averaged in: they answer a different
+ *    question or describe different code.
+ *
+ * Each run draws `--limit` entries; change `--seed` between runs so the draws
+ * overlap partially, widening coverage while deepening the entries drawn again:
+ *
+ *   node scripts/ai-review.mjs --limit 20 --seed 1 \
  *     --existing data/reviews.jsonl < data/catalog.jsonl > data/reviews.next.jsonl
  */
 
@@ -322,7 +332,42 @@ async function review(entry) {
 }
 
 /**
- * Read stored reviews, keyed for content-sensitive reuse.
+ * Combine a new review with whatever was stored for the same repository.
+ *
+ * Averaging is only valid across samples of the same question about the same
+ * code, so a stored record is carried forward only when its prompt version and
+ * commit SHA match the new one. Otherwise the new sample replaces it: mixing a
+ * score for an older commit into the mean would report an average of two
+ * different repositories' states as one number.
+ *
+ * @param prior - stored record, or undefined.
+ * @param record - the review just produced, known to be `reviewed`.
+ * @returns a record carrying `scores`, `runs`, and `score` as the mean.
+ */
+function mergeReview(prior, record) {
+  const comparable = prior?.reviewed
+    && prior.promptVersion === record.promptVersion
+    && prior.commitSha === record.commitSha
+  const previous = comparable
+    ? (Array.isArray(prior.scores) ? prior.scores : [prior.score]).filter(Number.isInteger)
+    : []
+  const scores = [...previous, record.score]
+  const mean = scores.reduce((sum, value) => sum + value, 0) / scores.length
+  return {
+    ...record,
+    // The published score is the mean; the raw samples stay alongside it so the
+    // number is auditable rather than merely reported.
+    score: mean,
+    scores,
+    runs: scores.length,
+    // Reasons come from the latest sample. Keeping every run's reasons would
+    // grow without bound and they describe the same commit.
+    reasons: record.reasons,
+  }
+}
+
+/**
+ * Read stored reviews, so repeated samples of the same entry can be averaged.
  * @param path - JSONL path.
  * @returns map from repo to stored record.
  */
@@ -379,48 +424,54 @@ async function main() {
   if (dropped > 0) process.stderr.write(`dropped ${dropped} duplicate input row(s)\n`)
 
   const stored = loadExisting(opts.existing)
-  const ordered = seededShuffle([...byRepo.values()], opts.seed)
 
-  // Prefer entries with no usable stored review, so repeated runs widen coverage
-  // instead of re-reviewing the same head of the shuffle.
-  const fresh = []
-  const reusable = []
-  for (const entry of ordered) {
-    const prior = stored.get(entry.repo)
-    if (prior?.reviewed && prior.promptVersion === PROMPT_VERSION) reusable.push({ entry, prior })
-    else fresh.push(entry)
-  }
+  // Draw this run's sample. Every run re-draws: a repository already reviewed is
+  // reviewed AGAIN and its scores are averaged, rather than being skipped.
+  //
+  // Skipping was the earlier behaviour and it was wrong. It assumed the score is
+  // a function of the content, so re-asking could only waste an API call. That
+  // assumption was already falsified in this project: `dsh-toolkit` and `dsh-TUI`
+  // scored 4 and 3 on an identical commit SHA and identical README bytes. A
+  // single sample of a non-deterministic judgement was published as if it were
+  // the judgement.
+  const ordered = seededShuffle([...byRepo.values()], opts.seed)
+  const sample = ordered.slice(0, opts.limit)
 
   const results = []
   let attempted = 0
   let unreviewed = 0
-  let reused = 0
+  let repeated = 0
 
-  for (const entry of fresh.slice(0, opts.limit)) {
+  for (const entry of sample) {
     attempted += 1
     const record = await review(entry)
-    if (!record.reviewed) unreviewed += 1
-    results.push(record)
+    if (!record.reviewed) {
+      unreviewed += 1
+      results.push(record)
+      process.stderr.write(`FAILED ${record.failure}  ${entry.repo}\n`)
+      continue
+    }
+    const prior = stored.get(entry.repo)
+    const merged = mergeReview(prior, record)
+    if (merged.runs > 1) repeated += 1
+    results.push(merged)
     process.stderr.write(
-      `${record.reviewed ? `score ${record.score}` : `FAILED ${record.failure}`}  ${entry.repo}\n`,
+      `score ${record.score}  ${entry.repo}`
+        + (merged.runs > 1
+          ? `  (run ${merged.runs}: [${merged.scores.join(',')}] mean ${merged.score.toFixed(2)})`
+          : '')
+        + '\n',
     )
   }
 
-  // Carry forward stored reviews whose pinned content still matches.
-  for (const { entry, prior } of reusable) {
-    const head = await headCommit(entry.repo)
-    if (head && head.sha === prior.commitSha) {
-      results.push(prior)
-      reused += 1
-      continue
-    }
-    attempted += 1
-    const record = await review(entry)
-    if (!record.reviewed) unreviewed += 1
-    results.push(record)
-    process.stderr.write(
-      `${record.reviewed ? `rescored ${record.score}` : `FAILED ${record.failure}`}  ${entry.repo} (moved)\n`,
-    )
+  // Carry forward every stored review not drawn this time, so output remains the
+  // complete record rather than only this run's sample.
+  const drawn = new Set(sample.map((entry) => entry.repo))
+  let carried = 0
+  for (const [repo, prior] of stored) {
+    if (drawn.has(repo)) continue
+    results.push(prior)
+    carried += 1
   }
 
   for (const record of results) process.stdout.write(`${JSON.stringify(record)}\n`)
@@ -429,9 +480,19 @@ async function main() {
   const mean = scored.length
     ? (scored.reduce((sum, r) => sum + r.score, 0) / scored.length).toFixed(2)
     : 'n/a'
+  const multi = scored.filter((r) => (r.runs ?? 1) > 1)
   process.stderr.write(
-    `\nreviewed ${scored.length}, reused ${reused}, failed ${unreviewed} of ${attempted} attempted; mean ${mean}\n`,
+    `\nreviewed ${attempted - unreviewed} of ${attempted} drawn`
+      + ` (${repeated} repeat, ${carried} carried forward), failed ${unreviewed}\n`
+      + `catalogue coverage ${scored.length}; mean of published scores ${mean}\n`,
   )
+  if (multi.length > 0) {
+    const spread = multi.filter((r) => Math.max(...r.scores) !== Math.min(...r.scores))
+    process.stderr.write(
+      `${multi.length} entr(y/ies) have more than one sample;`
+        + ` ${spread.length} disagree across runs\n`,
+    )
+  }
 
   // A run that mostly failed describes the runner, not the ecosystem.
   if (attempted > 0 && unreviewed / attempted > MAX_UNREVIEWED_SHARE) {

@@ -97,13 +97,21 @@ check(
 )
 
 check(
-  'reuse is keyed on prompt version',
-  /prior\.promptVersion === PROMPT_VERSION/.test(SOURCE),
+  'averaging is gated on the prompt version',
+  /prior\.promptVersion === record\.promptVersion/.test(SOURCE),
+  'samples answering a different question must not be averaged together',
 )
 
 check(
-  'reuse is keyed on the pinned commit sha',
-  /head\.sha === prior\.commitSha/.test(SOURCE),
+  'averaging is gated on the pinned commit sha',
+  /prior\.commitSha === record\.commitSha/.test(SOURCE),
+  'samples describing different code must not be averaged together',
+)
+
+check(
+  'a drawn entry is re-reviewed rather than skipped',
+  !/reusable\.push/.test(SOURCE) && /const sample = ordered\.slice/.test(SOURCE),
+  'skipping an already-scored entry makes repeated sampling impossible',
 )
 
 check(
@@ -217,9 +225,45 @@ const reuse = runWithGh(`#!/usr/bin/env node
 process.stdout.write('{"score": 5, "reasons": ["fresh"]}')
 `, { existing: `${storedSame}\n` })
 check(
-  'a stored review at the same sha is reused, not re-scored',
-  reuse.records[0]?.score === 2 && /reused 1/.test(String(reuse.stderr)),
-  `${JSON.stringify(reuse.records[0] ?? '')} / ${reuse.stderr}`,
+  'a second sample at the same sha is averaged with the first',
+  reuse.records[0]?.score === 3.5
+    && JSON.stringify(reuse.records[0]?.scores) === '[2,5]'
+    && reuse.records[0]?.runs === 2,
+  JSON.stringify(reuse.records[0] ?? reuse.stderr),
+)
+check(
+  'the published score is the mean of the raw samples',
+  (() => {
+    const r = reuse.records[0]
+    if (!r?.scores) return false
+    const mean = r.scores.reduce((sum, v) => sum + v, 0) / r.scores.length
+    return Math.abs(r.score - mean) < 1e-9
+  })(),
+  JSON.stringify(reuse.records[0] ?? ''),
+)
+check(
+  'disagreement across runs is reported',
+  /1 disagree across runs/.test(String(reuse.stderr)),
+  String(reuse.stderr).split('\n').slice(-3).join(' | '),
+)
+
+// A third sample must extend the same list rather than restarting it.
+const storedTwice = JSON.stringify({
+  repo: 'o/p',
+  reviewed: true,
+  score: 3,
+  scores: [2, 4],
+  runs: 2,
+  commitSha: 'a'.repeat(40),
+  promptVersion: 'v1',
+})
+const third = runWithGh(`#!/usr/bin/env node
+process.stdout.write('{"score": 3, "reasons": ["third"]}')
+`, { existing: `${storedTwice}\n` })
+check(
+  'a third sample extends the existing list',
+  JSON.stringify(third.records[0]?.scores) === '[2,4,3]' && third.records[0]?.runs === 3,
+  JSON.stringify(third.records[0] ?? third.stderr),
 )
 
 const storedOldPrompt = JSON.stringify({
@@ -233,8 +277,8 @@ const bumped = runWithGh(`#!/usr/bin/env node
 process.stdout.write('{"score": 5, "reasons": ["fresh"]}')
 `, { existing: `${storedOldPrompt}\n` })
 check(
-  'a stored review from an older prompt version is re-scored',
-  bumped.records[0]?.score === 5,
+  'a sample from an older prompt version is discarded, not averaged',
+  bumped.records[0]?.score === 5 && JSON.stringify(bumped.records[0]?.scores) === '[5]',
   JSON.stringify(bumped.records[0] ?? bumped.stderr),
 )
 
@@ -249,8 +293,8 @@ const moved = runWithGh(`#!/usr/bin/env node
 process.stdout.write('{"score": 5, "reasons": ["fresh"]}')
 `, { existing: `${storedMoved}\n` })
 check(
-  'a stored review at a different sha is re-scored',
-  moved.records[0]?.score === 5,
+  'a sample against a different commit is discarded, not averaged',
+  moved.records[0]?.score === 5 && JSON.stringify(moved.records[0]?.scores) === '[5]',
   JSON.stringify(moved.records[0] ?? moved.stderr),
 )
 
