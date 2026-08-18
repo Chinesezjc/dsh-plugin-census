@@ -19,14 +19,15 @@ The [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic held **6081**
 repositories on 2026-08-17, up from 1064 three days earlier. GitHub sorts topic
 pages by stars, and the most-starred entries are the least likely to be plugins.
 
-Measured over a 999-repository sample (the search API's per-query ceiling):
+Measured over a 998-repository sample (the search API returns at most 1000 rows
+per query; 2 were duplicates):
 
 | Stars | Satisfies the plugin contract |
 | --- | --- |
 | 0 | 76.3% |
 | 1-2 | 79.1% |
 | 3-9 | 77.0% |
-| 10-49 | 76.2% |
+| 10-49 | 76.3% |
 | 50+ | **52.7%** |
 | all | 75.5% |
 
@@ -60,7 +61,7 @@ All 998 probed repositories, by verdict:
 
 `VENDORED_HARNESS` marks a repository that ships a copy of the harness rather
 than a plugin: it satisfies the contract because it *contains* DSH's own bundle
-packages. All six have `fork: false`, so they are source copies that neither an
+packages. All five have `fork: false`, so they are source copies that neither an
 owner check nor a fork check detects; they are identified by first-party package
 name. The largest is `fufankeji/deepseek-harness-studio` at 208 stars.
 
@@ -78,8 +79,8 @@ scripts are included so the reading can be retaken rather than trusted.
 
 The scheduled workflow demonstrates this directly: a run a few hours after the
 figures above were written produced a catalogue of 742 rather than 763 entries
-from the same 999-repository ceiling. Nothing in the probe changed between them —
-the topic's most-recently-updated 999 repositories were simply a different set.
+from the same per-query ceiling. Nothing in the probe changed between them —
+the topic's most-recently-updated page was simply a different set.
 
 ## What "contract-verified" means
 
@@ -95,23 +96,29 @@ failure the loader would raise:
 
 Only `PARSED` entries are listed as plugins.
 
-**Honest limit:** tiers 2 and 3 reject little in practice — 11 of 772 tier-1
-passers fail them. Static verification is close to exhausted at tier 1, and the
-remaining uncertainty can only be resolved by installing a plugin. Install
-verification is not implemented; nothing here claims a plugin runs.
+**Honest limit:** tiers 2 and 3 reject little in practice — 4 of the 757
+repositories that declare a patch fail them (2 at `RESOLVED`, 2 at `PARSED`).
+Static verification is close to exhausted at tier 1, and the remaining
+uncertainty can only be resolved by installing a plugin. Install verification is
+not implemented; nothing here claims a plugin runs.
 
 ## Surface attribution
 
 Each verified plugin is attributed to the surface it extends, with the evidence
 ranked by strength and the confidence published alongside:
 
-- **high** — depends on `@deepseek-ai/dsh-client-*` (client) or
-  `@deepseek-ai/dsh-host-*` and host-only packages (host).
-- **low** — no `@deepseek-ai/*` dependency at all; attributed from name and
-  description keywords. 303 of 753 (40.2%) fall here, against 414 attributed
-  from dependency evidence and 36 partially attributed.
+| Confidence | Basis | Count | Share |
+| --- | --- | --- | --- |
+| `high` | depends on `@deepseek-ai/dsh-client-*` (client) or `@deepseek-ai/dsh-host-*` and host-only packages (host) | 414 | 55.0% |
+| `medium` | depends on `@deepseek-ai/*`, but no dependency distinguishes client from host — surface `indeterminate` | 36 | 4.8% |
+| `low` | no `@deepseek-ai/*` dependency; surface guessed from a name or description keyword | 210 | 27.9% |
+| `none` | no dependency evidence and no keyword match — **not attributed at all** | 93 | 12.4% |
 
-A low-confidence attribution is a guess and is labelled as one.
+Only the 450 `high` and `medium` rows rest on dependency evidence. A `low`
+attribution is a guess from a word in the repository name and is labelled as
+one. A `none` row carries surface `indeterminate` and empty evidence: it is an
+absence of attribution, not a weak attribution, and it should not be read as a
+statement about the plugin.
 
 ## Installability
 
@@ -125,9 +132,11 @@ anything:
 | `git-only` | absent from npm; installable from a Git specifier | 363 |
 | `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 5 |
 
-A further six repositories carry `@deepseek-ai/dsh-base` verbatim. They are not
-misnamed plugins but **vendored copies of the harness**, so they are classified
-`VENDORED_HARNESS` and excluded from the catalogue rather than counted here.
+A further five repositories in this sample carry `@deepseek-ai/dsh-base`
+verbatim (at least two more exist outside it: `my-dsh/oh-my-dsh` and
+`BenHuHuan/dhs-tuicode`). They are not misnamed plugins but **vendored copies of
+the harness**, so they are classified `VENDORED_HARNESS` and excluded from the
+catalogue rather than counted here.
 
 The blocked entries are listed separately in the catalogue. They satisfy the
 bundle contract, but only the DeepSeek organisation can publish to the
@@ -214,9 +223,10 @@ suite turns red.
 | `data/catalog.jsonl` | joined, classified catalogue |
 | `data/decay.jsonl` | per-entry decay state |
 
-The search API returns at most 1000 results per query, so the sample is 999
-unique repositories out of 6081 reported — the shortfall is an API ceiling, not
-filtering. Entries are sampled by most-recently-updated.
+The search API returns at most 1000 results per query, and 2 of the 1000 rows
+returned were duplicates, so the sample is 998 unique repositories out of 6081
+reported — the shortfall is an API ceiling, not filtering. Entries are sampled by
+most-recently-updated.
 
 ## Related projects
 
@@ -252,16 +262,17 @@ What remains distinct here:
 - **Unsolicited coverage.** Both projects above examine repositories that are
   submitted to them. This one probes a topic-wide sample regardless of whether
   anyone submitted it, so it measures the ecosystem rather than its inbox.
-- **Vendored-harness detection.** Six repositories carry `@deepseek-ai/dsh-base`
-  verbatim with `fork: false`. They pass a contract check by containing DSH's own
-  packages, and neither an owner check nor a fork check sees them.
+- **Vendored-harness detection.** Five repositories in this sample carry
+  `@deepseek-ai/dsh-base` verbatim with `fork: false`, and more exist outside it.
+  They pass a contract check by containing DSH's own packages, and neither an
+  owner check nor a fork check sees them.
 - **Decay scanning that refuses to guess.** `scripts/scan-decay.mjs` reports
   `gone`, `archived`, `dormant` and `unbundled`, and reports an unreadable probe
   as `inconclusive` rather than as decay, because every decay state invites a
   deletion the evidence may not support.
 - **Published distributions of the whole sample** rather than a curated
   selection: verdict shares, star-band compliance, and installability across all
-  999 probed repositories, with the probe scripts included.
+  998 probed repositories, with the probe scripts included.
 
 A deeper per-repository audit exists but is **not published** — see
 [AUDIT-EXPERIMENTAL.md](AUDIT-EXPERIMENTAL.md). Its first implementation produced
