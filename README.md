@@ -19,20 +19,20 @@ The [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic held **6923**
 repositories on 2026-08-18, up from 1064 four days earlier. GitHub sorts topic
 pages by stars, and the most-starred entries are the least likely to be plugins.
 
-The topic is enumerated in full rather than sampled: <!-- census:begin n-enumerated -->7111<!-- census:end n-enumerated --> unique
+The topic is enumerated in full rather than sampled: <!-- census:begin n-enumerated -->7746<!-- census:end n-enumerated --> unique
 repositories, by sharding around the search API's 1000-result per-query ceiling.
 Contract probing then accumulates across runs, so the verdict figures below cover
-the <!-- census:begin n-probed -->2398<!-- census:end n-probed --> repositories probed so far:
+the <!-- census:begin n-probed -->3098<!-- census:end n-probed --> repositories probed so far:
 
 | Stars | Satisfies the plugin contract |
 | --- | --- |
 <!-- census:begin compliance-en -->
-| 0 | 69.4% |
-| 1-2 | 69.1% |
-| 3-9 | 75.2% |
-| 10-49 | 70.9% |
-| 50+ | **47.5%** |
-| all | 69.2% |
+| 0 | 64.7% |
+| 1-2 | 66.4% |
+| 3-9 | 76.8% |
+| 10-49 | 73.1% |
+| 50+ | **50.5%** |
+| all | 68.3% |
 <!-- census:end compliance-en -->
 
 Only the top band is depressed, and its contents explain why: the
@@ -49,31 +49,31 @@ subpackages, which the earlier one missed.
 
 ## Sample composition
 
-All <!-- census:begin n-probed -->2398<!-- census:end n-probed --> probed repositories, by verdict:
+All <!-- census:begin n-probed -->3098<!-- census:end n-probed --> probed repositories, by verdict:
 
 | Verdict | Count | Share |
 | --- | --- | --- |
 <!-- census:begin verdicts -->
-| `CONTRACT_OK` | 1660 | 69.2% |
-| `NO_DSH_FIELD` | 337 | 14.1% |
-| `NO_PACKAGE_JSON` | 233 | 9.7% |
-| `DSH_WITHOUT_BUNDLE_PATCH` | 145 | 6.0% |
-| `VENDORED_HARNESS` | 10 | 0.4% |
-| `PATCH_FILE_MISSING` | 4 | 0.2% |
+| `CONTRACT_OK` | 2116 | 68.3% |
+| `NO_DSH_FIELD` | 427 | 13.8% |
+| `NO_PACKAGE_JSON` | 314 | 10.1% |
+| `DSH_WITHOUT_BUNDLE_PATCH` | 209 | 6.7% |
+| `VENDORED_HARNESS` | 14 | 0.5% |
+| `PATCH_FILE_MISSING` | 5 | 0.2% |
+| `MALFORMED_PACKAGE_JSON` | 4 | 0.1% |
+| `PATCH_FILE_EMPTY_OR_INVALID` | 4 | 0.1% |
 | `BUNDLE_UNDETERMINED` | 2 | 0.1% |
-| `MALFORMED_PACKAGE_JSON` | 2 | 0.1% |
-| `PATCH_FILE_EMPTY_OR_INVALID` | 2 | 0.1% |
 | `TREE_UNREADABLE` | 2 | 0.1% |
 | `FIRST_PARTY_HARNESS` | 1 | 0.0% |
 <!-- census:end verdicts -->
 
 Probing accumulates: each run spends its API allowance on repositories never
 probed, then on the stalest, so this table covers a growing share of the
-<!-- census:begin n-enumerated -->7111<!-- census:end n-enumerated --> enumerated repositories rather than a fresh sample each time.
+<!-- census:begin n-enumerated -->7746<!-- census:end n-enumerated --> enumerated repositories rather than a fresh sample each time.
 
 `VENDORED_HARNESS` marks a repository that ships a copy of the harness rather
 than a plugin: it satisfies the contract because it *contains* DSH's own bundle
-packages. All <!-- census:begin n-vendored -->10<!-- census:end n-vendored --> have `fork: false`, so they are source copies that neither an
+packages. All <!-- census:begin n-vendored -->14<!-- census:end n-vendored --> have `fork: false`, so they are source copies that neither an
 owner check nor a fork check detects; they are identified by first-party package
 name. The largest is `fufankeji/deepseek-harness-studio` at 260 stars.
 
@@ -110,8 +110,8 @@ failure the loader would raise:
 
 Only `PARSED` entries are listed as plugins.
 
-**Honest limit:** tiers 2 and 3 reject little in practice — <!-- census:begin n-tier23-fail -->6<!-- census:end n-tier23-fail --> of the
-<!-- census:begin n-declared -->1666<!-- census:end n-declared --> repositories that declare a patch fail them.
+**Honest limit:** tiers 2 and 3 reject little in practice — <!-- census:begin n-tier23-fail -->9<!-- census:end n-tier23-fail --> of the
+<!-- census:begin n-declared -->2125<!-- census:end n-declared --> repositories that declare a patch fail them.
 Static verification is close to exhausted at tier 1, and the remaining
 uncertainty can only be resolved by installing a plugin. Install verification is
 not implemented; nothing here claims a plugin runs.
@@ -124,10 +124,10 @@ ranked by strength and the confidence published alongside:
 | Confidence | Basis | Count | Share |
 | --- | --- | --- | --- |
 <!-- census:begin surface-en -->
-| `high` | depends on `@deepseek-ai/dsh-client-*` (client) or `@deepseek-ai/dsh-host-*` and host-only packages (host) | 1009 | 60.8% |
-| `medium` | depends on `@deepseek-ai/*`, but no dependency distinguishes client from host — surface `indeterminate` | 67 | 4.0% |
-| `low` | no `@deepseek-ai/*` dependency; surface guessed from a name or description keyword | 411 | 24.8% |
-| `none` | no dependency evidence and no keyword match — **not attributed at all** | 173 | 10.4% |
+| `high` | depends on `@deepseek-ai/dsh-client-*` (client) or `@deepseek-ai/dsh-host-*` and host-only packages (host) | 1286 | 60.8% |
+| `medium` | depends on `@deepseek-ai/*`, but no dependency distinguishes client from host — surface `indeterminate` | 87 | 4.1% |
+| `low` | no `@deepseek-ai/*` dependency; surface guessed from a name or description keyword | 518 | 24.5% |
+| `none` | no dependency evidence and no keyword match — **not attributed at all** | 225 | 10.6% |
 <!-- census:end surface-en -->
 
 Only the 729 `high` and `medium` rows rest on dependency evidence. A `low`
@@ -145,12 +145,12 @@ anything:
 | Verdict | Meaning | Count |
 | --- | --- | --- |
 <!-- census:begin install-en -->
-| `published` | the declared name resolves on the npm registry | 807 |
-| `git-only` | absent from npm; installable from a Git specifier | 802 |
-| `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 51 |
+| `published` | the declared name resolves on the npm registry | 1020 |
+| `git-only` | absent from npm; installable from a Git specifier | 1032 |
+| `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 64 |
 <!-- census:end install-en -->
 
-A further <!-- census:begin n-vendored -->10<!-- census:end n-vendored --> repositories carry `@deepseek-ai/dsh-base` verbatim. They are
+A further <!-- census:begin n-vendored -->14<!-- census:end n-vendored --> repositories carry `@deepseek-ai/dsh-base` verbatim. They are
 not misnamed plugins but **vendored copies of the harness**, so they are
 classified `VENDORED_HARNESS` and excluded from the catalogue rather than
 counted here.
@@ -174,17 +174,17 @@ conditions, flagging and never removing: `gone` (404), `archived`, `dormant`
 that cannot reach a conclusion is reported as `inconclusive`, never as decay,
 because every decay state invites a deletion the evidence may not support.
 
-Over all <!-- census:begin n-catalog-rows -->1660<!-- census:end n-catalog-rows --> entries:
+Over all <!-- census:begin n-catalog-rows -->2116<!-- census:end n-catalog-rows --> entries:
 
 | State | Count |
 | --- | --- |
 <!-- census:begin decay -->
-| `live` | 1215 |
-| `archived` | 4 |
-| `gone` | 2 |
-| `unbundled` | 1 |
+| `live` | 1544 |
+| `archived` | 6 |
+| `gone` | 3 |
+| `unbundled` | 2 |
 | `dormant` | 0 |
-| `inconclusive` | 438 |
+| `inconclusive` | 283 |
 <!-- census:end decay -->
 
 **`dormant: 0` reflects the topic's age, not its health.** The oldest push among
@@ -194,7 +194,7 @@ enumeration covers the whole topic rather than its most-recently-updated page �
 but the figure still says nothing about long-term maintenance, because nothing in
 this ecosystem has had time to go quiet.
 
-**`inconclusive` is <!-- census:begin n-inconclusive -->438<!-- census:end n-inconclusive --> entries (<!-- census:begin pct-inconclusive -->26.4%<!-- census:end pct-inconclusive -->), and that is a
+**`inconclusive` is <!-- census:begin n-inconclusive -->283<!-- census:end n-inconclusive --> entries (<!-- census:begin pct-inconclusive -->15.4%<!-- census:end pct-inconclusive -->), and that is a
 limitation of the scan rather than a finding about those repositories.** The scan
 spends the same hourly API allowance as the probe, and a run that exhausts it
 reports what it could not check instead of guessing. The refusal threshold is 40%,
@@ -209,17 +209,21 @@ and carries the rest forward, so a state in this table may have been observed
 on an earlier run than the figures above.
 
 <!-- census:begin decay-flagged-en -->
-The 7 entries flagged as decayed (`inconclusive` is not decay and is excluded):
+The 11 entries flagged as decayed (`inconclusive` is not decay and is excluded):
 
 | Entry | State |
 | --- | --- |
 | `1HelloMan1/dsh-stats-dashboard` | archived — repository is archived |
 | `ccch1mneyyy/dsh-working-activity` | archived — repository is archived |
+| `ccq1/dsh-side-panel` | archived — repository is archived |
+| `haiyoucuv/dsh-model-provider-label` | archived — repository is archived |
 | `Hanihahaha/deepseek-harness-plugins` | archived — repository is archived |
 | `hyls9527/dsh-plugins` | archived — repository is archived |
 | `E83737664/dsh-skills-manager` | gone — repository returns 404 |
+| `Gdnaiteab/pingo-dsh-plugin` | gone — repository returns 404 |
 | `omdsh-plugins/omdsh-base` | gone — repository returns 404 |
 | `ghbhiee/dsh-plugins` | unbundled — no dsh.bundle.patch found; previously at packages/cli-session/package.json |
+| `jlu-lujing/dsh-kit` | unbundled — no dsh.bundle.patch found; previously at packages/dsh-kit/package.json |
 <!-- census:end decay-flagged-en -->
 
 ## Quality review
@@ -243,16 +247,16 @@ once scored 4 and 3 on an identical commit SHA and identical README bytes, and
 the first entry to be drawn twice under the new mechanism
 (`wangzhuo-coding/geo-content-optimizer`) scored 5 then 4 on unchanged bytes.
 
-Over <!-- census:begin n-reviewed -->104<!-- census:end n-reviewed --> reviewed entries, by mean score:
+Over <!-- census:begin n-reviewed -->262<!-- census:end n-reviewed --> reviewed entries, by mean score:
 
 | Score | Meaning | Count | Share |
 | --- | --- | --- | --- |
 <!-- census:begin scores-en -->
-| 5 | substantial, documented, tested | 55 | 52.9% |
-| 4 | solid and usable | 46 | 44.2% |
-| 3 | ordinary, thin, undocumented | 3 | 2.9% |
-| 2 | barely a plugin | 0 | 0.0% |
-| 1 | empty or broken | 0 | 0.0% |
+| 5 | substantial, documented, tested | 142 | 54.2% |
+| 4 | solid and usable | 112 | 42.7% |
+| 3 | ordinary, thin, undocumented | 5 | 1.9% |
+| 2 | barely a plugin | 1 | 0.4% |
+| 1 | empty or broken | 2 | 0.8% |
 <!-- census:end scores-en -->
 
 **This distribution is the finding, and it makes the score nearly useless as a
@@ -287,7 +291,7 @@ accumulated. Drift data accumulates only where two draws collide, and two
 needs on the order of 60 runs. Until then, treat a single-run score (`runs: 1`)
 as one sample of a noisy judgement, and prefer entries with a higher `runs` count.
 
-Coverage is <!-- census:begin n-reviewed -->104<!-- census:end n-reviewed --> of <!-- census:begin n-catalogued -->1660<!-- census:end n-catalogued --> and grows with each scheduled run,
+Coverage is <!-- census:begin n-reviewed -->262<!-- census:end n-reviewed --> of <!-- census:begin n-catalogued -->2116<!-- census:end n-catalogued --> and grows with each scheduled run,
 which reviews up to 180 entries under a seed derived from the hour. The batch is
 the smaller of that cap and what the remaining hourly API allowance affords, and
 the reviewer stops at a 15-minute deadline so a slow run cannot exceed the job
@@ -362,7 +366,7 @@ suite turns red.
 
 The search API returns at most 1000 results per query. `scripts/enumerate-topic.mjs`
 shards around that ceiling by star bucket and then by creation day, reaching
-<!-- census:begin n-enumerated -->7111<!-- census:end n-enumerated --> unique repositories, the whole topic rather than a sample.
+<!-- census:begin n-enumerated -->7746<!-- census:end n-enumerated --> unique repositories, the whole topic rather than a sample.
 Day boundaries come from result counts rather than sort order, because this
 search backend does not order by creation date.
 
@@ -410,7 +414,7 @@ What remains distinct here:
   deletion the evidence may not support.
 - **Published distributions of the whole sample** rather than a curated
   selection: verdict shares, star-band compliance, and installability across all
-  <!-- census:begin n-probed -->2398<!-- census:end n-probed --> probed repositories, with the probe scripts included.
+  <!-- census:begin n-probed -->3098<!-- census:end n-probed --> probed repositories, with the probe scripts included.
 
 A deeper per-repository audit exists but is **not published** — see
 [AUDIT-EXPERIMENTAL.md](AUDIT-EXPERIMENTAL.md). Its first implementation produced
