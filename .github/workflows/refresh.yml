@@ -272,8 +272,9 @@ jobs:
                 description: ($r[.repo].desc // null),
                 pushed: ($r[.repo].pushed_at // null)})
             | sort_by([(if .installable=="published" then 0 elif .installable=="git-only" then 1 else 2 end),
-                       (if .confidence=="high" then 0 elif .confidence=="medium" then 1
-                        elif .confidence=="low" then 2 else 3 end), -.stars])
+                       (if .confidence=="high" then 0 elif .confidence=="declared" then 1
+                        elif .confidence=="medium" then 2 elif .confidence=="low" then 3
+                        else 4 end), -.stars])
             | .[]' data/contract-v3.jsonl > data/catalog.jsonl
           node scripts/render.mjs
 

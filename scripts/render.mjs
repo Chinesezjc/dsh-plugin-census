@@ -76,8 +76,25 @@ const catalogue = readJsonl(new URL('../data/catalog.jsonl', import.meta.url).pa
 const blocked = catalogue.filter((entry) => entry.installable === 'unpublishable-scope')
 const installable = catalogue.filter((entry) => entry.installable !== 'unpublishable-scope')
 const high = installable.filter((entry) => entry.confidence === 'high')
+// `declared` needs its own section. Without one these entries matched no filter
+// and vanished from the document: 416 of 419 were silently dropped when the tier
+// was introduced, because every section tested for a specific confidence value.
+const declared = installable.filter((entry) => entry.confidence === 'declared')
 const medium = installable.filter((entry) => entry.confidence === 'medium')
 const weak = installable.filter((entry) => entry.confidence === 'low' || entry.confidence === 'none')
+
+// Every installable entry must land in exactly one section, or the catalogue
+// silently under-reports. Checked here rather than trusted, because the failure
+// mode is invisible in the rendered output.
+const sectioned = high.length + declared.length + medium.length + weak.length
+if (sectioned !== installable.length) {
+  process.stderr.write(
+    `refusing to render: ${installable.length - sectioned} installable entr(y/ies) match no`
+    + ` section, which would drop them from the catalogue. Confidence values seen: `
+    + `${[...new Set(installable.map((e) => e.confidence))].sort().join(', ')}\n`,
+  )
+  process.exit(1)
+}
 
 const bySurface = (entries, surface) => entries.filter((entry) => entry.surface === surface)
 
@@ -115,6 +132,24 @@ ${table(bySurface(high, 'client'))}
 
 ${table(bySurface(high, 'both'))}
 
+## Declared attribution (${declared.length})
+
+Surface taken from the plugin's own \`dsh.client\` or \`dsh.host\` block. This is the
+author's declaration rather than an installed dependency, so it ranks below
+dependency evidence and above a keyword guess.
+
+### Host plugins (${bySurface(declared, 'host').length})
+
+${bySurface(declared, 'host').length > 0 ? table(bySurface(declared, 'host')) : '_None._'}
+
+### Client plugins (${bySurface(declared, 'client').length})
+
+${bySurface(declared, 'client').length > 0 ? table(bySurface(declared, 'client')) : '_None._'}
+
+### Client + Host (${bySurface(declared, 'both').length})
+
+${bySurface(declared, 'both').length > 0 ? table(bySurface(declared, 'both')) : '_None._'}
+
 ## Partial attribution (${medium.length})
 
 Depends on \`@deepseek-ai/*\` packages, but none that identify a surface.
@@ -143,4 +178,7 @@ ${blocked.length > 0 ? table(blocked) : '_None._'}
 `
 
 writeFileSync(new URL('../PLUGINS.md', import.meta.url).pathname, document)
-process.stderr.write(`rendered ${catalogue.length} entries: ${high.length} verified, ${medium.length} partial, ${weak.length} unverified\n`)
+process.stderr.write(
+  `rendered ${catalogue.length} entries: ${high.length} verified, ${declared.length} declared,`
+  + ` ${medium.length} partial, ${weak.length} unverified\n`,
+)
