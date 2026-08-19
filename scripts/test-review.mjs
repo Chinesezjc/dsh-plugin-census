@@ -731,6 +731,90 @@ check(
   `ceiling is ${(SOURCE.match(/CENSUS_MAX_TOKENS \?\? (\d+)/) ?? ['', 'unset'])[1]}`,
 )
 
+// Transient retry. All three non-truncation failures in the first green CI run
+// were transient: every repository reported unreadable was fully readable minutes
+// later. A blip must not cost a review slot — but a 404 must not be retried,
+// because that would hide a repository that genuinely vanished.
+{
+  const dir = mkdtempSync(join(tmpdir(), 'retry-'))
+  const countFile = join(dir, 'attempts')
+  const modeFile = join(dir, 'mode')
+  writeFileSync(countFile, '0')
+  // Fail the first `commits` call, then succeed; count attempts on that path.
+  writeFileSync(
+    join(dir, 'gh'),
+    `#!/usr/bin/env node
+const fs = require('node:fs')
+const path = process.argv.slice(2).join(' ')
+const out = (o) => process.stdout.write(JSON.stringify(o))
+const mode = fs.readFileSync(${JSON.stringify(modeFile)}, 'utf8').trim()
+if (path.includes('/commits')) {
+  const n = Number(fs.readFileSync(${JSON.stringify(countFile)}, 'utf8')) + 1
+  fs.writeFileSync(${JSON.stringify(countFile)}, String(n))
+  if (n === 1) {
+    process.stderr.write(mode === 'notfound' ? 'gh: Not Found (HTTP 404)' : 'gh: server error (HTTP 502)')
+    process.exit(1)
+  }
+  out([{ sha: 'a'.repeat(40), commit: { committer: { date: '2026-08-17T00:00:00Z' } } }])
+} else if (path.includes('/readme')) out({ content: Buffer.from('# hi').toString('base64') })
+else if (path.includes('/git/trees')) out({ truncated: false, tree: [{ path: 'src/index.ts', type: 'blob' }] })
+else if (path.includes('/contents/')) out({ content: Buffer.from('{"name":"p"}').toString('base64') })
+else out({})
+`,
+    { mode: 0o755 },
+  )
+  const model = mkdtempSync(join(tmpdir(), 'rmodel-'))
+  const modelPath = join(model, 'model')
+  writeFileSync(
+    modelPath,
+    '#!/usr/bin/env node\nprocess.stdout.write(\'{"score": 4, "reasons": ["x"]}\')\n',
+    { mode: 0o755 },
+  )
+  const runRetry = (mode) => {
+    writeFileSync(countFile, '0')
+    writeFileSync(modeFile, mode)
+    const result = spawnSync(process.execPath, [SCRIPT, '--limit', '1'], {
+      input: oneRepo,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: `${dir}:${process.env.PATH}`,
+        CENSUS_MODEL_CLI: modelPath,
+        CENSUS_RETRY_DELAY_MS: '10',
+      },
+      timeout: 60_000,
+    })
+    return {
+      attempts: Number(readFileSync(countFile, 'utf8')),
+      records: String(result.stdout || '').split('\n').filter((l) => l.trim()).map((l) => JSON.parse(l)),
+    }
+  }
+
+  const transient = runRetry('transient')
+  check(
+    'a transient failure is retried',
+    transient.attempts === 2,
+    `${transient.attempts} attempt(s)`,
+  )
+  check(
+    'a retried transient failure yields a score',
+    transient.records[0]?.reviewed === true && transient.records[0]?.score === 4,
+    JSON.stringify(transient.records[0] ?? ''),
+  )
+
+  const notFound = runRetry('notfound')
+  check(
+    'a 404 is not retried',
+    notFound.attempts === 1,
+    `${notFound.attempts} attempt(s); a 404 is an answer, not a blip`,
+  )
+  check(
+    'a 404 still produces no score',
+    notFound.records[0]?.reviewed === false && notFound.records[0]?.score === undefined,
+    JSON.stringify(notFound.records[0] ?? ''),
+  )
+}
+
 process.stdout.write(
   failures === 0
     ? `\nall ${checks} review controls behaved as specified\n`

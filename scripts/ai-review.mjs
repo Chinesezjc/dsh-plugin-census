@@ -116,6 +116,12 @@ const DEADLINE_SECONDS = Number(process.env.CENSUS_REVIEW_DEADLINE_SECONDS ?? 0)
  */
 const CONCURRENCY = Math.max(1, Number(process.env.CENSUS_REVIEW_CONCURRENCY ?? 4))
 
+/** Extra attempts for a transient `gh` failure; 0 disables retrying. */
+const RETRY_ATTEMPTS = Number(process.env.CENSUS_RETRY_ATTEMPTS ?? 1)
+
+/** Pause before a retry, long enough to clear a momentary blip. */
+const RETRY_DELAY_MS = Number(process.env.CENSUS_RETRY_DELAY_MS ?? 1500)
+
 /** Fraction of attempted reviews that may fail before the run is refused. */
 const MAX_UNREVIEWED_SHARE = 0.3
 
@@ -164,7 +170,7 @@ function run(cmd, args, input) {
           commandFailures += 1
           process.stderr.write(`  ${cmd} failed: ${String(stderr).trim().slice(0, 200)}\n`)
         }
-        resolve(error ? null : String(stdout))
+        resolve(error ? { failed: true, stderr: String(stderr) } : String(stdout))
       },
     )
     if (input !== undefined && child.stdin) {
@@ -239,7 +245,10 @@ async function askApi(prompt) {
  * @returns assistant text, or null when the call failed.
  */
 async function ask(prompt) {
-  return API_KEY ? askApi(prompt) : run(MODEL_CLI, ['-p', prompt])
+  if (API_KEY) return askApi(prompt)
+  const out = await run(MODEL_CLI, ['-p', prompt])
+  // run() now reports failures as an object; the CLI path wants text or null.
+  return typeof out === 'string' ? out : null
 }
 
 /** @returns true when the backend reported it never finished answering. */
@@ -253,12 +262,28 @@ function isTruncated(raw) {
  * @returns parsed body, or null on failure.
  */
 async function api(path) {
-  const out = await run('gh', ['api', path])
-  if (out === null) return null
-  try {
-    return JSON.parse(out)
-  } catch {
-    return null
+  for (let attempt = 0; ; attempt += 1) {
+    const out = await run('gh', ['api', path])
+    if (typeof out === 'string') {
+      try {
+        return JSON.parse(out)
+      } catch {
+        return null
+      }
+    }
+    const stderr = out?.stderr ?? ''
+    // A 404 is an answer, not a failure: retrying it would turn a repository that
+    // genuinely vanished into a slow failure and hide a real decay signal.
+    const permanent = /HTTP 404|Not Found/i.test(stderr)
+    // A spent allowance will not recover within a retry either, and retrying it
+    // burns the little that is left.
+    const rateLimited = /rate limit/i.test(stderr)
+    if (permanent || rateLimited || attempt >= RETRY_ATTEMPTS) return null
+    // All three non-truncation failures in the first green CI run were transient:
+    // every repository reported HEAD_UNREADABLE or README_UNREADABLE was fully
+    // readable minutes later. One bounded retry converts those into reviews
+    // instead of spending a slot on a blip.
+    await new Promise((resolve) => { setTimeout(resolve, RETRY_DELAY_MS) })
   }
 }
 
