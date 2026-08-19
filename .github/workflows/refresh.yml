@@ -303,12 +303,20 @@ jobs:
           # this and what the remaining core allowance affords, and the reviewer
           # also stops at the wall-clock deadline below.
           #
-          # Time binds before quota: a review takes ~17.6 s, so the allowance would
-          # afford ~185 reviews (~54 min) while `timeout-minutes: 45` with 25 min of
-          # census work leaves ~15 min. 50 reviews is ~15 min, and the deadline
-          # enforces it even if a review runs slower than measured.
-          CENSUS_REVIEW_MAX: '50'
+          # Reviews now run in a pool, measured at 4.83 s each against the live
+          # endpoint rather than 17.6 s sequentially. Both constraints land near
+          # the same place: 15 minutes affords ~186 reviews, and the allowance left
+          # after the census work affords a similar number at 3 calls each. The cap
+          # sits just under that, and the deadline enforces it if a run is slower
+          # than measured. The budget is computed from a fresh `rate_limit` read in
+          # the step body, so a depleted allowance shrinks the batch automatically.
+          CENSUS_REVIEW_MAX: '180'
           CENSUS_REVIEW_DEADLINE_SECONDS: '900'
+          # Bounded pool. Kept below what the endpoint tolerated (24 concurrent
+          # calls returned 200 with no latency change) because the `gh` fetches
+          # share GitHub's allowance with the probe, and a burst risks secondary
+          # rate limiting that no per-hour figure predicts.
+          CENSUS_REVIEW_CONCURRENCY: '4'
         run: |
           # The `secrets` context is not available in a step-level `if`, so the
           # skip is decided here instead. Using `if: secrets.X != ''` would make

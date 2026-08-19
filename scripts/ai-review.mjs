@@ -88,6 +88,22 @@ const MAX_TOKENS = Number(process.env.CENSUS_MAX_TOKENS ?? 4096)
  */
 const DEADLINE_SECONDS = Number(process.env.CENSUS_REVIEW_DEADLINE_SECONDS ?? 0)
 
+/**
+ * How many reviews run at once.
+ *
+ * Reviews are independent, and the sequential loop spent most of its time
+ * waiting: measured at 17.6 s per review, of which about 12.7 s is the model call
+ * and 4.9 s the three `gh` fetches. Concurrency turns that wait into throughput.
+ *
+ * Measured against the live endpoint: 6, 12 and 24 concurrent calls all returned
+ * 200 with no latency degradation (p50 stayed ~1.1 s). The default is kept well
+ * below the point where anything was observed to strain, because the limit that
+ * matters is not this endpoint's tolerance but GitHub's — the `gh` fetches share
+ * the same hourly allowance as the probe, and a burst risks secondary rate
+ * limiting that no per-hour figure predicts.
+ */
+const CONCURRENCY = Math.max(1, Number(process.env.CENSUS_REVIEW_CONCURRENCY ?? 4))
+
 /** Fraction of attempted reviews that may fail before the run is refused. */
 const MAX_UNREVIEWED_SHARE = 0.3
 
@@ -569,33 +585,61 @@ async function main() {
   let unreviewed = 0
   let repeated = 0
 
+  // Reviews are independent, so they run in a bounded pool rather than one at a
+  // time. The deadline is checked before each entry is claimed, so a run stops
+  // between reviews instead of abandoning one midway.
   const startedAt = Date.now()
-  for (const entry of sample) {
-    if (DEADLINE_SECONDS > 0 && (Date.now() - startedAt) / 1000 > DEADLINE_SECONDS) {
+  const reviewedRows = new Array(sample.length)
+  let cursor = 0
+  let stopped = false
+
+  const expired = () => DEADLINE_SECONDS > 0 && (Date.now() - startedAt) / 1000 > DEADLINE_SECONDS
+
+  async function worker() {
+    for (;;) {
+      if (expired()) {
+        stopped = true
+        return
+      }
+      const index = cursor
+      cursor += 1
+      if (index >= sample.length) return
+      const entry = sample[index]
+      attempted += 1
+      const record = await review(entry)
+      if (!record.reviewed) {
+        unreviewed += 1
+        // Slot by draw index, not append order. Appending as each worker
+        // finished made the output order depend on which review happened to
+        // return first, so the same seed produced the same sample in a different
+        // sequence and every run rewrote unrelated lines of reviews.jsonl.
+        reviewedRows[index] = record
+        process.stderr.write(`FAILED ${record.failure}  ${entry.repo}\n`)
+        continue
+      }
+      const prior = stored.get(entry.repo)
+      const merged = mergeReview(prior, record)
+      if (merged.runs > 1) repeated += 1
+      reviewedRows[index] = merged
       process.stderr.write(
-        `stopping at the ${DEADLINE_SECONDS}s deadline after ${attempted} review(s);`
-        + ` ${sample.length - attempted} drawn entr(y/ies) not reviewed this run\n`,
+        `score ${record.score}  ${entry.repo}`
+          + (merged.runs > 1
+            ? `  (run ${merged.runs}: [${merged.scores.join(',')}] mean ${merged.score.toFixed(2)})`
+            : '')
+          + '\n',
       )
-      break
     }
-    attempted += 1
-    const record = await review(entry)
-    if (!record.reviewed) {
-      unreviewed += 1
-      results.push(record)
-      process.stderr.write(`FAILED ${record.failure}  ${entry.repo}\n`)
-      continue
-    }
-    const prior = stored.get(entry.repo)
-    const merged = mergeReview(prior, record)
-    if (merged.runs > 1) repeated += 1
-    results.push(merged)
+  }
+
+  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, sample.length) }, worker))
+
+  // Emit in draw order, skipping slots no worker reached before the deadline.
+  for (const row of reviewedRows) if (row !== undefined) results.push(row)
+
+  if (stopped) {
     process.stderr.write(
-      `score ${record.score}  ${entry.repo}`
-        + (merged.runs > 1
-          ? `  (run ${merged.runs}: [${merged.scores.join(',')}] mean ${merged.score.toFixed(2)})`
-          : '')
-        + '\n',
+      `stopping at the ${DEADLINE_SECONDS}s deadline after ${attempted} review(s);`
+      + ` ${sample.length - attempted} drawn entr(y/ies) not reviewed this run\n`,
     )
   }
 

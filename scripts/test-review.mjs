@@ -523,6 +523,10 @@ check(
       PATH: `${dir}:${process.env.PATH}`,
       CENSUS_MODEL_CLI: slowPath,
       CENSUS_REVIEW_DEADLINE_SECONDS: '2',
+      // Pin concurrency to 1: with the default pool, four workers claim the whole
+      // sample before the deadline elapses and nothing is left unreached, so the
+      // control would pass without the deadline doing anything.
+      CENSUS_REVIEW_CONCURRENCY: '1',
     },
     timeout: 120_000,
   })
@@ -588,6 +592,10 @@ check(
       PATH: `${dir}:${process.env.PATH}`,
       CENSUS_MODEL_CLI: slowPath,
       CENSUS_REVIEW_DEADLINE_SECONDS: '2',
+      // Pin concurrency to 1: with the default pool, four workers claim the whole
+      // sample before the deadline elapses and nothing is left unreached, so the
+      // control would pass without the deadline doing anything.
+      CENSUS_REVIEW_CONCURRENCY: '1',
     },
     timeout: 120_000,
   })
@@ -604,6 +612,112 @@ check(
     'unreached entries keep their stored score',
     records.filter((row) => row.runs === 1 && row.score === 3).length > 0,
     JSON.stringify(records.map((row) => `${row.repo}:${row.score}/${row.runs}`)),
+  )
+}
+
+// Concurrency. Reviews are independent and the sequential loop spent most of its
+// time waiting, so the pool is the difference between ~17.6 s and a few seconds
+// per review. These controls check that it is real and that it stays bounded.
+{
+  const dir = mkdtempSync(join(tmpdir(), 'conc-'))
+  writeFileSync(join(dir, 'gh'), ghStub(), { mode: 0o755 })
+  const slow = mkdtempSync(join(tmpdir(), 'slowc-'))
+  const slowPath = join(slow, 'model')
+  const logFile = join(slow, 'calls.log')
+  // Append a start and end timestamp per call and reconstruct overlap from the
+  // ordering. An earlier version kept a live counter in a file; that is an
+  // unsynchronised read-modify-write across processes and reported a peak of 5
+  // for a pool of 4, which measured the instrument rather than the pool.
+  writeFileSync(
+    slowPath,
+    `#!/usr/bin/env node
+const fs = require('node:fs')
+fs.appendFileSync(${JSON.stringify(logFile)}, 'S ' + Date.now() + '\\n')
+setTimeout(() => {
+  fs.appendFileSync(${JSON.stringify(logFile)}, 'E ' + Date.now() + '\\n')
+  process.stdout.write('{"score": 4, "reasons": ["x"]}')
+}, 700)
+`,
+    { mode: 0o755 },
+  )
+  const catalogue = Array.from({ length: 12 }, (_, i) =>
+    JSON.stringify({ repo: `owner${i}/plugin`, package: 'p', manifestPath: 'package.json' }),
+  ).join('\n') + '\n'
+
+  /** Peak overlap, reconstructed from the start/end timestamps. */
+  const peakOverlap = () => {
+    const events = readFileSync(logFile, 'utf8')
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+      .map((line) => {
+        const [kind, at] = line.split(' ')
+        return { at: Number(at), delta: kind === 'S' ? 1 : -1 }
+      })
+      .sort((a, b) => a.at - b.at || a.delta - b.delta)
+    let current = 0
+    let peak = 0
+    for (const event of events) {
+      current += event.delta
+      if (current > peak) peak = current
+    }
+    return peak
+  }
+
+  const runPool = (concurrency) => {
+    writeFileSync(logFile, '')
+    const started = Date.now()
+    const result = spawnSync(process.execPath, [SCRIPT, '--limit', '12'], {
+      input: catalogue,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: `${dir}:${process.env.PATH}`,
+        CENSUS_MODEL_CLI: slowPath,
+        CENSUS_REVIEW_CONCURRENCY: String(concurrency),
+      },
+      timeout: 120_000,
+    })
+    return {
+      ms: Date.now() - started,
+      peak: peakOverlap(),
+      records: String(result.stdout || '').split('\n').filter((l) => l.trim()).map((l) => JSON.parse(l)),
+      status: result.status,
+    }
+  }
+
+  const serial = runPool(1)
+  const parallel = runPool(4)
+
+  check(
+    'concurrency 1 runs one model call at a time',
+    serial.peak === 1,
+    `peak=${serial.peak}`,
+  )
+  check(
+    'concurrency 4 overlaps model calls',
+    parallel.peak > 1,
+    `peak=${parallel.peak}`,
+  )
+  check(
+    'the pool never exceeds its configured size',
+    parallel.peak <= 4,
+    `peak=${parallel.peak} exceeds 4`,
+  )
+  check(
+    'concurrency reviews the whole sample',
+    parallel.records.length === 12 && serial.records.length === 12,
+    `serial=${serial.records.length} parallel=${parallel.records.length}`,
+  )
+  check(
+    'concurrency is faster than serial for the same work',
+    parallel.ms < serial.ms,
+    `serial=${serial.ms}ms parallel=${parallel.ms}ms`,
+  )
+  check(
+    'both orders emit the same entries in the same sequence',
+    serial.records.map((r) => r.repo).join() === parallel.records.map((r) => r.repo).join(),
+    `serial=${serial.records.map((r) => r.repo).slice(0, 3).join()} parallel=${parallel.records.map((r) => r.repo).slice(0, 3).join()}`,
   )
 }
 

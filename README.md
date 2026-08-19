@@ -236,14 +236,14 @@ once scored 4 and 3 on an identical commit SHA and identical README bytes, and
 the first entry to be drawn twice under the new mechanism
 (`wangzhuo-coding/geo-content-optimizer`) scored 5 then 4 on unchanged bytes.
 
-Over <!-- census:begin n-reviewed -->93<!-- census:end n-reviewed --> reviewed entries, by mean score:
+Over <!-- census:begin n-reviewed -->104<!-- census:end n-reviewed --> reviewed entries, by mean score:
 
 | Score | Meaning | Count | Share |
 | --- | --- | --- | --- |
 <!-- census:begin scores-en -->
-| 5 | substantial, documented, tested | 52 | 55.9% |
-| 4 | solid and usable | 38 | 40.9% |
-| 3 | ordinary, thin, undocumented | 3 | 3.2% |
+| 5 | substantial, documented, tested | 55 | 52.9% |
+| 4 | solid and usable | 46 | 44.2% |
+| 3 | ordinary, thin, undocumented | 3 | 2.9% |
 | 2 | barely a plugin | 0 | 0.0% |
 | 1 | empty or broken | 0 | 0.0% |
 <!-- census:end scores-en -->
@@ -272,19 +272,23 @@ from a catalogue averaging 26 and containing none of its 326 zero-star entries.
 Selection is now a seeded shuffle over repository names, re-drawn per run. The
 published sample has median 2 stars and includes 21 zero-star entries of 79.
 
-**How far these scores drift is not yet known.** Of the two entries sampled
-twice, one repeated its score exactly and one moved by a point — too few to be a
-measurement. Drift data accumulates only where two draws collide, and two
+**How far these scores drift is not yet known.** Of the three entries sampled
+twice so far, two repeated their score exactly and one moved by a point — too few
+to be a measurement, and the direction has already changed once as samples
+accumulated. Drift data accumulates only where two draws collide, and two
 20-entry draws from the catalogue overlap by well under one entry on average, so a usable figure
 needs on the order of 60 runs. Until then, treat a single-run score (`runs: 1`)
 as one sample of a noisy judgement, and prefer entries with a higher `runs` count.
 
-Coverage is <!-- census:begin n-reviewed -->93<!-- census:end n-reviewed --> of <!-- census:begin n-catalogued -->1660<!-- census:end n-catalogued --> and grows with each scheduled run,
-which reviews up to 50 entries under a seed derived from the hour. The batch is
+Coverage is <!-- census:begin n-reviewed -->104<!-- census:end n-reviewed --> of <!-- census:begin n-catalogued -->1660<!-- census:end n-catalogued --> and grows with each scheduled run,
+which reviews up to 180 entries under a seed derived from the hour. The batch is
 the smaller of that cap and what the remaining hourly API allowance affords, and
-the reviewer stops at a 15-minute deadline: a review takes about 17.6 seconds, so
-time binds before quota and an unbounded batch would exceed the job timeout and
-take the census down with it. A failed review is recorded with
+the reviewer stops at a 15-minute deadline so a slow run cannot exceed the job
+timeout and take the census down with it.
+
+Reviews run in a pool of four rather than one at a time, measured at 4.83 seconds
+each against the live endpoint instead of 17.6 sequentially. Output order follows
+the draw, not completion, so the same seed produces byte-identical ordering. A failed review is recorded with
 `reviewed: false` and no score, and a run in which more than 30% of reviews fail
 exits non-zero rather than publishing a transport failure as an opinion about
 someone's code.
