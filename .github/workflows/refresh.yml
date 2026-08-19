@@ -72,6 +72,13 @@ jobs:
       - name: Verify the quality reviewer never publishes a failure as a score
         run: node scripts/test-review.mjs
 
+      # Every figure in both READMEs is generated from data/. They used to be typed
+      # by hand while a scheduled workflow regenerated the data, so they could only
+      # drift: measured once at 6929/1698/1167 published against 7111/2398/1660 in
+      # the data. This gate makes that state unmergeable.
+      - name: Verify the published figures match the data
+        run: node scripts/test-render-readme.mjs
+
       - name: Verify the checkout fetcher rejects incomplete transfers
         run: ./scripts/test-fetch.sh
 
@@ -310,6 +317,13 @@ jobs:
           else
             echo "::warning::review run refused its own output; data/reviews.jsonl left unchanged"
           fi
+
+      # Rewrite the figures from the data just produced. Without this the commit
+      # below would publish a fresh catalogue beside stale prose.
+      - name: Regenerate the published figures
+        run: |
+          node scripts/render-readme.mjs
+          node scripts/render-readme.mjs --check
 
       - name: Commit regenerated catalogue
         run: |
