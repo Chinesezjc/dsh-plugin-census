@@ -100,7 +100,7 @@
 
 只有达到 `PARSED` 的条目才被列为插件。
 
-**如实说明的局限：** 第 2、3 级在实践中拦下的很少——<!-- census:begin n-declared -->2125<!-- census:end n-declared --> 个声明了 patch
+**如实说明的局限：** 第 2、3 级在实践中拦下的很少——<!-- census:begin n-declared -->0<!-- census:end n-declared --> 个声明了 patch
 的仓库中只有 <!-- census:begin n-tier23-fail -->9<!-- census:end n-tier23-fail --> 个在这两级失败。静态验证在第 1 级就基本到顶了，剩余的不确定性只能靠实际安装
 插件来消除。安装验证尚未实现；本仓库不声称任何插件能运行。
 
@@ -112,14 +112,19 @@
 | --- | --- | --- | --- |
 <!-- census:begin surface-zh -->
 | `high` | 依赖 `@deepseek-ai/dsh-client-*`（client 侧）或 `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧） | 1286 | 60.8% |
+| `declared` | 插件自己的 `dsh.client` 或 `dsh.host` 块声明了该 surface | 0 | 0.0% |
 | `medium` | 有 `@deepseek-ai/*` 依赖，但没有一个依赖能区分 client 与 host，surface 记为 `indeterminate` | 87 | 4.1% |
 | `low` | 没有 `@deepseek-ai/*` 依赖，surface 由名称或描述中的关键词猜测 | 518 | 24.5% |
 | `none` | 既无依赖证据也无关键词命中——**根本没有归因** | 225 | 10.6% |
 <!-- census:end surface-zh -->
 
-只有 `high` 与 `medium` 这 729 行基于依赖证据。`low` 是从仓库名里的一个词做出的
-猜测，并被如实标注。`none` 行的 surface 是 `indeterminate`、证据为空：它是归因的
-缺失，不是弱归因，不应被读成对该插件的任何判断。
+`high` 与 `medium` 这 <!-- census:begin n-dep-evidence -->1373<!-- census:end n-dep-evidence --> 行基于**已安装的依赖**。另有
+<!-- census:begin n-declared -->0<!-- census:end n-declared --> 行为 `declared`：插件自己的 `dsh` 块声明了 surface——这是作者的
+声明而非已安装的包，所以排在依赖证据之下、猜测之上。归因此前只读依赖，因而丢掉了这些
+声明——在 60 个按关键词归因的样本里，有 43 个带明确声明。
+
+`low` 是从仓库名里的一个词做出的猜测，并被如实标注。`none` 行的 surface 是
+`indeterminate`、证据为空：它是归因的缺失，不是弱归因，不应被读成对该插件的任何判断。
 
 ## 可安装性
 

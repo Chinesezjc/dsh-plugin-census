@@ -72,7 +72,98 @@ assert.ok(thresholdMatch !== null, 'sentinel: a threshold must exist to test')
 assert.equal(Number(thresholdMatch[1]) < 1, true,
   'sentinel: a threshold of 1 or more could never refuse any run')
 
+// Manifest declarations. Attribution read only dependencies, which discarded the
+// author's own statement of surface: measured over 25 low/none rows, 16 carried a
+// `dsh.client` or `dsh.host` block while being attributed from a keyword.
+{
+  const { spawnSync } = await import('node:child_process')
+  const { mkdtempSync, writeFileSync } = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const { join } = await import('node:path')
+
+  /**
+   * Run attribution against a stubbed manifest.
+   * @param manifest - object served as the package.json.
+   * @param row - catalogue row fields.
+   * @returns the emitted record.
+   */
+  const attribute = (manifest, row = {}) => {
+    const dir = mkdtempSync(join(tmpdir(), 'attr-'))
+    // fetchFile passes `--jq .content`, so the stub emits the base64 string
+    // rather than the API wrapper object.
+    writeFileSync(
+      join(dir, 'gh'),
+      `#!/usr/bin/env node
+process.stdout.write(Buffer.from(${JSON.stringify(JSON.stringify(manifest))}).toString('base64'))
+`,
+      { mode: 0o755 },
+    )
+    const input = JSON.stringify({
+      repo: 'o/p',
+      verdict: 'CONTRACT_OK',
+      name: 'plugin',
+      manifestPath: 'package.json',
+      ...row,
+    })
+    const result = spawnSync(
+      process.execPath,
+      [new URL('./attribute.mjs', import.meta.url).pathname, '--existing', '/dev/null'],
+      { input: `${input}\n`, encoding: 'utf8', env: { ...process.env, PATH: `${dir}:${process.env.PATH}` }, timeout: 60_000 },
+    )
+    const line = String(result.stdout ?? '').split('\n').find((l) => l.trim())
+    return line ? JSON.parse(line) : null
+  }
+
+  const declaredClient = attribute({ name: 'p', dsh: { client: { platform: 'web' } } })
+  check(
+    'a dsh.client declaration attributes the client surface',
+    declaredClient?.surface === 'client' && declaredClient?.confidence === 'declared',
+    JSON.stringify(declaredClient),
+  )
+  check(
+    'the declaration is recorded as evidence',
+    JSON.stringify(declaredClient?.evidence) === '["dsh.client"]',
+    JSON.stringify(declaredClient?.evidence),
+  )
+
+  const declaredHost = attribute({ name: 'p', dsh: { host: { tools: [] } } })
+  check(
+    'a dsh.host declaration attributes the host surface',
+    declaredHost?.surface === 'host' && declaredHost?.confidence === 'declared',
+    JSON.stringify(declaredHost),
+  )
+
+  const declaredBoth = attribute({ name: 'p', dsh: { client: {}, host: {} } })
+  check(
+    'declaring both surfaces attributes both',
+    declaredBoth?.surface === 'both' && declaredBoth?.confidence === 'declared',
+    JSON.stringify(declaredBoth),
+  )
+
+  // A dependency on a surface-specific first-party package is installed evidence
+  // and must outrank a manifest declaration, which can be aspirational.
+  const conflicting = attribute({
+    name: 'p',
+    dsh: { host: {} },
+    dependencies: { '@deepseek-ai/dsh-client-ui': '1.0.0' },
+  })
+  check(
+    'dependency evidence outranks a manifest declaration',
+    conflicting?.surface === 'client' && conflicting?.confidence === 'high',
+    JSON.stringify(conflicting),
+  )
+
+  // A bundle-only `dsh` block says nothing about surface and must not be read as
+  // a declaration; it would otherwise attribute every compliant plugin.
+  const bundleOnly = attribute({ name: 'p', dsh: { bundle: { patch: './p.yml' } } })
+  check(
+    'a bundle-only dsh block is not a surface declaration',
+    bundleOnly?.confidence !== 'declared',
+    JSON.stringify(bundleOnly),
+  )
+}
+
 process.stdout.write(failed === 0
-  ? '\nall 9 attribution-guard controls behaved as specified\n'
-  : `\n${failed} of 9 attribution-guard controls did not behave as specified\n`)
+  ? '\nall 15 attribution-guard controls behaved as specified\n'
+  : `\n${failed} of 15 attribution-guard controls did not behave as specified\n`)
 process.exit(failed === 0 ? 0 : 1)

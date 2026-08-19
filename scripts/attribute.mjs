@@ -108,6 +108,38 @@ function fromDependencies(dependencies) {
 }
 
 /**
+ * Attribute a surface from the plugin's own `dsh` manifest block.
+ *
+ * This is the author's explicit declaration of which surface the plugin extends,
+ * so it outranks a keyword guess and sits just below a dependency on a
+ * surface-specific first-party package. Attribution read only dependencies until
+ * now, which discarded it: measured over 25 low/none rows, 16 carried a
+ * `dsh.client` or `dsh.host` block while being attributed from a word in the
+ * repository name. `1MLightyears/dsh-theme-synthwave` declares
+ * `dsh.client.platform: "web"`, and `13071301808/dsh-composer-expand` declares
+ * `dsh.client.inject: ["@deepseek-ai/dsh-client-ui-conversation"]`.
+ *
+ * Confidence is `declared` rather than `high`: it is a first-party statement of
+ * intent, which is strong evidence about the surface but is not the same kind of
+ * evidence as an installed dependency, and a manifest can be aspirational.
+ *
+ * @param manifest - parsed package.json, possibly null.
+ * @returns surface and confidence, or null when no declaration exists.
+ */
+function fromManifest(manifest) {
+  const dsh = manifest?.dsh
+  if (!dsh || typeof dsh !== 'object') return null
+  const client = dsh.client !== undefined && dsh.client !== null
+  const host = dsh.host !== undefined && dsh.host !== null
+  if (!client && !host) return null
+  const evidence = []
+  if (client) evidence.push('dsh.client')
+  if (host) evidence.push('dsh.host')
+  const surface = client && host ? 'both' : client ? 'client' : 'host'
+  return { surface, confidence: 'declared', evidence }
+}
+
+/**
  * Attribute a surface from name and description keywords.
  * @param packageName - npm package name, possibly null.
  * @param description - repository description, possibly null.
@@ -140,7 +172,12 @@ async function main() {
         // A previous inconclusive result is not worth carrying: it may have come
         // from a failed fetch rather than from the package itself, and reusing it
         // would make a transient failure permanent.
-        if (record.confidence === 'high' || record.confidence === 'medium') {
+        // `declared` is reused for the same reason as dependency evidence: it comes
+        // from the manifest, not from a guess, so re-fetching cannot improve it.
+        // `low` and `none` are deliberately NOT reused — they are re-attributed
+        // every run, which is what lets a newly added `dsh.client` block, or the
+        // manifest tier itself, upgrade rows that were previously keyword guesses.
+        if (['high', 'declared', 'medium'].includes(record.confidence)) {
           existing.set(record.repo, record)
         }
       } catch { /* skip unparseable rows */ }
@@ -185,19 +222,23 @@ async function main() {
       const manifestText = await fetchFile(record.repo, manifestPath)
       let dependencies = []
       let description = null
+      let parsedManifest = null
       if (manifestText !== null) {
         try {
-          const manifest = JSON.parse(manifestText)
+          parsedManifest = JSON.parse(manifestText)
           dependencies = Object.keys({
-            ...(manifest.dependencies ?? {}),
-            ...(manifest.peerDependencies ?? {}),
-            ...(manifest.devDependencies ?? {}),
+            ...(parsedManifest.dependencies ?? {}),
+            ...(parsedManifest.peerDependencies ?? {}),
+            ...(parsedManifest.devDependencies ?? {}),
           })
-          description = manifest.description ?? null
+          description = parsedManifest.description ?? null
         } catch { /* fall through to keyword attribution */ }
       }
 
+      // Ordered by evidence strength: an installed surface-specific dependency,
+      // then the author's own `dsh` declaration, then a keyword guess.
       const attribution = fromDependencies(dependencies)
+        ?? fromManifest(parsedManifest)
         ?? fromKeywords(record.name, description)
 
       process.stdout.write(`${JSON.stringify({

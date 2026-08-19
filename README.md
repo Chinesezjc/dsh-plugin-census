@@ -111,7 +111,7 @@ failure the loader would raise:
 Only `PARSED` entries are listed as plugins.
 
 **Honest limit:** tiers 2 and 3 reject little in practice — <!-- census:begin n-tier23-fail -->9<!-- census:end n-tier23-fail --> of the
-<!-- census:begin n-declared -->2125<!-- census:end n-declared --> repositories that declare a patch fail them.
+<!-- census:begin n-declared -->0<!-- census:end n-declared --> repositories that declare a patch fail them.
 Static verification is close to exhausted at tier 1, and the remaining
 uncertainty can only be resolved by installing a plugin. Install verification is
 not implemented; nothing here claims a plugin runs.
@@ -125,14 +125,21 @@ ranked by strength and the confidence published alongside:
 | --- | --- | --- | --- |
 <!-- census:begin surface-en -->
 | `high` | depends on `@deepseek-ai/dsh-client-*` (client) or `@deepseek-ai/dsh-host-*` and host-only packages (host) | 1286 | 60.8% |
+| `declared` | the plugin's own `dsh.client` or `dsh.host` block declares the surface | 0 | 0.0% |
 | `medium` | depends on `@deepseek-ai/*`, but no dependency distinguishes client from host — surface `indeterminate` | 87 | 4.1% |
 | `low` | no `@deepseek-ai/*` dependency; surface guessed from a name or description keyword | 518 | 24.5% |
 | `none` | no dependency evidence and no keyword match — **not attributed at all** | 225 | 10.6% |
 <!-- census:end surface-en -->
 
-Only the 729 `high` and `medium` rows rest on dependency evidence. A `low`
-attribution is a guess from a word in the repository name and is labelled as
-one. A `none` row carries surface `indeterminate` and empty evidence: it is an
+The <!-- census:begin n-dep-evidence -->1373<!-- census:end n-dep-evidence --> `high` and `medium` rows rest on an installed
+dependency. A further <!-- census:begin n-declared -->0<!-- census:end n-declared --> are `declared`: the plugin's own `dsh`
+block names the surface, which is the author's statement rather than an installed
+package, so it ranks below dependency evidence and above a guess. Attribution read
+only dependencies until recently, which discarded those declarations — over a
+sample of 60 keyword-attributed rows, 43 carried an explicit declaration.
+
+A `low` attribution is a guess from a word in the repository name and is labelled
+as one. A `none` row carries surface `indeterminate` and empty evidence: it is an
 absence of attribution, not a weak attribution, and it should not be read as a
 statement about the plugin.
 

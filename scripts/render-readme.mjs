@@ -104,7 +104,7 @@ function verdictRows() {
 /** Surface-attribution table with a fixed row order and localised bases. */
 function surfaceRows(basis) {
   const counts = tally(surface, 'confidence')
-  return ['high', 'medium', 'low', 'none']
+  return ['high', 'declared', 'medium', 'low', 'none']
     .map((level) => {
       const count = counts.get(level) ?? 0
       return `| \`${level}\` | ${basis[level]} | ${count} | ${share(count, surface.length)} |`
@@ -187,12 +187,14 @@ const REGIONS = {
   'verdicts': verdictRows,
   'surface-en': () => surfaceRows({
     high: 'depends on `@deepseek-ai/dsh-client-*` (client) or `@deepseek-ai/dsh-host-*` and host-only packages (host)',
+    declared: "the plugin's own `dsh.client` or `dsh.host` block declares the surface",
     medium: 'depends on `@deepseek-ai/*`, but no dependency distinguishes client from host — surface `indeterminate`',
     low: 'no `@deepseek-ai/*` dependency; surface guessed from a name or description keyword',
     none: 'no dependency evidence and no keyword match — **not attributed at all**',
   }),
   'surface-zh': () => surfaceRows({
     high: '依赖 `@deepseek-ai/dsh-client-*`（client 侧）或 `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧）',
+    declared: '插件自己的 `dsh.client` 或 `dsh.host` 块声明了该 surface',
     medium: '有 `@deepseek-ai/*` 依赖，但没有一个依赖能区分 client 与 host，surface 记为 `indeterminate`',
     low: '没有 `@deepseek-ai/*` 依赖，surface 由名称或描述中的关键词猜测',
     none: '既无依赖证据也无关键词命中——**根本没有归因**',
@@ -263,6 +265,11 @@ const REGIONS = {
     const ages = decay.map((row) => row.ageDays).filter((value) => typeof value === 'number')
     return ages.length === 0 ? 'unknown' : String(Math.max(...ages))
   },
+  'n-dep-evidence': () => {
+    const counts = tally(surface, 'confidence')
+    return String((counts.get('high') ?? 0) + (counts.get('medium') ?? 0))
+  },
+  'n-declared': () => String(tally(surface, 'confidence').get('declared') ?? 0),
   'n-inconclusive': () => String(decay.filter((row) => row.state === 'inconclusive').length),
   'pct-inconclusive': () => share(decay.filter((row) => row.state === 'inconclusive').length, decay.length),
   'review-mean': () => (reviewed.length === 0
