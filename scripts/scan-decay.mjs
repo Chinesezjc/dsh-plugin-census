@@ -51,17 +51,24 @@ import { createInterface } from 'node:readline'
  */
 const DORMANT_DAYS = Number(process.env.DECAY_DORMANT_DAYS ?? 30)
 
+/** Extra attempts for a transient `gh` failure; 0 disables retrying. */
+const RETRY_ATTEMPTS = Number(process.env.CENSUS_RETRY_ATTEMPTS ?? 1)
+
+/** Pause before a retry, long enough to clear a momentary blip. */
+const RETRY_DELAY_MS = Number(process.env.CENSUS_RETRY_DELAY_MS ?? 1500)
+
 /**
  * Run a `gh api` call and parse the JSON body.
  * @param path - API path after the host.
  * @returns `{ status, body }`; status 0 marks a transport failure.
  */
-function api(path) {
+function apiOnce(path) {
   return new Promise((resolve) => {
     execFile('gh', ['api', path], { maxBuffer: 32 * 1024 * 1024 }, (error, stdout, stderr) => {
       if (error) {
-        const notFound = /HTTP 404|Not Found/.test(String(stderr))
-        return resolve({ status: notFound ? 404 : 0 })
+        const text = String(stderr)
+        const notFound = /HTTP 404|Not Found/.test(text)
+        return resolve({ status: notFound ? 404 : 0, rateLimited: /rate limit/i.test(text) })
       }
       try {
         resolve({ status: 200, body: JSON.parse(stdout) })
@@ -70,6 +77,30 @@ function api(path) {
       }
     })
   })
+}
+
+/**
+ * Call `gh api`, retrying a transient failure.
+ *
+ * 280 of 283 inconclusive entries in the published report carried "repository
+ * metadata unavailable", and every sampled one was reachable and healthy minutes
+ * later — the same transient class that cost the reviewer three slots per run.
+ * A single attempt turns a momentary blip into a permanent `inconclusive`, which
+ * both loses coverage and pushes the run toward its 40% refusal threshold.
+ *
+ * A 404 is never retried: it is the answer that produces `gone`, and retrying it
+ * would delay a real decay finding. A spent allowance is not retried either,
+ * since it cannot recover within the delay and the attempt spends what is left.
+ *
+ * @param path - API path.
+ * @returns `{ status, body? }`.
+ */
+async function api(path) {
+  for (let attempt = 0; ; attempt += 1) {
+    const result = await apiOnce(path)
+    if (result.status !== 0 || result.rateLimited || attempt >= RETRY_ATTEMPTS) return result
+    await new Promise((resolve) => { setTimeout(resolve, RETRY_DELAY_MS) })
+  }
 }
 
 /**

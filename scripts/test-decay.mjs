@@ -169,6 +169,75 @@ else out({ archived: false, pushed_at: new Date().toISOString(), fork: false })
   )
 }
 
+// Transient retry. 280 of 283 inconclusive entries in the published report said
+// "repository metadata unavailable", and every sampled one was reachable and
+// healthy minutes later. A single attempt makes a blip permanent, which both
+// loses coverage and pushes the run toward its 40% refusal threshold.
+{
+  const { spawnSync } = await import('node:child_process')
+  const { mkdtempSync, writeFileSync, readFileSync: read } = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const { join } = await import('node:path')
+
+  const dir = mkdtempSync(join(tmpdir(), 'decay-retry-'))
+  const countFile = join(dir, 'attempts')
+  const modeFile = join(dir, 'mode')
+  // Fail the first metadata call, then succeed. Count attempts on that path.
+  writeFileSync(
+    join(dir, 'gh'),
+    `#!/usr/bin/env node
+const fs = require('node:fs')
+const path = process.argv.slice(2).join(' ')
+const out = (o) => process.stdout.write(JSON.stringify(o))
+const mode = fs.readFileSync(${JSON.stringify(modeFile)}, 'utf8').trim()
+if (path.includes('/git/trees')) { out({ truncated: false, tree: [{ path: 'package.json', type: 'blob' }] }) }
+else if (path.includes('/contents/')) { out({ content: Buffer.from(JSON.stringify({ dsh: { bundle: { patch: './p.yml' } } })).toString('base64') }) }
+else {
+  const n = Number(fs.readFileSync(${JSON.stringify(countFile)}, 'utf8')) + 1
+  fs.writeFileSync(${JSON.stringify(countFile)}, String(n))
+  if (n === 1) {
+    process.stderr.write(mode === 'notfound' ? 'gh: Not Found (HTTP 404)' : 'gh: server error (HTTP 502)')
+    process.exit(1)
+  }
+  out({ archived: false, pushed_at: new Date().toISOString(), fork: false })
+}
+`,
+    { mode: 0o755 },
+  )
+
+  const runRetry = (mode) => {
+    writeFileSync(countFile, '0')
+    writeFileSync(modeFile, mode)
+    const result = spawnSync(process.execPath, [new URL('./scan-decay.mjs', import.meta.url).pathname], {
+      input: `${JSON.stringify({ repo: 'owner/plugin', manifestPath: 'package.json' })}\n`,
+      encoding: 'utf8',
+      env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, CENSUS_RETRY_DELAY_MS: '10' },
+      timeout: 60_000,
+    })
+    return {
+      attempts: Number(read(countFile, 'utf8')),
+      status: result.status,
+      rows: String(result.stdout ?? '').split('\n').filter((l) => l.trim()).map((l) => JSON.parse(l)),
+    }
+  }
+
+  const transient = runRetry('transient')
+  check('a transient metadata failure is retried', transient.attempts === 2, `${transient.attempts} attempt(s)`)
+  check(
+    'a retried entry reaches a conclusion instead of inconclusive',
+    transient.rows[0]?.state === 'live',
+    JSON.stringify(transient.rows[0] ?? ''),
+  )
+
+  const notFound = runRetry('notfound')
+  check('a 404 is not retried', notFound.attempts === 1, `${notFound.attempts} attempt(s)`)
+  check(
+    'a 404 still reports gone rather than inconclusive',
+    notFound.rows[0]?.state === 'gone',
+    JSON.stringify(notFound.rows[0] ?? ''),
+  )
+}
+
 // Sentinel: prove the actionable set is not simply empty, which would make
 // every check above vacuous.
 assert.ok(ACTIONABLE.size === 4, 'sentinel: four actionable decay states must be tracked')
@@ -176,6 +245,6 @@ assert.ok(ACTIONABLE.has('gone') && ACTIONABLE.has('unbundled'),
   'sentinel: gone and unbundled must be actionable')
 
 process.stdout.write(failed === 0
-  ? '\nall 24 decay controls behaved as specified\n'
-  : `\n${failed} of 24 decay controls did not behave as specified\n`)
+  ? '\nall 28 decay controls behaved as specified\n'
+  : `\n${failed} of 28 decay controls did not behave as specified\n`)
 process.exit(failed === 0 ? 0 : 1)
