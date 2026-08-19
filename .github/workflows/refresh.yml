@@ -299,6 +299,16 @@ jobs:
           CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
           CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
           CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}
+          # Upper bound on reviews per run. The effective batch is the smaller of
+          # this and what the remaining core allowance affords, and the reviewer
+          # also stops at the wall-clock deadline below.
+          #
+          # Time binds before quota: a review takes ~17.6 s, so the allowance would
+          # afford ~185 reviews (~54 min) while `timeout-minutes: 45` with 25 min of
+          # census work leaves ~15 min. 50 reviews is ~15 min, and the deadline
+          # enforces it even if a review runs slower than measured.
+          CENSUS_REVIEW_MAX: '50'
+          CENSUS_REVIEW_DEADLINE_SECONDS: '900'
         run: |
           # The `secrets` context is not available in a step-level `if`, so the
           # skip is decided here instead. Using `if: secrets.X != ''` would make
@@ -307,9 +317,25 @@ jobs:
             echo "no CENSUS_API_KEY configured; skipping the model review"
             exit 0
           fi
+          # Size the batch from the allowance actually left, not a fixed guess.
+          # Measured: 3 core calls per review (head commit, README, tree; the
+          # manifest read is served from the same tree request often enough that
+          # the average is 3.0 over a sample of fresh reviews). The steps before
+          # this one spend most of the hourly 5000, and the catalogue keeps
+          # growing, so a hardcoded limit either wastes headroom or overruns it.
+          remaining=$(gh api rate_limit --jq '.resources.core.remaining')
+          reserve=200
+          budget=$(( (remaining - reserve) / 3 ))
+          limit="${CENSUS_REVIEW_MAX}"
+          if [ "${budget}" -lt "${limit}" ]; then limit="${budget}"; fi
+          echo "core remaining: ${remaining}; review limit: ${limit} (cap ${CENSUS_REVIEW_MAX})"
+          if [ "${limit}" -lt 1 ]; then
+            echo "::warning::not enough core allowance left to review anything this run"
+            exit 0
+          fi
           seed=$(date -u +%Y%m%d%H)
           echo "review seed: ${seed}"
-          if node scripts/ai-review.mjs --limit 20 --seed "${seed}" \
+          if node scripts/ai-review.mjs --limit "${limit}" --seed "${seed}" \
               --existing data/reviews.jsonl \
               < data/catalog.jsonl > /tmp/reviews.jsonl; then
             mv /tmp/reviews.jsonl data/reviews.jsonl

@@ -280,7 +280,11 @@ needs on the order of 60 runs. Until then, treat a single-run score (`runs: 1`)
 as one sample of a noisy judgement, and prefer entries with a higher `runs` count.
 
 Coverage is <!-- census:begin n-reviewed -->93<!-- census:end n-reviewed --> of <!-- census:begin n-catalogued -->1660<!-- census:end n-catalogued --> and grows with each scheduled run,
-which reviews 20 entries under a seed derived from the hour. A failed review is recorded with
+which reviews up to 50 entries under a seed derived from the hour. The batch is
+the smaller of that cap and what the remaining hourly API allowance affords, and
+the reviewer stops at a 15-minute deadline: a review takes about 17.6 seconds, so
+time binds before quota and an unbounded batch would exceed the job timeout and
+take the census down with it. A failed review is recorded with
 `reviewed: false` and no score, and a run in which more than 30% of reviews fail
 exits non-zero rather than publishing a transport failure as an opinion about
 someone's code.

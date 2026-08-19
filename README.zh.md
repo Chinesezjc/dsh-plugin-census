@@ -245,8 +245,10 @@ commit 不同的样本会被丢弃而不是并入均值。
 20 个的期望重叠只有 0.34 个，所以要拿到可用的数字大约需要 60 次运行。在那之前，把
 `runs: 1` 的分数当作一次带噪声的采样，优先看 `runs` 更大的条目。
 
-覆盖率是 <!-- census:begin n-catalogued -->1660<!-- census:end n-catalogued --> 中的 <!-- census:begin n-reviewed -->93<!-- census:end n-reviewed -->，并随每次定时运行增长——每次按
-小时派生的种子评审 20 个条目。
+覆盖率是 <!-- census:begin n-catalogued -->1660<!-- census:end n-catalogued --> 中的 <!-- census:begin n-reviewed -->93<!-- census:end n-reviewed -->，并随每次定时运行增长——每次按小时派生的
+种子最多评审 50 个条目。实际批量取「这个上限」与「剩余每小时 API 配额支持的数量」
+中较小的那个，且评审器在 15 分钟处停止：单条评审约 17.6 秒，所以**时间比配额更早
+成为瓶颈**，不设界的批量会超出 job 超时并把普查一起拖死。
 
 评审器在设置了 `CENSUS_API_KEY` 时直接调用 Messages API，否则回退到本地模型 CLI。
 定时 workflow 走 API 这条路，且**不会让整个任务失败**：普查是可判定的证据，评审是

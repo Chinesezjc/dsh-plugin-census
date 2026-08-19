@@ -77,6 +77,17 @@ const API_MODEL = process.env.CENSUS_API_MODEL ?? process.env.ANTHROPIC_MODEL ??
  */
 const MAX_TOKENS = Number(process.env.CENSUS_MAX_TOKENS ?? 4096)
 
+/**
+ * Wall-clock budget for one run, in seconds; 0 disables the deadline.
+ *
+ * Measured: a review takes about 17.6 s, almost all of it the model call. The
+ * workflow job sets `timeout-minutes: 45` and the census work alone has taken 25,
+ * so a batch sized only by API allowance (which affords roughly 185 reviews) would
+ * blow the job timeout and kill the census with it. The reviewer stops at the
+ * deadline and publishes what it finished, instead of being killed mid-write.
+ */
+const DEADLINE_SECONDS = Number(process.env.CENSUS_REVIEW_DEADLINE_SECONDS ?? 0)
+
 /** Fraction of attempted reviews that may fail before the run is refused. */
 const MAX_UNREVIEWED_SHARE = 0.3
 
@@ -558,7 +569,15 @@ async function main() {
   let unreviewed = 0
   let repeated = 0
 
+  const startedAt = Date.now()
   for (const entry of sample) {
+    if (DEADLINE_SECONDS > 0 && (Date.now() - startedAt) / 1000 > DEADLINE_SECONDS) {
+      process.stderr.write(
+        `stopping at the ${DEADLINE_SECONDS}s deadline after ${attempted} review(s);`
+        + ` ${sample.length - attempted} drawn entr(y/ies) not reviewed this run\n`,
+      )
+      break
+    }
     attempted += 1
     const record = await review(entry)
     if (!record.reviewed) {
@@ -580,9 +599,11 @@ async function main() {
     )
   }
 
-  // Carry forward every stored review not drawn this time, so output remains the
-  // complete record rather than only this run's sample.
-  const drawn = new Set(sample.map((entry) => entry.repo))
+  // Carry forward every stored review not written this run, so output stays the
+  // complete record. Keying on what was actually reviewed rather than on what was
+  // drawn matters once a deadline can cut the loop short: an entry drawn but never
+  // reached must keep its stored review instead of vanishing from the output.
+  const drawn = new Set(results.map((row) => row.repo))
   let carried = 0
   for (const [repo, prior] of stored) {
     if (drawn.has(repo)) continue

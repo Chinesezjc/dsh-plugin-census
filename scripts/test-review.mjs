@@ -497,6 +497,116 @@ check(
   String(brokenGh.stderr).split('\n').slice(0, 3).join(' | '),
 )
 
+// Wall-clock deadline. The batch is bounded by time, not only by API allowance:
+// a review takes ~17.6 s and the job times out at 45 minutes, so a run sized
+// purely by quota would kill the census with it.
+{
+  const dir = mkdtempSync(join(tmpdir(), 'deadline-'))
+  writeFileSync(join(dir, 'gh'), ghStub(), { mode: 0o755 })
+  const slow = mkdtempSync(join(tmpdir(), 'slowmodel-'))
+  const slowPath = join(slow, 'model')
+  // Each call takes ~1.2 s, so a 2 s deadline stops the loop partway.
+  writeFileSync(
+    slowPath,
+    '#!/usr/bin/env node\n'
+      + 'setTimeout(() => process.stdout.write(\'{"score": 4, "reasons": ["x"]}\'), 1200)\n',
+    { mode: 0o755 },
+  )
+  const many = Array.from({ length: 8 }, (_, i) =>
+    JSON.stringify({ repo: `owner${i}/plugin`, package: 'p', manifestPath: 'package.json' }),
+  ).join('\n') + '\n'
+  const result = spawnSync(process.execPath, [SCRIPT, '--limit', '8'], {
+    input: many,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `${dir}:${process.env.PATH}`,
+      CENSUS_MODEL_CLI: slowPath,
+      CENSUS_REVIEW_DEADLINE_SECONDS: '2',
+    },
+    timeout: 120_000,
+  })
+  const records = String(result.stdout || '')
+    .split('\n')
+    .filter((l) => l.trim())
+    .map((l) => JSON.parse(l))
+  check(
+    'the deadline stops the loop before the whole sample is reviewed',
+    records.length < 8 && records.length > 0,
+    `${records.length} of 8 reviewed; stderr=${String(result.stderr).slice(-200)}`,
+  )
+  check(
+    'the deadline is reported with a count',
+    /stopping at the 2s deadline after \d+ review/.test(String(result.stderr)),
+    String(result.stderr).split('\n').slice(-3).join(' | '),
+  )
+  check(
+    'a deadline-shortened run still exits zero',
+    result.status === 0,
+    `status=${result.status}`,
+  )
+}
+
+// An entry drawn but never reached must keep its stored review. Keying the
+// carry-forward on "drawn" rather than "reviewed" silently dropped those rows.
+{
+  const dir = mkdtempSync(join(tmpdir(), 'carry-'))
+  writeFileSync(join(dir, 'gh'), ghStub(), { mode: 0o755 })
+  const slow = mkdtempSync(join(tmpdir(), 'slow2-'))
+  const slowPath = join(slow, 'model')
+  writeFileSync(
+    slowPath,
+    '#!/usr/bin/env node\n'
+      + 'setTimeout(() => process.stdout.write(\'{"score": 4, "reasons": ["x"]}\'), 1200)\n',
+    { mode: 0o755 },
+  )
+  const repos = Array.from({ length: 8 }, (_, i) => `owner${i}/plugin`)
+  const catalogue = repos
+    .map((repo) => JSON.stringify({ repo, package: 'p', manifestPath: 'package.json' }))
+    .join('\n') + '\n'
+  // Every entry already has a stored review, so nothing may be lost.
+  const existingPath = join(slow, 'existing.jsonl')
+  writeFileSync(
+    existingPath,
+    repos
+      .map((repo) => JSON.stringify({
+        repo,
+        reviewed: true,
+        score: 3,
+        scores: [3],
+        runs: 1,
+        commitSha: 'f'.repeat(40),
+        promptVersion: 'v1',
+      }))
+      .join('\n') + '\n',
+  )
+  const result = spawnSync(process.execPath, [SCRIPT, '--limit', '8', '--existing', existingPath], {
+    input: catalogue,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `${dir}:${process.env.PATH}`,
+      CENSUS_MODEL_CLI: slowPath,
+      CENSUS_REVIEW_DEADLINE_SECONDS: '2',
+    },
+    timeout: 120_000,
+  })
+  const records = String(result.stdout || '')
+    .split('\n')
+    .filter((l) => l.trim())
+    .map((l) => JSON.parse(l))
+  check(
+    'a deadline-shortened run loses no stored entry',
+    new Set(records.map((row) => row.repo)).size === repos.length,
+    `${new Set(records.map((row) => row.repo)).size} of ${repos.length} repos in output`,
+  )
+  check(
+    'unreached entries keep their stored score',
+    records.filter((row) => row.runs === 1 && row.score === 3).length > 0,
+    JSON.stringify(records.map((row) => `${row.repo}:${row.score}/${row.runs}`)),
+  )
+}
+
 process.stdout.write(
   failures === 0
     ? `\nall ${checks} review controls behaved as specified\n`
