@@ -168,7 +168,7 @@ is a different concern this catalogue does not adjudicate.
 
 ## Decay
 
-`scripts/scan-decay.mjs` re-checks every catalogued entry and reports four
+`scripts/scan-decay.mjs` re-checks catalogued entries and reports four
 conditions, flagging and never removing: `gone` (404), `archived`, `dormant`
 (no push within 30 days) and `unbundled` (the contract no longer holds). A probe
 that cannot reach a conclusion is reported as `inconclusive`, never as decay,
@@ -200,6 +200,13 @@ spends the same hourly API allowance as the probe, and a run that exhausts it
 reports what it could not check instead of guessing. The refusal threshold is 40%,
 so this run published; a reader should treat the decay table as covering the
 entries that were actually reachable.
+
+The scan is incremental for the same reason the probe is: re-checking every
+entry cost two API calls per catalogued plugin and grew with the catalogue,
+reaching 85% of the hourly allowance and failing a scheduled run outright at
+45.4% inconclusive. Each run now checks a bounded batch, oldest results first,
+and carries the rest forward, so a state in this table may have been observed
+on an earlier run than the figures above.
 
 <!-- census:begin decay-flagged-en -->
 The 7 entries flagged as decayed (`inconclusive` is not decay and is excluded):

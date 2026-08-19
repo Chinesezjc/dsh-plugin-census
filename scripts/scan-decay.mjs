@@ -24,11 +24,21 @@
  * always report zero and look healthy. DORMANT_DAYS is set against the topic's
  * actual age, and the report states which sample it ran over.
  *
- *   node scripts/scan-decay.mjs < data/catalog.jsonl > data/decay.jsonl
+ * The scan is incremental. It re-checked every entry on every run, which cost two
+ * API calls per catalogue entry and grew with the catalogue: 85% of the hourly
+ * allowance at 2117 entries, and more than the whole allowance at the size this
+ * catalogue is heading for. A run that cannot check most entries is refused
+ * outright, so unbounded growth turned into a hard failure — measured at 45.4%
+ * inconclusive, above the 40% ceiling. Each run now checks a bounded batch,
+ * oldest results first, and carries forward the rest.
+ *
+ *   node scripts/scan-decay.mjs --existing data/decay.jsonl \
+ *     < data/catalog.jsonl > data/decay.next.jsonl
  *   node scripts/scan-decay.mjs --summary < data/catalog.jsonl
  */
 
 import { execFile } from 'node:child_process'
+import { existsSync, readFileSync } from 'node:fs'
 import { createInterface } from 'node:readline'
 
 /**
@@ -146,6 +156,30 @@ async function scan(entry) {
   return { repo: entry.repo, state: 'live', detail: `pushed ${ageDays} day(s) ago`, ageDays }
 }
 
+/**
+ * Read previously scanned entries so a run can carry forward what it skips.
+ * @param path - JSONL path, or empty.
+ * @returns map from repo to stored record.
+ */
+function loadExisting(path) {
+  const stored = new Map()
+  if (!path || !existsSync(path)) return stored
+  for (const line of readFileSync(path, 'utf8').split('\n')) {
+    if (!line.trim()) continue
+    try {
+      const record = JSON.parse(line)
+      if (record?.repo) stored.set(record.repo, record)
+    } catch { /* skip unparseable stored row */ }
+  }
+  return stored
+}
+
+/** @returns the value following `flag`, or a fallback. */
+function argValue(flag, fallback) {
+  const index = process.argv.indexOf(flag)
+  return index >= 0 && process.argv[index + 1] !== undefined ? process.argv[index + 1] : fallback
+}
+
 async function main() {
   const summaryOnly = process.argv.includes('--summary')
   const entries = []
@@ -156,27 +190,65 @@ async function main() {
     } catch { /* skip unparseable input rows */ }
   }
 
+  const stored = loadExisting(argValue('--existing', ''))
+  const batchSize = Number(process.env.CENSUS_DECAY_BATCH ?? argValue('--limit', '0')) || 0
+
+  // Order by staleness: entries never scanned first, then the oldest results.
+  // Without an order a bounded batch would re-check the same head every run and
+  // the tail would never be scanned at all.
+  const ordered = [...entries].sort((a, b) => {
+    const aAt = stored.get(a.repo)?.scannedAt ?? ''
+    const bAt = stored.get(b.repo)?.scannedAt ?? ''
+    return aAt < bAt ? -1 : aAt > bAt ? 1 : a.repo.localeCompare(b.repo)
+  })
+  const selected = batchSize > 0 ? ordered.slice(0, batchSize) : ordered
+  const scanning = new Set(selected.map((entry) => entry.repo))
+  if (batchSize > 0 && selected.length < entries.length) {
+    process.stderr.write(
+      `scanning ${selected.length} of ${entries.length} entr(y/ies) this run;`
+      + ` the rest keep their stored state\n`,
+    )
+  }
+
   const limit = Number(process.env.RADAR_CONCURRENCY ?? 8)
   const results = []
   let cursor = 0
   let done = 0
 
+  const scannedNow = []
+
   async function worker() {
-    while (cursor < entries.length) {
-      const entry = entries[cursor++]
+    while (cursor < selected.length) {
+      const entry = selected[cursor++]
       let record
       try {
         record = await scan(entry)
       } catch (error) {
         record = { repo: entry.repo, state: 'inconclusive', detail: String(error) }
       }
-      results.push(record)
-      if (!summaryOnly) process.stdout.write(`${JSON.stringify(record)}\n`)
+      // Stamp the scan time so the next run can order by staleness. Without it
+      // a bounded batch has no way to advance past the first N entries.
+      record.scannedAt = new Date().toISOString()
+      scannedNow.push(record)
       done += 1
-      if (done % 50 === 0) process.stderr.write(`  scanned ${done}/${entries.length}\n`)
+      if (done % 50 === 0) process.stderr.write(`  scanned ${done}/${selected.length}\n`)
     }
   }
-  await Promise.all(Array.from({ length: Math.min(limit, entries.length) }, worker))
+  await Promise.all(Array.from({ length: Math.min(limit, selected.length) }, worker))
+
+  // Emit in catalogue order: freshly scanned entries, and stored records for the
+  // rest. Dropping unscanned entries would shrink the report to this run's batch
+  // and make the decay counts describe the batch rather than the catalogue.
+  const freshByRepo = new Map(scannedNow.map((record) => [record.repo, record]))
+  let carried = 0
+  for (const entry of entries) {
+    const record = freshByRepo.get(entry.repo) ?? stored.get(entry.repo)
+    if (!record) continue
+    if (!freshByRepo.has(entry.repo)) carried += 1
+    results.push(record)
+    if (!summaryOnly) process.stdout.write(`${JSON.stringify(record)}\n`)
+  }
+  if (carried > 0) process.stderr.write(`carried forward ${carried} stored result(s)\n`)
 
   const counts = {}
   for (const record of results) counts[record.state] = (counts[record.state] ?? 0) + 1
@@ -203,15 +275,29 @@ async function main() {
   // `live` counts as coverage they are not. The threshold is deliberately looser
   // than attribution's, because a decay scan makes two API calls per entry and
   // some unreadable repositories are normal.
-  const inconclusive = counts.inconclusive ?? 0
-  if (results.length > 0) {
-    const rate = inconclusive / results.length
-    process.stderr.write(`inconclusive rate: ${inconclusive}/${results.length} (${(rate * 100).toFixed(1)}%)\n`)
+  // Judge this run's own work, not the report as a whole. Carried-forward records
+  // were checked successfully in an earlier run, so counting them here would let
+  // a wholly failed batch hide behind stored results — and, before the scan was
+  // incremental, an accumulation of old inconclusive rows would fail a run whose
+  // fresh batch was entirely fine.
+  const freshInconclusive = scannedNow.filter((record) => record.state === 'inconclusive').length
+  if (scannedNow.length > 0) {
+    const rate = freshInconclusive / scannedNow.length
+    process.stderr.write(
+      `inconclusive rate this run: ${freshInconclusive}/${scannedNow.length} (${(rate * 100).toFixed(1)}%)\n`,
+    )
     if (rate > 0.4) {
-      process.stderr.write('refusing to publish this decay scan: most entries could not be checked,'
-        + ' so neither the decay findings nor the live counts are meaningful\n')
+      process.stderr.write('refusing to publish this decay scan: most entries checked this run could not'
+        + ' be reached, so neither the decay findings nor the live counts are meaningful\n')
       process.exit(1)
     }
+  }
+  const totalInconclusive = counts.inconclusive ?? 0
+  if (totalInconclusive > 0) {
+    process.stderr.write(
+      `inconclusive in the published report: ${totalInconclusive}/${results.length}`
+      + ` (${((totalInconclusive / results.length) * 100).toFixed(1)}%)\n`,
+    )
   }
 }
 

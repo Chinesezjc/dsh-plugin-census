@@ -256,12 +256,20 @@ jobs:
       # but the step is NOT continue-on-error: the scan refuses to publish when
       # most entries could not be checked, and swallowing that exit would put the
       # meaningless scan back into the commit it was written to prevent.
+      # The scan is incremental. Re-checking every entry cost two API calls per
+      # catalogue entry and grew with the catalogue — 85% of the hourly allowance
+      # at 2117 entries — which is what made the 2026-08-19 scheduled run fail at
+      # 45.4% inconclusive. Each run checks a bounded batch, oldest first, and
+      # carries the rest forward.
       - name: Scan the catalogue for decay
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RADAR_CONCURRENCY: '10'
+          CENSUS_DECAY_BATCH: '800'
         run: |
-          node scripts/scan-decay.mjs < data/catalog.jsonl > data/decay.jsonl
+          node scripts/scan-decay.mjs --existing data/decay.jsonl \
+            < data/catalog.jsonl > /tmp/decay.jsonl
+          mv /tmp/decay.jsonl data/decay.jsonl
           jq -r '.state' data/decay.jsonl | sort | uniq -c | sort -rn
 
       # A refresh that produces an empty catalogue means the search or probe

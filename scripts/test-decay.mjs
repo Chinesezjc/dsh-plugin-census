@@ -84,6 +84,91 @@ if (rateMatch !== null) {
 }
 check('the refusal exits non-zero', /process\.exit\(1\)/.test(source))
 
+// Incremental scanning. Re-checking every entry cost two API calls per catalogue
+// entry and grew with the catalogue: 85% of the hourly allowance at 2117 entries,
+// which is what made a scheduled run fail at 45.4% inconclusive.
+{
+  const { spawnSync } = await import('node:child_process')
+  const { mkdtempSync, writeFileSync, readFileSync: read } = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const { join } = await import('node:path')
+
+  const dir = mkdtempSync(join(tmpdir(), 'decay-'))
+  // Stub `gh` so no network is involved; every repository looks live.
+  writeFileSync(
+    join(dir, 'gh'),
+    `#!/usr/bin/env node
+const path = process.argv.slice(2).join(' ')
+const out = (o) => process.stdout.write(JSON.stringify(o))
+if (path.includes('/git/trees')) out({ truncated: false, tree: [{ path: 'package.json', type: 'blob' }] })
+else if (path.includes('/contents/')) out({ content: Buffer.from(JSON.stringify({ dsh: { bundle: { patch: './p.yml' } } })).toString('base64') })
+else out({ archived: false, pushed_at: new Date().toISOString(), fork: false })
+`,
+    { mode: 0o755 },
+  )
+  const catalogue = Array.from({ length: 20 }, (_, i) =>
+    JSON.stringify({ repo: `owner${i}/plugin`, manifestPath: 'package.json' }),
+  ).join('\n') + '\n'
+
+  const runScan = (existing) => {
+    const args = [new URL('./scan-decay.mjs', import.meta.url).pathname]
+    if (existing) args.push('--existing', existing)
+    const result = spawnSync(process.execPath, args, {
+      input: catalogue,
+      encoding: 'utf8',
+      env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, CENSUS_DECAY_BATCH: '5' },
+      timeout: 120_000,
+    })
+    return {
+      status: result.status,
+      stderr: String(result.stderr ?? ''),
+      rows: String(result.stdout ?? '').split('\n').filter((l) => l.trim()).map((l) => JSON.parse(l)),
+    }
+  }
+
+  const first = runScan(null)
+  check('a bounded scan exits zero', first.status === 0)
+  check('a bounded scan checks only its batch', first.rows.length === 5, `${first.rows.length} rows`)
+  check('the batch limit is reported', /scanning 5 of 20/.test(first.stderr))
+  check('every scanned row carries a scan time', first.rows.every((r) => typeof r.scannedAt === 'string'))
+
+  const firstPath = join(dir, 'first.jsonl')
+  writeFileSync(firstPath, first.rows.map((r) => JSON.stringify(r)).join('\n') + '\n')
+  const second = runScan(firstPath)
+  check('a second run carries forward stored results', /carried forward 5 stored result/.test(second.stderr))
+  check('a second run grows the report', second.rows.length === 10, `${second.rows.length} rows`)
+  const firstRepos = new Set(first.rows.map((r) => r.repo))
+  const rescanned = second.rows.filter(
+    (r) => firstRepos.has(r.repo) && r.scannedAt !== first.rows.find((f) => f.repo === r.repo)?.scannedAt,
+  )
+  check(
+    'a second run scans entries the first did not',
+    rescanned.length === 0,
+    `${rescanned.length} entr(y/ies) were re-scanned instead of advancing`,
+  )
+
+  // The refusal must judge this run's batch, not the accumulated report: stored
+  // inconclusive rows would otherwise fail a run whose own batch was fine.
+  const pollutedPath = join(dir, 'polluted.jsonl')
+  writeFileSync(
+    pollutedPath,
+    Array.from({ length: 5 }, (_, i) =>
+      JSON.stringify({ repo: `owner${i}/plugin`, state: 'inconclusive', detail: 'old failure', scannedAt: '2000-01-01T00:00:00Z' }),
+    ).join('\n') + '\n',
+  )
+  const afterPollution = runScan(pollutedPath)
+  check(
+    'stored inconclusive rows do not fail a healthy run',
+    afterPollution.status === 0,
+    `status=${afterPollution.status} ${afterPollution.stderr.slice(-200)}`,
+  )
+  check(
+    'the refusal rate is reported for this run only',
+    /inconclusive rate this run: 0\/5/.test(afterPollution.stderr),
+    afterPollution.stderr.split('\n').filter((l) => l.includes('inconclusive')).join(' | '),
+  )
+}
+
 // Sentinel: prove the actionable set is not simply empty, which would make
 // every check above vacuous.
 assert.ok(ACTIONABLE.size === 4, 'sentinel: four actionable decay states must be tracked')
@@ -91,6 +176,6 @@ assert.ok(ACTIONABLE.has('gone') && ACTIONABLE.has('unbundled'),
   'sentinel: gone and unbundled must be actionable')
 
 process.stdout.write(failed === 0
-  ? '\nall 15 decay controls behaved as specified\n'
-  : `\n${failed} of 15 decay controls did not behave as specified\n`)
+  ? '\nall 24 decay controls behaved as specified\n'
+  : `\n${failed} of 24 decay controls did not behave as specified\n`)
 process.exit(failed === 0 ? 0 : 1)
