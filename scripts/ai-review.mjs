@@ -74,8 +74,20 @@ const API_MODEL = process.env.CENSUS_API_MODEL ?? process.env.ANTHROPIC_MODEL ??
  * `Totoro-qaq/dsh-plugin-bridge`: 4094 characters of thinking exhausted a 1024
  * budget and the answer never arrived, which surfaced as unparseable output. The
  * budget has to cover the reasoning, not just the answer.
+ *
+ * 4096 still truncated 6 of 9 failures in a full CI run. Raising it to 8192 is
+ * strictly better on both axes, which is not obvious until measured: over the same
+ * 12 entries the larger ceiling scored 12 rather than 9 *and* finished in 72 s
+ * rather than 97. `max_tokens` is a cap, not a target, so a request that fits
+ * costs no more — while a truncated one spends the entire budget and returns
+ * nothing, so the failures were the expensive case.
+ *
+ * Input size does not predict truncation: successful reviews include a 71 KB
+ * README and a 20571-file tree, while a 4 KB README with 79 files truncated. The
+ * variable is how long the model reasons, which also makes it non-deterministic —
+ * `FlipFlopszzz/dsh-studio` truncated on CI and scored on a local retry.
  */
-const MAX_TOKENS = Number(process.env.CENSUS_MAX_TOKENS ?? 4096)
+const MAX_TOKENS = Number(process.env.CENSUS_MAX_TOKENS ?? 8192)
 
 /**
  * Wall-clock budget for one run, in seconds; 0 disables the deadline.

@@ -721,6 +721,16 @@ setTimeout(() => {
   )
 }
 
+// The token ceiling must be high enough that reasoning fits. 4096 truncated 6 of
+// 9 failures in a full CI run, and 8192 scored 12 of 12 where 4096 scored 9 while
+// also finishing faster, because a truncated call spends the whole budget and
+// returns nothing.
+check(
+  'the token ceiling leaves room for the reasoning block',
+  Number((SOURCE.match(/CENSUS_MAX_TOKENS \?\? (\d+)/) ?? [])[1]) >= 8192,
+  `ceiling is ${(SOURCE.match(/CENSUS_MAX_TOKENS \?\? (\d+)/) ?? ['', 'unset'])[1]}`,
+)
+
 process.stdout.write(
   failures === 0
     ? `\nall ${checks} review controls behaved as specified\n`
