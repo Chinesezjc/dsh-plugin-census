@@ -144,11 +144,37 @@ jobs:
           core_reset=$(printf '%s' "${limits}" | jq -r '.resources.core.reset')
           search=$(printf '%s' "${limits}" | jq -r '.resources.search.remaining')
           search_reset=$(printf '%s' "${limits}" | jq -r '.resources.search.reset')
-          echo "core allowance remaining:   ${core}"
+          echo "core allowance reported:    ${core}"
           echo "search allowance remaining: ${search}"
-          if [ "${core}" -lt 2500 ]; then
+
+          # `rate_limit` does not report the pool that governs these calls. Run
+          # 32222507092 read `core: 5000` here and, ten minutes later, every one
+          # of 700 tree reads failed with "API rate limit exceeded for
+          # installation" — a different bucket from the `core` this endpoint
+          # describes. A threshold on `core` therefore cannot fire, and reading it
+          # gave false confidence rather than a check.
+          #
+          # The only reliable signal is a request against the same pool, so make
+          # one and read its outcome. It costs a single call.
+          probe_status=$(gh api repos/${GITHUB_REPOSITORY}/git/trees/HEAD \
+            --jq '.sha' >/dev/null 2>/tmp/probe.err && echo ok || echo failed)
+          if [ "${probe_status}" != "ok" ]; then
+            if grep -qi 'rate limit' /tmp/probe.err; then
+              echo "::error::the installation allowance is exhausted: a single tree read was rejected. Re-run in the next window."
+              sed 's/^/  /' /tmp/probe.err
+              exit 1
+            fi
+            echo "::error::a probe request failed for a reason other than rate limiting:"
+            sed 's/^/  /' /tmp/probe.err
+            exit 1
+          fi
+          echo "installation allowance: a tree read succeeded"
+
+          # Keep the reported figure as a secondary signal: when it does drop it
+          # still means something, even though it cannot be relied on alone.
+          if [ "${core}" -lt 500 ]; then
             wait_min=$(( (core_reset - $(date +%s) + 59) / 60 ))
-            echo "::error::only ${core} core calls left; a full refresh needs roughly 2500. The allowance resets in about ${wait_min} minute(s)."
+            echo "::error::the reported core allowance is down to ${core}; it resets in about ${wait_min} minute(s)."
             exit 1
           fi
           # The enumerator paces itself, so it only needs the window to be
