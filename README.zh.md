@@ -249,10 +249,14 @@ commit 不同的样本会被丢弃而不是并入均值。
 现在的选择方式是对仓库名做带种子的洗牌。已公布的样本 star 中位数为 1，目录中位数
 同为 1；40 个中有 14 个是零 star；与 star 的 Spearman 相关系数为 0.22。
 
-**这些分数会漂移多少，目前还不知道。** 目前被抽到两次的条目共三个：两个两次完全相同，
-一个差了 1 分——样本太少，还构不成测量值，而且随着样本累积这个方向已经变过一次。漂移数据只在两次抽样撞上同一条目时才增长，而从整个目录里抽两次
-20 个的期望重叠只有 0.34 个，所以要拿到可用的数字大约需要 60 次运行。在那之前，把
-`runs: 1` 的分数当作一次带噪声的采样，优先看 `runs` 更大的条目。
+**重复采样的结果多数一致。** 被抽到一次以上的 <!-- census:begin n-multi -->13<!-- census:end n-multi --> 个条目中，
+<!-- census:begin n-identical -->12<!-- census:end n-identical --> 个两次分数完全相同，<!-- census:begin n-disagree -->1<!-- census:end n-disagree --> 个发生了变化，
+平均跨度 <!-- census:begin mean-spread -->0.08<!-- census:end mean-spread --> 分，最大跨度 <!-- census:begin max-spread -->1<!-- census:end max-spread --> 分。本表更早的一次读数
+是在只有两个条目被抽到两次、且两个都变化时得出的，当时据此称这些分数「有噪声」——
+那个样本量不足以支撑该结论，现以本次读数为准。
+
+这个数字仍是暂定的。重复采样只在两次抽样撞上同一条目时才增长，所以计数上升很慢；
+`runs: 1` 的分数仍然只是一次观测而非稳定值——优先看 `runs` 更大的条目。
 
 覆盖率是 <!-- census:begin n-catalogued -->2116<!-- census:end n-catalogued --> 中的 <!-- census:begin n-reviewed -->262<!-- census:end n-reviewed -->，并随每次定时运行增长——每次按小时派生的
 种子最多评审 180 个条目。实际批量取「这个上限」与「剩余每小时 API 配额支持的数量」

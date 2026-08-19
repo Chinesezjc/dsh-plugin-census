@@ -237,10 +237,19 @@ check(
     region !== null && /more in `data\/decay\.jsonl`/.test(region[1]),
     region ? region[1].split('\n').slice(-2).join(' | ') : '',
   )
+  // Compute the expectation from the sandbox data. Hardcoding a total made this
+  // control fail the moment a CI refresh changed how many entries are decayed,
+  // which measured the data rather than the generator.
+  const expectedDecayed = readFileSync(decayPath, 'utf8')
+    .split('\n')
+    .filter((line) => line.trim())
+    .map((line) => JSON.parse(line))
+    .filter((row) => ['gone', 'archived', 'dormant', 'unbundled'].includes(row.state))
+    .length
   check(
     'the count in the header reflects every decayed entry, not just the shown ones',
-    region !== null && /\b47 entries flagged as decayed\b/.test(region[1]),
-    region ? region[1].split('\n')[0] : '',
+    region !== null && new RegExp(`\\b${expectedDecayed} entries flagged as decayed\\b`).test(region[1]),
+    `expected ${expectedDecayed}; header was ${region ? region[1].split('\n')[0] : 'absent'}`,
   )
 }
 
@@ -265,10 +274,18 @@ check(
     region !== null && !/synthetic\/unchecked/.test(region[1]),
     region ? region[1].slice(0, 200) : 'no region',
   )
+  const expectedInconclusive = readFileSync(decayPath, 'utf8')
+    .split('\n')
+    .filter((line) => line.trim())
+    .map((line) => JSON.parse(line))
+    .filter((row) => row.state === 'inconclusive')
+    .length
   check(
     'the inconclusive count is published separately',
-    /<!-- census:begin n-inconclusive -->468<!-- census:end n-inconclusive -->/.test(generated),
-    (generated.match(/n-inconclusive -->[^<]*/) ?? ['missing'])[0],
+    new RegExp(
+      `<!-- census:begin n-inconclusive -->${expectedInconclusive}<!-- census:end n-inconclusive -->`,
+    ).test(generated),
+    `expected ${expectedInconclusive}; got ${(generated.match(/n-inconclusive -->[^<]*/) ?? ['missing'])[0]}`,
   )
 }
 

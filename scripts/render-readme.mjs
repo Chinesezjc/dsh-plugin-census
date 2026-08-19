@@ -243,6 +243,16 @@ const REGIONS = {
   'n-reviewed': () => String(reviewed.length),
   'n-multi': () => String(multiSampled.length),
   'n-disagree': () => String(disagreeing.length),
+  'n-identical': () => String(multiSampled.length - disagreeing.length),
+  'mean-spread': () => (multiSampled.length === 0
+    ? 'n/a'
+    : (
+      multiSampled.reduce((sum, row) => sum + (Math.max(...row.scores) - Math.min(...row.scores)), 0)
+      / multiSampled.length
+    ).toFixed(2)),
+  'max-spread': () => (multiSampled.length === 0
+    ? 'n/a'
+    : String(Math.max(...multiSampled.map((row) => Math.max(...row.scores) - Math.min(...row.scores))))),
   'n-declared': () => String(contract.filter((row) => (row.tier ?? 0) >= 1).length),
   'n-tier23-fail': () => String(
     contract.filter((row) => ['PATCH_FILE_MISSING', 'PATCH_FILE_EMPTY_OR_INVALID'].includes(row.verdict)).length,

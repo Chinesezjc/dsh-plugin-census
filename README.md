@@ -283,13 +283,17 @@ from a catalogue averaging 26 and containing none of its 326 zero-star entries.
 Selection is now a seeded shuffle over repository names, re-drawn per run. The
 published sample has median 2 stars and includes 21 zero-star entries of 79.
 
-**How far these scores drift is not yet known.** Of the three entries sampled
-twice so far, two repeated their score exactly and one moved by a point — too few
-to be a measurement, and the direction has already changed once as samples
-accumulated. Drift data accumulates only where two draws collide, and two
-20-entry draws from the catalogue overlap by well under one entry on average, so a usable figure
-needs on the order of 60 runs. Until then, treat a single-run score (`runs: 1`)
-as one sample of a noisy judgement, and prefer entries with a higher `runs` count.
+**Repeated samples agree more often than not.** Of the <!-- census:begin n-multi -->13<!-- census:end n-multi --> entries sampled
+more than once, <!-- census:begin n-identical -->12<!-- census:end n-identical --> returned an identical score and
+<!-- census:begin n-disagree -->1<!-- census:end n-disagree --> moved, with a mean spread of <!-- census:begin mean-spread -->0.08<!-- census:end mean-spread --> points and a
+maximum of <!-- census:begin max-spread -->1<!-- census:end max-spread -->. An earlier reading of this table, taken when only two
+entries had been sampled twice and both had moved, described the scores as noisy;
+that reading was too small to support the claim and this one supersedes it.
+
+The figure is still provisional. Repeat samples accumulate only where two draws
+collide, so the count grows slowly, and a single-run score (`runs: 1`) remains one
+observation rather than a stable value — prefer entries with a higher `runs`
+count.
 
 Coverage is <!-- census:begin n-reviewed -->262<!-- census:end n-reviewed --> of <!-- census:begin n-catalogued -->2116<!-- census:end n-catalogued --> and grows with each scheduled run,
 which reviews up to 180 entries under a seed derived from the hour. The batch is
