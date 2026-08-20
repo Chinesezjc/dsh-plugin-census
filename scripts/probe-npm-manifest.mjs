@@ -33,6 +33,32 @@
  *     < data/catalog.jsonl > data/npm-manifest.next.jsonl
  */
 
+/*
+ * Rejected here, recorded so it is not re-litigated: full runtime verification —
+ * installing each plugin and reading `dsh --dump-config` — to decide the surface
+ * of the entries attribution can only guess.
+ *
+ * It is feasible. Measured against @deepseek-ai/dsh@0.1.0-rc.7: the harness
+ * installs (452 packages, 8 min), the CLI runs headlessly with no API key,
+ * `dsh plugin add` works non-interactively, and `--dump-config` prints the
+ * composed profile tree with provenance comments and exits. Registering
+ * `dsh-tongflow` took the tree from 81 to 82 rows with a `# == dsh-tongflow`
+ * marker, so a load can be observed objectively.
+ *
+ * It still does not answer the question. The row a plugin contributes reads
+ * `- id: tongflow / name: dsh-tongflow / config: {}` — no seam names, so it does
+ * not distinguish client from host. Proving a plugin *loads* is not proving what
+ * it *extends*.
+ *
+ * And the arithmetic is poor even if it did: only 151 entries are both
+ * weakly-attributed and npm-loadable, at ~1.5 min each that is ~3.8 h per pass
+ * against a 45-minute job timeout, and every run would reinstall the harness.
+ *
+ * What was worth building from that experiment is this file: the same install
+ * revealed that 6.3% of published packages cannot load at all, which is a
+ * correctness defect in what the catalogue already claims.
+ */
+
 import { existsSync, readFileSync } from 'node:fs'
 import { createInterface } from 'node:readline'
 
