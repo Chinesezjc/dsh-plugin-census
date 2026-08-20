@@ -292,6 +292,134 @@ check(
   `${paced.calls} calls in ${pacedMs} ms with a 400 ms interval`,
 )
 
+// A transient failure on ONE day count must not discard the whole star bucket.
+// Measured on run 32337103958: a single HTTP 502 on `stars:0 created:2026-08-20`
+// produced "stars:0: 0 shard(s)" and dropped 3927 repositories, taking the census
+// to 55.4% of the topic — above the 50% refusal threshold, so it published as if
+// complete.
+{
+  const dir = mkdtempSync(join(tmpdir(), 'oneday-'))
+  const countFile = join(dir, 'calls')
+  writeFileSync(countFile, '0')
+  // Fail exactly one specific day count, permanently (every retry too), and
+  // serve everything else normally.
+  writeFileSync(
+    join(dir, 'gh'),
+    `#!/usr/bin/env node
+const fs = require('node:fs')
+const path = decodeURIComponent(process.argv.slice(2).join(' '))
+fs.writeFileSync(${JSON.stringify(countFile)}, String(Number(fs.readFileSync(${JSON.stringify(countFile)}, 'utf8')) + 1))
+const day = (path.match(/created:(\\d{4}-\\d{2}-\\d{2})(?![.\\d])/) || [])[1]
+if (day && day.endsWith('-15')) {
+  process.stderr.write('gh: Server Error (HTTP 502)')
+  process.exit(1)
+}
+const page = Number((path.match(/[&?]page=(\\d+)/) || [])[1] || 1)
+const items = page === 1
+  ? Array.from({ length: 5 }, (_, i) => ({
+      full_name: 'o' + (day || 'x') + '/r' + i,
+      stargazers_count: 0, pushed_at: '2026-08-20T00:00:00Z', created_at: '2026-08-20T00:00:00Z',
+      archived: false, fork: false, description: null, language: 'TS', topics: ['dsh-plugin'],
+    }))
+  : []
+const over = /stars:0/.test(path) && !/created:\\d{4}-\\d{2}-\\d{2}/.test(path)
+process.stdout.write(JSON.stringify({ total_count: over ? 4000 : 40, items }))
+`,
+    { mode: 0o755 },
+  )
+  const result = spawnSync(process.execPath, [SCRIPT], {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `${dir}:${process.env.PATH}`,
+      CENSUS_SEARCH_INTERVAL_MS: '0',
+      CENSUS_RETRY_DELAY_MS: '5',
+      CENSUS_RECENT_DAYS: '20',
+    },
+    timeout: 300_000,
+  })
+  const rows = String(result.stdout ?? '').split('\n').filter((l) => l.trim())
+  // The stub fails that day permanently, so its own shard yields nothing — a real
+  // 502 is transient and would succeed on the fetch. What must hold either way is
+  // that the *other* shards still produce rows: before the fix, one failed day
+  // count returned null and `shard()` discarded the entire bucket, so every shard
+  // under it was lost rather than just the broken day.
+  const buckets = (String(result.stderr).match(/shard\(s\)/g) ?? []).length
+  check(
+    'one unreadable day does not drop the whole bucket',
+    rows.length > 0 && buckets > 1,
+    `emitted ${rows.length} row(s) across ${buckets} planned bucket(s); stderr tail: `
+      + String(result.stderr).split('\n').slice(-3).join(' | '),
+  )
+  check(
+    'the unreadable day is reported rather than hidden',
+    /day count\(s\) unreadable, querying them anyway/.test(String(result.stderr)),
+    String(result.stderr).split('\n').filter((l) => l.includes('unreadable')).join(' | '),
+  )
+  check(
+    'no bucket is reported as yielding zero shards',
+    !/: 0 shard\(s\)/.test(String(result.stderr)),
+    String(result.stderr).split('\n').filter((l) => /shard\(s\)/.test(l)).join(' | '),
+  )
+}
+
+// A transient count failure must be retried, since one 502 previously cost a
+// whole bucket.
+{
+  const dir = mkdtempSync(join(tmpdir(), 'retry-'))
+  const countFile = join(dir, 'attempts')
+  writeFileSync(countFile, '')
+  // Fail the very first call only, then serve normally.
+  writeFileSync(
+    join(dir, 'gh'),
+    `#!/usr/bin/env node
+const fs = require('node:fs')
+const path = decodeURIComponent(process.argv.slice(2).join(' '))
+// Always fail this one exact query, and log every attempt at it, so the
+// assertion counts retries of the SAME query rather than unrelated calls.
+if (/stars:0(?!\\.)/.test(path) && !/created:/.test(path)) {
+  fs.appendFileSync(${JSON.stringify(countFile)}, 'x')
+  process.stderr.write('gh: Server Error (HTTP 502)')
+  process.exit(1)
+}
+process.stdout.write(JSON.stringify({ total_count: 10, items: [] }))
+`,
+    { mode: 0o755 },
+  )
+  const result = spawnSync(process.execPath, [SCRIPT, '--plan'], {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `${dir}:${process.env.PATH}`,
+      CENSUS_SEARCH_INTERVAL_MS: '0',
+      CENSUS_RETRY_DELAY_MS: '5',
+    },
+    timeout: 120_000,
+  })
+  const sameQueryAttempts = readFileSync(countFile, 'utf8').length
+  check(
+    'a transient count failure is retried',
+    sameQueryAttempts > 1,
+    `${sameQueryAttempts} attempt(s) at the same failing query`,
+  )
+  check(
+    'the retried run still reports a topic total',
+    /repositories reported/.test(String(result.stderr)),
+    String(result.stderr).split('\n')[0],
+  )
+}
+
+// The coverage floor must reject the run that actually shipped: 4873 of 8796 is
+// 55.4%, which a 50% gate accepted.
+check(
+  'the coverage floor rejects the 55.4% run that was published',
+  (() => {
+    const m = SOURCE.match(/CENSUS_MIN_COVERAGE \?\? ([\d.]+)/)
+    return m ? 4873 / 8796 < Number(m[1]) : false
+  })(),
+  `floor is ${(SOURCE.match(/CENSUS_MIN_COVERAGE \?\? ([\d.]+)/) ?? ['', 'unset'])[1]}, run was ${(4873 / 8796).toFixed(3)}`,
+)
+
 process.stdout.write(
   failures === 0
     ? `\nall ${checks} enumeration controls behaved as specified\n`

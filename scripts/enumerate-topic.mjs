@@ -58,6 +58,15 @@ const MAX_SHARD_DEPTH = 2
  */
 const RECENT_DAYS = Number(process.env.CENSUS_RECENT_DAYS ?? 21)
 
+/** Retries for a transient count failure; 0 disables retrying. */
+const COUNT_RETRIES = Number(process.env.CENSUS_COUNT_RETRIES ?? 2)
+
+/** Minimum share of the reported topic an enumeration must reach to publish. */
+const MIN_COVERAGE = Number(process.env.CENSUS_MIN_COVERAGE ?? 0.85)
+
+/** Pause before retrying a failed count. */
+const RETRY_DELAY_MS = Number(process.env.CENSUS_RETRY_DELAY_MS ?? 2000)
+
 /**
  * Set when a search call fails because the allowance is spent, so the shard loop
  * can stop instead of failing every remaining shard identically. Declared before
@@ -123,7 +132,11 @@ async function search(query, page = 1, sort = 'updated', order = null) {
         if (/rate limit|secondary rate|abuse detection/i.test(message)) {
           rateLimited = true
         }
-        return resolve(null)
+        // Report the reason so the caller can tell a transient 5xx from a spent
+        // allowance. A single HTTP 502 on one day count once discarded an entire
+        // 3927-repository star bucket, because a null propagated up to `shard()`
+        // as "this bucket cannot be split".
+        return resolve({ failed: true, stderr: message })
       }
       try {
         const body = JSON.parse(stdout)
@@ -141,8 +154,14 @@ async function search(query, page = 1, sort = 'updated', order = null) {
  * @returns the reported total, or null when unavailable.
  */
 async function count(query) {
-  const result = await search(query, 1)
-  return result === null ? null : result.total
+  for (let attempt = 0; ; attempt += 1) {
+    const result = await search(query, 1)
+    if (result !== null && !result.failed) return result.total
+    // A spent allowance will not recover inside a retry, and retrying it burns
+    // what is left; the shard loop stops on `rateLimited` anyway.
+    if (rateLimited || attempt >= COUNT_RETRIES) return null
+    await new Promise((resolve) => { setTimeout(resolve, RETRY_DELAY_MS) })
+  }
 }
 
 /**
@@ -240,24 +259,47 @@ function addDays(day, days) {
  * Days with no repositories are skipped, which keeps the shard count and the
  * search spend proportional to the days that actually hold data.
  *
+ * A day whose count cannot be read is *included* rather than abandoning the
+ * whole bucket. Returning null here discarded 3927 repositories — the entire
+ * `stars:0` bucket — because one day count hit an HTTP 502 and `shard()` read the
+ * null as "this bucket cannot be split". Enumeration published 4873 of 8796
+ * repositories (55.4%), which cleared the 50% refusal threshold and so was
+ * published as a complete census. Querying an uncertain day costs one wasted
+ * query when it is empty; skipping it silently loses real repositories.
+ *
  * @param stem - query with no `created:` qualifier.
- * @returns qualifier strings, or null when a count failed.
+ * @returns qualifier strings, or null only when the whole window is unreadable.
  */
 async function populatedDays(stem) {
   const today = new Date().toISOString().slice(0, 10)
   const cutoff = addDays(today, -RECENT_DAYS)
 
   const older = await count(`${stem} created:<${cutoff}`)
-  if (older === null) return null
-
-  const spans = older > 0 ? [`created:<${cutoff}`] : []
+  // The catch-all carries the older tail; if it cannot be read, include it
+  // rather than dropping everything before the cutoff.
+  const spans = older === null || older > 0 ? [`created:<${cutoff}`] : []
+  let unreadableDays = 0
+  let readableDays = 0
   for (let offset = 0; offset <= RECENT_DAYS; offset += 1) {
     const day = addDays(cutoff, offset)
     if (day > today) break
     const onDay = await count(`${stem} created:${day}`)
-    if (onDay === null) return null
+    if (onDay === null) {
+      unreadableDays += 1
+      spans.push(`created:${day}`)
+      continue
+    }
+    readableDays += 1
     if (onDay > 0) spans.push(`created:${day}`)
   }
+  if (unreadableDays > 0) {
+    process.stderr.write(
+      `  ${stem}: ${unreadableDays} day count(s) unreadable, querying them anyway\n`,
+    )
+  }
+  // Only give up when essentially nothing could be read: a plan built entirely
+  // from guesses is not a plan, and the caller reports the bucket as unread.
+  if (readableDays === 0 && unreadableDays > 0) return null
   return spans
 }
 
@@ -270,7 +312,7 @@ async function fetchAll(query) {
   const records = []
   for (let page = 1; page <= Math.ceil(RESULT_CAP / PAGE_SIZE); page += 1) {
     const result = await search(query, page)
-    if (result === null) break
+    if (result === null || result.failed) break
     records.push(...result.items)
     if (result.items.length < PAGE_SIZE) break
   }
@@ -360,13 +402,19 @@ async function main() {
 
   // The point of sharding is coverage; a run that quietly collapses back toward
   // the single-query cap has failed at its only job.
-  if (coverage !== null && coverage < 0.5) {
+  //
+  // The floor is 0.85, not 0.5. A run that enumerated 4873 of 8796 repositories
+  // (55.4%) cleared a 50% gate and published as a complete census, because one
+  // dropped star bucket is worth far more than half the topic. Sharding that
+  // works reaches ~100%; anything below 85% means a bucket was lost, not that the
+  // topic is awkward to divide.
+  if (coverage !== null && coverage < MIN_COVERAGE) {
     process.stderr.write(
       rateLimited
         ? 'refusing this enumeration: the search allowance was spent partway through, so this is'
           + ' a fragment of the topic rather than a sample of it. This is an allowance failure,'
           + ' not an ecosystem change — re-run once the search pool resets.\n'
-        : 'refusing this enumeration: coverage below 50% means sharding did not work,'
+        : `refusing this enumeration: coverage below ${(MIN_COVERAGE * 100).toFixed(0)}% means sharding did not work,`
           + ' and publishing it would repeat the single-query sample under a new name\n',
     )
     process.exit(1)
