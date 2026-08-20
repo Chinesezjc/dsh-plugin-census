@@ -185,6 +185,36 @@ The check deliberately does **not** flag lookalike scopes such as
 whose owners can publish normally, so they are installable — confusing branding
 is a different concern this catalogue does not adjudicate.
 
+## What the published package declares
+
+Contract verification reads a repository's `package.json`. A user runs
+`dsh plugin add <name>`, which installs the published tarball. **Those are
+different artefacts and they disagree.**
+
+Over <!-- census:begin n-npm-checked -->1296<!-- census:end n-npm-checked --> packages that resolve on npm:
+
+| State | Meaning | Count | Share |
+| --- | --- | --- | --- |
+<!-- census:begin npm-manifest -->
+| `bundle-ok` | the published manifest declares `dsh.bundle` | 1214 | 93.7% |
+| `bundle-missing` | **the published manifest declares no `dsh.bundle`** — DSH refuses it as a profile bundle | 75 | 5.8% |
+| `package-missing` | the declared name no longer resolves on the registry | 7 | 0.5% |
+| `unreadable` | the registry could not be read; not a statement about the package | 0 | 0.0% |
+<!-- census:end npm-manifest -->
+
+<!-- census:begin n-npm-broken -->82<!-- census:end n-npm-broken --> of them (<!-- census:begin pct-npm-broken -->6.3%<!-- census:end pct-npm-broken -->) **cannot be loaded by
+name**, while satisfying the contract in their repository. `bobcat848/dsh-calculator`
+declares `dsh.bundle` and a full `dsh.client` block in its repository, and its
+published `dsh-calculator@0.0.1` declares no `dsh` field at all; `orriduck/dsh-tui`
+is the same at `0.2.19`. Installing one and registering it as a profile bundle
+fails with `declares no dsh.bundle in its package.json`, verified against
+`@deepseek-ai/dsh@0.1.0-rc.7`.
+
+This is a publish-time gap rather than a mistake in the repository — typically a
+build that rewrites `package.json` without carrying the `dsh` block through. The
+catalogue reports it rather than removing the entries, because the repository does
+satisfy the contract and the fix belongs to the author.
+
 ## Decay
 
 `scripts/scan-decay.mjs` re-checks catalogued entries and reports four
@@ -389,6 +419,7 @@ suite turns red.
 | `data/catalog.jsonl` | joined, classified catalogue |
 | `data/decay.jsonl` | per-entry decay state |
 | `data/reviews.jsonl` | model quality scores (mean, run count, raw samples), pinned to a commit and prompt version |
+| `data/npm-manifest.jsonl` | what each published package declares, versus its repository |
 
 The search API returns at most 1000 results per query. `scripts/enumerate-topic.mjs`
 shards around that ceiling by star bucket and then by creation day, reaching

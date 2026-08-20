@@ -79,6 +79,9 @@ jobs:
       - name: Verify the published figures match the data
         run: node scripts/test-render-readme.mjs
 
+      - name: Verify the published-manifest check never reports a read failure as a defect
+        run: node scripts/test-npm-manifest.mjs
+
       - name: Verify the checkout fetcher rejects incomplete transfers
         run: ./scripts/test-fetch.sh
 
@@ -288,6 +291,20 @@ jobs:
       # at 2117 entries — which is what made the 2026-08-19 scheduled run fail at
       # 45.4% inconclusive. Each run checks a bounded batch, oldest first, and
       # carries the rest forward.
+      # The contract probe reads a repository's package.json; a user installs the
+      # published tarball. They disagree: 75 of 1296 published packages declare no
+      # `dsh.bundle` even though their repository does, so DSH refuses them as
+      # profile bundles with "declares no dsh.bundle" — verified against
+      # @deepseek-ai/dsh@0.1.0-rc.7. This runs against the npm registry, so it does
+      # not compete with the probe for GitHub's installation allowance.
+      - name: Check what the published packages declare
+        env:
+          CENSUS_NPM_BATCH: '600'
+        run: |
+          node scripts/probe-npm-manifest.mjs --existing data/npm-manifest.jsonl \
+            < data/catalog.jsonl > /tmp/npm-manifest.jsonl
+          mv /tmp/npm-manifest.jsonl data/npm-manifest.jsonl
+
       - name: Scan the catalogue for decay
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -23,12 +23,13 @@
  *   node scripts/render-readme.mjs --check    # exit 1 if anything is stale
  */
 
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 const ROOT = new URL('..', import.meta.url).pathname
 
-/** Read a JSONL file into records. */
+/** Read a JSONL file into records, or null when it does not exist yet. */
 function load(name) {
+  if (!existsSync(`${ROOT}data/${name}.jsonl`)) return null
   return readFileSync(`${ROOT}data/${name}.jsonl`, 'utf8')
     .split('\n')
     .filter((line) => line.trim())
@@ -54,6 +55,7 @@ const install = load('installability-v3')
 const decay = load('decay')
 const catalog = load('catalog')
 const reviews = load('reviews')
+const npmManifest = load('npm-manifest') ?? []
 
 const verdicts = tally(contract, 'verdict')
 const catalogued = verdicts.get('CONTRACT_OK') ?? 0
@@ -180,6 +182,22 @@ function scoreRows(meanings) {
 const multiSampled = reviewed.filter((row) => (row.runs ?? 1) > 1)
 const disagreeing = multiSampled.filter((row) => Math.max(...row.scores) !== Math.min(...row.scores))
 
+/** Meanings for the published-manifest states, kept beside the region. */
+const NPM_MEANINGS = {
+  'bundle-ok': 'the published manifest declares `dsh.bundle`',
+  'bundle-missing': '**the published manifest declares no `dsh.bundle`** — DSH refuses it as a profile bundle',
+  'package-missing': 'the declared name no longer resolves on the registry',
+  unreadable: 'the registry could not be read; not a statement about the package',
+}
+
+/** Chinese meanings for the same states. */
+const NPM_MEANINGS_ZH = {
+  'bundle-ok': '已发布的清单声明了 `dsh.bundle`',
+  'bundle-missing': '**已发布的清单没有 `dsh.bundle`**——DSH 会拒绝把它作为 profile bundle 加载',
+  'package-missing': '声明的包名已无法在 registry 上解析',
+  unreadable: 'registry 读取失败；这不是对该包的判断',
+}
+
 /** Regions for both files. Keys must match the markers in the documents. */
 const REGIONS = {
   'compliance-en': () => complianceRows({ all: 'all' }),
@@ -270,6 +288,36 @@ const REGIONS = {
     return String((counts.get('high') ?? 0) + (counts.get('medium') ?? 0))
   },
   'n-declared': () => String(tally(surface, 'confidence').get('declared') ?? 0),
+  'npm-manifest': () => {
+    const counts = tally(npmManifest, 'state')
+    const total = npmManifest.length
+    return ['bundle-ok', 'bundle-missing', 'package-missing', 'unreadable']
+      .map((state) => {
+        const count = counts.get(state) ?? 0
+        return `| \`${state}\` | ${NPM_MEANINGS[state]} | ${count} | ${share(count, total)} |`
+      })
+      .join('\n')
+  },
+  'npm-manifest-zh': () => {
+    const counts = tally(npmManifest, 'state')
+    const total = npmManifest.length
+    return ['bundle-ok', 'bundle-missing', 'package-missing', 'unreadable']
+      .map((state) => {
+        const count = counts.get(state) ?? 0
+        return `| \`${state}\` | ${NPM_MEANINGS_ZH[state]} | ${count} | ${share(count, total)} |`
+      })
+      .join('\n')
+  },
+  'n-npm-checked': () => String(npmManifest.length),
+  'n-npm-broken': () => {
+    const counts = tally(npmManifest, 'state')
+    return String((counts.get('bundle-missing') ?? 0) + (counts.get('package-missing') ?? 0))
+  },
+  'pct-npm-broken': () => {
+    const counts = tally(npmManifest, 'state')
+    const bad = (counts.get('bundle-missing') ?? 0) + (counts.get('package-missing') ?? 0)
+    return share(bad, npmManifest.length)
+  },
   'n-inconclusive': () => String(decay.filter((row) => row.state === 'inconclusive').length),
   'pct-inconclusive': () => share(decay.filter((row) => row.state === 'inconclusive').length, decay.length),
   'review-mean': () => (reviewed.length === 0

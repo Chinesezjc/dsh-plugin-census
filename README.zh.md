@@ -161,6 +161,33 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 注册的 scope，其所有者可以正常发布，因此是可安装的——品牌混淆是另一个问题，
 本目录不对此做裁定。
 
+## 已发布的包声明了什么
+
+契约验证读的是仓库里的 `package.json`。而用户执行 `dsh plugin add <name>` 装的是
+**已发布的 tarball**。**这是两个不同的产物，而它们并不一致。**
+
+在 <!-- census:begin n-npm-checked -->1296<!-- census:end n-npm-checked --> 个能在 npm 上解析的包中：
+
+| 状态 | 含义 | 数量 | 占比 |
+| --- | --- | --- | --- |
+<!-- census:begin npm-manifest-zh -->
+| `bundle-ok` | 已发布的清单声明了 `dsh.bundle` | 1214 | 93.7% |
+| `bundle-missing` | **已发布的清单没有 `dsh.bundle`**——DSH 会拒绝把它作为 profile bundle 加载 | 75 | 5.8% |
+| `package-missing` | 声明的包名已无法在 registry 上解析 | 7 | 0.5% |
+| `unreadable` | registry 读取失败；这不是对该包的判断 | 0 | 0.0% |
+<!-- census:end npm-manifest-zh -->
+
+其中 <!-- census:begin n-npm-broken -->82<!-- census:end n-npm-broken --> 个（<!-- census:begin pct-npm-broken -->6.3%<!-- census:end pct-npm-broken -->）**按包名装不上**，尽管它们
+的仓库满足契约。`bobcat848/dsh-calculator` 的仓库里有 `dsh.bundle` 和完整的
+`dsh.client` 块，而已发布的 `dsh-calculator@0.0.1` **连 `dsh` 字段都没有**；
+`orriduck/dsh-tui` 在 `0.2.19` 上同样如此。装上并注册为 profile bundle 会失败并报
+`declares no dsh.bundle in its package.json`——已对 `@deepseek-ai/dsh@0.1.0-rc.7`
+实测确认。
+
+这是**发布环节的缺口**而不是仓库写错了——通常是构建过程重写了 `package.json` 却没有
+把 `dsh` 块带过去。目录选择报告它而不是删掉这些条目，因为仓库确实满足契约，修复权在
+作者手里。
+
 ## 失效扫描
 
 `scripts/scan-decay.mjs` 会重新检查每个已收录条目，报告四种状态，只标记、
@@ -336,6 +363,7 @@ owner、同时不误伤有权发布者、无关 scope 和形近 scope。两个�
 | `data/catalog.jsonl` | 合并、分类后的目录 |
 | `data/decay.jsonl` | 每个条目的失效状态 |
 | `data/reviews.jsonl` | 模型质量评分（均值、运行次数、各次原始分），固定到 commit 与 prompt 版本 |
+| `data/npm-manifest.jsonl` | 每个已发布包声明了什么，与其仓库的对比 |
 
 搜索 API 单次查询最多返回 1000 条结果。`scripts/enumerate-topic.mjs` 先按 star 桶、
 再按创建日期分片绕过这个上限，最终枚举到 <!-- census:begin n-enumerated -->8732<!-- census:end n-enumerated --> 个唯一仓库——
