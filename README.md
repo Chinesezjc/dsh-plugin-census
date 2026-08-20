@@ -146,6 +146,15 @@ as one. A `none` row carries surface `indeterminate` and empty evidence: it is a
 absence of attribution, not a weak attribution, and it should not be read as a
 statement about the plugin.
 
+**The remaining guesses are near the floor of what this method can decide.** The
+`low` and `none` rows that survive have only a `dsh.bundle` block and, usually, no
+dependencies at all, so there is nothing left in the manifest to read. Attributing
+them from the seams named in their bundle patch file was tested and rejected: over
+30 plugins whose surface is already known, 23 had no `inject` block and exactly one
+yielded a seam, so the rule could not be calibrated against anything. Resolving
+these would need evidence this census does not collect — installing the plugin, or
+reading its source.
+
 ## Installability
 
 Contract compliance says a plugin declares a valid patch. It does not say the

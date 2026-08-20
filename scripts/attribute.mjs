@@ -139,6 +139,26 @@ function fromManifest(manifest) {
   return { surface, confidence: 'declared', evidence }
 }
 
+/*
+ * Rejected: attributing from the bundle patch file's `inject` seams.
+ *
+ * The patch file names the seams a plugin injects (`commands`, `skills`,
+ * `webServer`, `tuiScenes`), which looks like stronger evidence than a keyword.
+ * A feasibility test against ground truth says otherwise, and it is recorded here
+ * so the idea is not re-attempted from the same premise:
+ *
+ *   - Over 30 plugins whose surface is already established by dependency
+ *     evidence, 23 had no `inject` block at all and 5 had an unreadable patch.
+ *     Exactly 1 yielded a seam, so there is no labelled data to calibrate a
+ *     seam-to-surface rule against. `commands` could plausibly be either surface.
+ *   - Over 19 `low`-confidence rows, only 3 carried an `inject` block, and all
+ *     three were the same author using the same seam.
+ *
+ * So it would cost one extra fetch per low-confidence row — 234 calls per run —
+ * to resolve at most ~37 of them by a rule that cannot be validated. That trades
+ * one guess for another guess while spending allowance the probe needs.
+ */
+
 /**
  * Attribute a surface from name and description keywords.
  * @param packageName - npm package name, possibly null.
