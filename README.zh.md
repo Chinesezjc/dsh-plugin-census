@@ -146,6 +146,7 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 | `published` | 声明的包名可在 npm registry 解析 | 1807 |
 | `git-only` | 不在 npm 上；只能用 Git specifier 安装 | 1795 |
 | `unpublishable-scope` | 仓库不属于该组织，却用 `@deepseek-ai/` 命名自己 | 95 |
+| `unknown` | **registry 没有给出结论**——这不是对该包的判断 | 0 |
 <!-- census:end install-zh -->
 
 另有 <!-- census:begin n-vendored -->22<!-- census:end n-vendored --> 个仓库原样携带 `@deepseek-ai/dsh-base`（样本外至少还有两个：

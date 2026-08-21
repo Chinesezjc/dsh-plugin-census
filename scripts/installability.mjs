@@ -29,6 +29,26 @@ const SCOPE_OWNERS = new Set(['deepseek-ai'])
 /** The npm scope reserved to the DSH project. */
 const RESERVED_SCOPE = '@deepseek-ai/'
 
+/** Retries for a transient registry failure; 0 disables retrying. */
+const RETRY_ATTEMPTS = Number(process.env.CENSUS_RETRY_ATTEMPTS ?? 1)
+
+/** Pause before retrying a failed registry lookup. */
+const RETRY_DELAY_MS = Number(process.env.CENSUS_RETRY_DELAY_MS ?? 1500)
+
+/**
+ * Share of `unknown` verdicts above which the run is refused.
+ *
+ * This step had no gate while every other step had one. A registry outage would
+ * publish thousands of `unknown` rows, and although `unknown` is honest rather
+ * than a false `git-only`, a table where most entries say "we could not tell"
+ * carries no signal and invites the reader to treat the remainder as coverage it
+ * is not.
+ */
+const MAX_UNKNOWN_SHARE = Number(process.env.CENSUS_MAX_UNKNOWN_SHARE ?? 0.25)
+
+/** Registry base; overridable so controls can run against a stub with no network. */
+const REGISTRY = (process.env.CENSUS_NPM_REGISTRY ?? 'https://registry.npmjs.org').replace(/\/+$/, '')
+
 /**
  * Query the npm registry for a package name.
  * @param packageName - full npm package name.
@@ -36,13 +56,18 @@ const RESERVED_SCOPE = '@deepseek-ai/'
  */
 async function registryState(packageName) {
   const encoded = packageName.replace('/', '%2F')
-  try {
-    const response = await fetch(`https://registry.npmjs.org/${encoded}`, { method: 'GET' })
-    if (response.status === 200) return 'published'
-    if (response.status === 404) return 'absent'
-    return 'unknown'
-  } catch {
-    return 'unknown'
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      const response = await fetch(`${REGISTRY}/${encoded}`, { method: 'GET' })
+      if (response.status === 200) return 'published'
+      // A 404 is the answer that produces `git-only`; retrying it would delay a
+      // real finding for every unpublished plugin in the catalogue.
+      if (response.status === 404) return 'absent'
+      if (attempt >= RETRY_ATTEMPTS) return 'unknown'
+    } catch {
+      if (attempt >= RETRY_ATTEMPTS) return 'unknown'
+    }
+    await new Promise((resolve) => { setTimeout(resolve, RETRY_DELAY_MS) })
   }
 }
 
@@ -97,6 +122,7 @@ async function main() {
   }
 
   const limit = Number(process.env.RADAR_CONCURRENCY ?? 8)
+  const verdicts = []
   let cursor = 0
   let done = 0
 
@@ -104,6 +130,7 @@ async function main() {
     while (cursor < targets.length) {
       const record = targets[cursor++]
       const assessment = await assess(record.repo, record.name)
+      verdicts.push(assessment.installable)
       process.stdout.write(`${JSON.stringify({
         repo: record.repo,
         packageName: record.name ?? null,
@@ -116,6 +143,25 @@ async function main() {
 
   await Promise.all(Array.from({ length: Math.min(limit, targets.length) }, worker))
   process.stderr.write(`installability assessment complete: ${done}\n`)
+
+  const counts = {}
+  for (const state of verdicts) counts[state] = (counts[state] ?? 0) + 1
+  for (const [state, count] of Object.entries(counts).sort((a, b) => b[1] - a[1])) {
+    process.stderr.write(`  ${state.padEnd(22)} ${String(count).padStart(4)}\n`)
+  }
+  const unknown = counts.unknown ?? 0
+  if (done > 0) {
+    const rate = unknown / done
+    process.stderr.write(`unknown rate: ${unknown}/${done} (${(rate * 100).toFixed(1)}%)\n`)
+    if (rate > MAX_UNKNOWN_SHARE) {
+      process.stderr.write(
+        'refusing to publish this assessment: the registry did not answer for most'
+        + ' packages, so neither the unknown count nor the published/git-only split'
+        + ' is meaningful\n',
+      )
+      process.exit(1)
+    }
+  }
 }
 
 await main()

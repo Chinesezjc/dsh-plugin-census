@@ -82,6 +82,11 @@ jobs:
       - name: Verify the published-manifest check never reports a read failure as a defect
         run: node scripts/test-npm-manifest.mjs
 
+      # This step had no controls and no failure gate while every other step had
+      # both, which is how the gap went unnoticed until an audit.
+      - name: Verify installability never turns a registry outage into a verdict
+        run: node scripts/test-installability.mjs
+
       - name: Verify the checkout fetcher rejects incomplete transfers
         run: ./scripts/test-fetch.sh
 

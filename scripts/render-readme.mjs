@@ -117,7 +117,18 @@ function surfaceRows(basis) {
 /** Installability table. */
 function installRows(meanings) {
   const counts = tally(install, 'installable')
-  return ['published', 'git-only', 'unpublishable-scope']
+  const ordered = ['published', 'git-only', 'unpublishable-scope', 'unknown', 'unnamed']
+  // Every state present in the data must appear. A hardcoded three-state list
+  // would have silently dropped `unknown` and `unnamed` rows — the same defect
+  // that removed 416 `declared` entries from PLUGINS.md when that tier was added.
+  const missing = [...counts.keys()].filter((state) => !ordered.includes(state))
+  if (missing.length > 0) {
+    throw new Error(
+      `installability state(s) ${missing.join(', ')} have no row; add them to installRows`,
+    )
+  }
+  return ordered
+    .filter((state) => (counts.get(state) ?? 0) > 0 || state !== 'unnamed')
     .map((state) => `| \`${state}\` | ${meanings[state]} | ${counts.get(state) ?? 0} |`)
     .join('\n')
 }
@@ -221,11 +232,15 @@ const REGIONS = {
     published: 'the declared name resolves on the npm registry',
     'git-only': 'absent from npm; installable from a Git specifier',
     'unpublishable-scope': 'names itself under `@deepseek-ai/` from a repository outside that organisation',
+    unknown: '**the registry did not answer** — not a statement about the package',
+    unnamed: 'the manifest declares no package name',
   }),
   'install-zh': () => installRows({
     published: '声明的包名可在 npm registry 解析',
     'git-only': '不在 npm 上；只能用 Git specifier 安装',
     'unpublishable-scope': '仓库不属于该组织，却用 `@deepseek-ai/` 命名自己',
+    unknown: '**registry 没有给出结论**——这不是对该包的判断',
+    unnamed: '清单没有声明包名',
   }),
   'decay': decayRows,
   'decay-flagged-en': () => decayFlagged({

@@ -167,6 +167,7 @@ anything:
 | `published` | the declared name resolves on the npm registry | 1807 |
 | `git-only` | absent from npm; installable from a Git specifier | 1795 |
 | `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 95 |
+| `unknown` | **the registry did not answer** — not a statement about the package | 0 |
 <!-- census:end install-en -->
 
 A further <!-- census:begin n-vendored -->22<!-- census:end n-vendored --> repositories carry `@deepseek-ai/dsh-base` verbatim. They are
