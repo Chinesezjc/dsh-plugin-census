@@ -12,17 +12,19 @@
   ],
   "fixtures": [
     {
-      "repo": "omdsh-dev/dsh-plugin-check",
-      "label": "compliant except for reserved scope",
+      "repo": "Stu-KatoMegumi/dsh-weixin",
+      "label": "plain-JavaScript plugin using a reserved scope",
       "mustReport": ["unpublishable-scope"],
-      "mustNotReport": ["missing-rewrite-imports", "stale-ts-imports", "no-manifest", "lib-layout-mismatch", "types-path-mismatch"],
+      "mustNotReport": ["no-manifest", "lib-layout-mismatch", "types-path-mismatch", "stale-ts-imports", "missing-rewrite-imports"],
       "evidence": {
-        "unpublishable-scope": "package.json name is @deepseek-ai/dsh-plugin-check but the repository owner is omdsh-dev; only the deepseek-ai npm organisation can publish that scope, and the registry returns 404 for the name",
-        "missing-rewrite-imports": "tsconfig.json sets rewriteRelativeImportExtensions: true, so relative .ts imports are rewritten on emit by tsc; this is correct TypeScript 5.7 usage",
-        "stale-ts-imports": "the .ts occurrences in lib/*.js are inside doc comments and an extension-name string constant, not import specifiers",
-        "lib-layout-mismatch": "tsconfig outDir is lib and main is lib/index.js; the prefixes agree",
-        "types-path-mismatch": "declarationDir is lib/types and types is lib/types/index.d.ts; the prefixes agree"
-      }
+        "unpublishable-scope": "package.json name is @deepseek-ai/dsh-weixin but the repository owner is Stu-KatoMegumi; only the deepseek-ai npm organisation can publish that scope",
+        "no-manifest": "package.json is present at the repository root and declares dsh.bundle.patch",
+        "lib-layout-mismatch": "there is no tsconfig.json and no lib directory; main is ./src/plugin/index.mjs, so no build-output layout is claimed to check",
+        "types-path-mismatch": "types is not declared, which is expected for a plain-JavaScript package shipping .mjs sources",
+        "stale-ts-imports": "the package ships .mjs sources with no TypeScript, so there are no rewritten import specifiers to go stale",
+        "missing-rewrite-imports": "no tsconfig.json exists, so the TypeScript emit setting this criterion checks does not apply"
+      },
+      "note": "Replaces omdsh-dev/dsh-plugin-check, which renamed itself to @omdsh-dev/dsh-plugin-check on 2026-08-21 and so no longer exhibits the defect. That rename is the outcome the census reports for, not a regression: three scheduled runs failed this gate before the fixture was repointed."
     },
     {
       "repo": "HsiangNianian/dsh-auto-continue",
