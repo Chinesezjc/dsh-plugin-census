@@ -43,10 +43,18 @@ check "complete checkout with manifest" 0 "HsiangNianian/dsh-auto-continue" "pac
 # later reads as "no manifest".
 check "nonexistent repository" 1 "nonexistent-owner-xyz-000/nope" "package.json"
 
-# Distinguishing case: a real repository that genuinely has no package.json
-# must report 3, never 1 and never 0. This is the code that makes an absence
+# Distinguishing case: a complete tree that genuinely lacks the marker must
+# report 3, never 1 and never 0. This is the code that makes an absence
 # trustworthy, and conflating it with 1 would discard real findings.
-check "complete tree, marker truly absent" 3 "titanwings/colleague-skill" "package.json"
+#
+# The marker is a name that cannot exist rather than a repository that happens to
+# lack package.json. The earlier form named `titanwings/colleague-skill`, which
+# added a package.json on 2026-08-25 and turned this control red — the second
+# fixture in two days to rot because its subject changed. Asserting against an
+# impossible filename tests the same branch and cannot be invalidated by anyone
+# else's commit, while the repository stays a real one so the transfer path is
+# still exercised end to end.
+check "complete tree, marker truly absent" 3 "HsiangNianian/dsh-auto-continue" "no-such-file-e3b0c44298fc.json"
 
 # Truncation control.
 #
