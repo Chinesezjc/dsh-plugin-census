@@ -164,15 +164,37 @@ jobs:
           #
           # The only reliable signal is a request against the same pool, so make
           # one and read its outcome. It costs a single call.
-          probe_status=$(gh api repos/${GITHUB_REPOSITORY}/git/trees/HEAD \
-            --jq '.sha' >/dev/null 2>/tmp/probe.err && echo ok || echo failed)
-          if [ "${probe_status}" != "ok" ]; then
-            if grep -qi 'rate limit' /tmp/probe.err; then
-              echo "::error::the installation allowance is exhausted: a single tree read was rejected. Re-run in the next window."
+          # Wait for the window rather than failing the run. The installation pool
+          # refills on a clock, and a scheduled run that starts shortly after
+          # another run is otherwise starved through no fault of its own: the
+          # 2026-08-24 cron began 50 minutes after a manual run and was refused,
+          # while the 2026-08-20 cron began 2h55m after one and succeeded. Failing
+          # here made an operator's timing look like a broken pipeline.
+          #
+          # Waiting is bounded by what the job can spare, not by what feels
+          # generous: both successful runs took exactly 30 minutes of a 45-minute
+          # timeout, so only ~12 minutes are available. Three attempts 5 minutes
+          # apart wait at most 10 minutes and leave 35 for the census. A longer
+          # wait would trade a starved run for a timed-out one.
+          probe_ok=no
+          for attempt in $(seq 1 3); do
+            if gh api repos/${GITHUB_REPOSITORY}/git/trees/HEAD --jq '.sha' \
+                >/dev/null 2>/tmp/probe.err; then
+              probe_ok=yes
+              break
+            fi
+            if ! grep -qi 'rate limit' /tmp/probe.err; then
+              echo "::error::a probe request failed for a reason other than rate limiting:"
               sed 's/^/  /' /tmp/probe.err
               exit 1
             fi
-            echo "::error::a probe request failed for a reason other than rate limiting:"
+            if [ "${attempt}" -lt 3 ]; then
+              echo "installation allowance exhausted; waiting 5 minutes (attempt ${attempt}/3)"
+              sleep 300
+            fi
+          done
+          if [ "${probe_ok}" != "yes" ]; then
+            echo "::error::the installation allowance stayed exhausted for ~10 minutes; a tree read is still rejected. A run within the hour before this one most likely spent it."
             sed 's/^/  /' /tmp/probe.err
             exit 1
           fi
