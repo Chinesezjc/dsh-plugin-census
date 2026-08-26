@@ -249,7 +249,7 @@ jobs:
           CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
           CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}
           CENSUS_RANK_LIMIT: '150'
-          CENSUS_RANK_DEADLINE_SECONDS: '780'
+          CENSUS_RANK_DEADLINE_SECONDS: '820'
           CENSUS_RANK_CONCURRENCY: '4'
         run: |
           # Start ranking first so it uses the whole enumeration window. Its failure
