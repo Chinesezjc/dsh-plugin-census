@@ -87,6 +87,12 @@ jobs:
       - name: Verify installability never turns a registry outage into a verdict
         run: node scripts/test-installability.mjs
 
+      # The absolute 1-5 score collapsed onto 4 and 5, so ranking is done by pairwise
+      # comparison. Its own risk is that a failed comparison silently moves a rating,
+      # or that ratings get reshaped toward a target curve.
+      - name: Verify pairwise ranking never turns a failed comparison into a rating
+        run: node scripts/test-rank.mjs
+
       - name: Verify the checkout fetcher rejects incomplete transfers
         run: ./scripts/test-fetch.sh
 
@@ -222,13 +228,63 @@ jobs:
       # most-recently-updated slice, which excludes dormant repositories by
       # construction. Sharding by star bucket, then by creation date where a
       # bucket still exceeds the cap, reached 96.5% when measured.
-      - name: Enumerate the whole topic
+      # The pairwise ranker runs alongside enumeration rather than after it. The two
+      # spend different allowances — enumeration uses the search pool and is paced at
+      # 2200 ms per call to stay under its 30-per-minute limit, while ranking reads
+      # repos/*/commits, readme and git/trees from the installation pool — so neither
+      # slows the other down. Enumeration's 809 seconds are mostly that pacing wait,
+      # and ranking is network wait too (measured: 4.5 s of `gh` plus about 8 s of
+      # model call per comparison), so overlapping them costs no CPU contention.
+      #
+      # Ranking reads the catalogue committed by the previous run, which is why it can
+      # start before this run rebuilds it: the catalogue grows by a few hundred entries
+      # a day and the entries being ranked already exist.
+      #
+      # Verified rather than assumed: two 6-second background jobs in one step
+      # complete in 6 seconds, not 12.
+      - name: Enumerate the whole topic, ranking plugins in parallel
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+          CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
+          CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}
+          CENSUS_RANK_LIMIT: '150'
+          CENSUS_RANK_DEADLINE_SECONDS: '780'
+          CENSUS_RANK_CONCURRENCY: '4'
         run: |
+          # Start ranking first so it uses the whole enumeration window. Its failure
+          # must not fail this step: enumeration is the census, ranking is an extra
+          # signal that accumulates, and its own refusal gate already rejects a run
+          # that mostly failed.
+          if [ -n "${CENSUS_API_KEY}" ] && [ -s data/catalog.jsonl ]; then
+            (
+              node scripts/rank-pairwise.mjs \
+                --limit "${CENSUS_RANK_LIMIT}" \
+                --existing data/ratings.jsonl \
+                < data/catalog.jsonl > /tmp/ratings.jsonl 2>/tmp/rank.log
+              echo "$?" > /tmp/rank.status
+            ) &
+            rank_pid=$!
+          else
+            echo "no model key or no catalogue yet; skipping the pairwise ranking"
+            rank_pid=""
+          fi
+
           node scripts/enumerate-topic.mjs > /tmp/enumerated.jsonl
           mv /tmp/enumerated.jsonl data/repos-raw.jsonl
           wc -l data/repos-raw.jsonl
+
+          if [ -n "${rank_pid}" ]; then
+            wait "${rank_pid}" || true
+            sed 's/^/  rank | /' /tmp/rank.log || true
+            if [ "$(cat /tmp/rank.status 2>/dev/null || echo 1)" = "0" ] \
+                && [ -s /tmp/ratings.jsonl ]; then
+              mv /tmp/ratings.jsonl data/ratings.jsonl
+              wc -l data/ratings.jsonl
+            else
+              echo "::warning::the pairwise ranking did not produce a usable file; ratings are unchanged"
+            fi
+          fi
 
       # Probing every enumerated repository costs more API calls than one hourly
       # allowance provides, so verdicts accumulate across runs instead of being
