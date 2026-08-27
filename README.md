@@ -186,6 +186,58 @@ The check deliberately does **not** flag lookalike scopes such as
 whose owners can publish normally, so they are installable — confusing branding
 is a different concern this catalogue does not adjudicate.
 
+## Pairwise ranking, still converging
+
+The 1-5 quality score above cannot separate plugins: 97% of reviews land on 4 or 5,
+and the mean moves only 0.7 points between plugins under 10 files and plugins of 31
+to 100. The model perceives the difference and does not express it.
+
+Asking which of two plugins a competent user would trust does separate them. Two
+plugins both scored 5 — `FengYangXun123/dsh-opencode-usage` at 7 files and
+`GongYuanCaiJi/dsh-claude-code-templates` at 5057 — produced a clear winner, and the
+smaller one won: 5031 of the larger repository's files sit under `skills/` and 3
+under `lib/`, so it mostly vendors someone else's work. Absolute scoring was
+flattened by size; the comparison was not.
+
+Ratings are Elo, updated only by comparisons that actually ran. **No target
+distribution is imposed.** Forcing a normal curve would mean moving several hundred
+plugins to a lower score than any evidence supports, about repositories this census
+does not own.
+
+**These ratings are not yet a ranking.** <!-- census:begin n-rated -->188<!-- census:end n-rated --> entries have a rating,
+averaging <!-- census:begin rating-matches-mean -->1.0<!-- census:end rating-matches-mean --> comparisons each with a maximum of
+<!-- census:begin rating-matches-max -->1<!-- census:end rating-matches-max -->, and the spread is only
+<!-- census:begin rating-spread -->1492 to 1508<!-- census:end rating-spread -->. Elo needs roughly 10 to 20 matches before a rating
+carries meaning, so the order below is close to arbitrary at present and is published
+to show the mechanism accumulating rather than to recommend anything. Each row states
+its match count for exactly that reason.
+
+| Plugin | Rating | Matches |
+| --- | --- | --- |
+<!-- census:begin rating-top -->
+| [0xKcyzz/dsh-local-project](https://github.com/0xKcyzz/dsh-local-project) | 1508 | 1 |
+| [121103qwq/dsh-vision-sidecar](https://github.com/121103qwq/dsh-vision-sidecar) | 1508 | 1 |
+| [863683348/dsh-memory-setup](https://github.com/863683348/dsh-memory-setup) | 1508 | 1 |
+| [863683348/dsh-plugin-gate](https://github.com/863683348/dsh-plugin-gate) | 1508 | 1 |
+| [A-G-guy/dsh-plus](https://github.com/A-G-guy/dsh-plus) | 1508 | 1 |
+| [bill9109/dsh-conversation-share](https://github.com/bill9109/dsh-conversation-share) | 1508 | 1 |
+| [bocha-ai/dsh-web-search-bocha](https://github.com/bocha-ai/dsh-web-search-bocha) | 1508 | 1 |
+| [btspoony/mstar-harness](https://github.com/btspoony/mstar-harness) | 1508 | 1 |
+| [chen-zz20/dsh-skill-stats](https://github.com/chen-zz20/dsh-skill-stats) | 1508 | 1 |
+| [chenw2759-wq/dsh-plugin-healthcheck](https://github.com/chenw2759-wq/dsh-plugin-healthcheck) | 1508 | 1 |
+| [chuyue-yue/dsh-plugin-manager](https://github.com/chuyue-yue/dsh-plugin-manager) | 1508 | 1 |
+| [codeMonkey-Pine/dsh-wallpaper](https://github.com/codeMonkey-Pine/dsh-wallpaper) | 1508 | 1 |
+| [couldbeme/dsh-write-gate](https://github.com/couldbeme/dsh-write-gate) | 1508 | 1 |
+| [CuteSamurai24/dsh-md-memory](https://github.com/CuteSamurai24/dsh-md-memory) | 1508 | 1 |
+| [dd2673/dsh-wending-ssh-manager](https://github.com/dd2673/dsh-wending-ssh-manager) | 1508 | 1 |
+<!-- census:end rating-top -->
+
+Comparisons run alongside enumeration, which spends a different API allowance, so
+150 of them add about 2% to the run rather than a separate 13 minutes. Some pairs
+never resolve: one produced a verdict in 2 of 8 identical attempts, because the
+model's reasoning competes with its answer for the token budget. An unresolved pair
+costs coverage, not correctness — no rating moves.
+
 ## What the published package declares
 
 Contract verification reads a repository's `package.json`. A user runs
@@ -421,6 +473,7 @@ suite turns red.
 | `data/decay.jsonl` | per-entry decay state |
 | `data/reviews.jsonl` | model quality scores (mean, run count, raw samples), pinned to a commit and prompt version |
 | `data/npm-manifest.jsonl` | what each published package declares, versus its repository |
+| `data/ratings.jsonl` | Elo ratings from pairwise comparisons, with each entry's match count |
 
 The search API returns at most 1000 results per query. `scripts/enumerate-topic.mjs`
 shards around that ceiling by star bucket and then by creation day, reaching

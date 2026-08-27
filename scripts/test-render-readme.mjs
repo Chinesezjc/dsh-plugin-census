@@ -289,6 +289,37 @@ check(
   )
 }
 
+// The ratings table is published while still converging, so the figures stating how
+// little evidence stands behind it must be generated, not written by hand. A stale
+// "averaging 1.0 comparisons" line beside ratings with 12 matches each would
+// misrepresent the data in the direction of overclaiming.
+{
+  const readme = readFileSync(`${ROOT}README.md`, 'utf8')
+  for (const region of ['n-rated', 'rating-matches-mean', 'rating-matches-max', 'rating-spread', 'rating-top']) {
+    check(
+      `the ratings region ${region} is generated`,
+      new RegExp(`census:begin ${region} -->`).test(readme),
+      `README.md must carry a ${region} marker`,
+    )
+  }
+  const zh = readFileSync(`${ROOT}README.zh.md`, 'utf8')
+  check(
+    'the Chinese README carries the same ratings figures',
+    ['n-rated', 'rating-matches-mean', 'rating-matches-max', 'rating-spread', 'rating-top']
+      .every((r) => new RegExp(`census:begin ${r} -->`).test(zh)),
+    'README.zh.md must carry every ratings marker',
+  )
+  // Every published rating row must state its match count, since the count is what
+  // tells a reader the order is not yet meaningful.
+  const table = readme.split('census:begin rating-top -->')[1]?.split('<!-- census:end')[0] ?? ''
+  const rows = table.split('\n').filter((l) => l.trim().startsWith('|'))
+  check(
+    'every published rating row states its match count',
+    rows.length === 0 || rows.every((l) => /\|\s*\d+\s*\|\s*\d+\s*\|/.test(l)),
+    `${rows.length} row(s); first: ${rows[0] ?? '(none)'}`,
+  )
+}
+
 process.stdout.write(
   failures === 0
     ? `\nall ${checks} readme-render controls behaved as specified\n`

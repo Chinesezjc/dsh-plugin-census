@@ -56,6 +56,7 @@ const decay = load('decay')
 const catalog = load('catalog')
 const reviews = load('reviews')
 const npmManifest = load('npm-manifest') ?? []
+const ratings = load('ratings') ?? []
 
 const verdicts = tally(contract, 'verdict')
 const catalogued = verdicts.get('CONTRACT_OK') ?? 0
@@ -332,6 +333,27 @@ const REGIONS = {
     const counts = tally(npmManifest, 'state')
     const bad = (counts.get('bundle-missing') ?? 0) + (counts.get('package-missing') ?? 0)
     return share(bad, npmManifest.length)
+  },
+  'n-rated': () => String(ratings.length),
+  'rating-matches-max': () => String(ratings.reduce((max, r) => Math.max(max, r.matches ?? 0), 0)),
+  'rating-matches-mean': () => (ratings.length === 0
+    ? '0'
+    : (ratings.reduce((sum, r) => sum + (r.matches ?? 0), 0) / ratings.length).toFixed(1)),
+  'rating-spread': () => {
+    if (ratings.length === 0) return 'no ratings yet'
+    const values = ratings.map((r) => r.rating ?? 0)
+    return `${Math.round(Math.min(...values))} to ${Math.round(Math.max(...values))}`
+  },
+  // Ordered by rating and capped, but every row carries its match count: with one
+  // match each the order is alphabetical rather than meaningful, and the count is
+  // what tells a reader that.
+  'rating-top': () => {
+    if (ratings.length === 0) return '_No comparisons have been played yet._'
+    return [...ratings]
+      .sort((x, y) => (y.rating ?? 0) - (x.rating ?? 0) || x.repo.localeCompare(y.repo))
+      .slice(0, 15)
+      .map((r) => `| [${r.repo}](https://github.com/${r.repo}) | ${Math.round(r.rating)} | ${r.matches ?? 0} |`)
+      .join('\n')
   },
   'n-inconclusive': () => String(decay.filter((row) => row.state === 'inconclusive').length),
   'pct-inconclusive': () => share(decay.filter((row) => row.state === 'inconclusive').length, decay.length),

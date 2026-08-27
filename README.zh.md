@@ -162,6 +162,50 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 注册的 scope，其所有者可以正常发布，因此是可安装的——品牌混淆是另一个问题，
 本目录不对此做裁定。
 
+## 成对比较排名（尚在收敛中）
+
+上面那个 1-5 质量分**无法区分插件**：97% 的评审落在 4 或 5，而按文件数分组，均值只
+从 4.05 走到 4.77。模型感知到了差异，却没有表达出来。
+
+改成问「两个插件里，有经验的 DSH 用户更信任哪个」就能区分。两个绝对分都是 5 的插件
+——`FengYangXun123/dsh-opencode-usage`（7 个文件）与
+`GongYuanCaiJi/dsh-claude-code-templates`（5057 个文件）——给出了明确胜者，而且
+**赢的是小的那个**：后者 5057 个文件里有 5031 个在 `skills/` 下、`lib/` 只有 3 个，
+主要是在打包别人的东西。绝对打分被规模带偏了，成对比较没有。
+
+评级用 Elo，**只由真实发生过的比较驱动**。**不施加任何目标分布。** 强行凑成正态意味着
+把几百个插件压到证据不支持的低分上，而这些判断写着别人仓库的名字。
+
+**这些评级还不构成排名。** 目前 <!-- census:begin n-rated -->188<!-- census:end n-rated --> 个条目有评级，平均每个只比过
+<!-- census:begin rating-matches-mean -->1.0<!-- census:end rating-matches-mean --> 场（最多 <!-- census:begin rating-matches-max -->1<!-- census:end rating-matches-max --> 场），跨度仅
+<!-- census:begin rating-spread -->1492 to 1508<!-- census:end rating-spread -->。Elo 大约需要 10-20 场才有意义，所以**下面的顺序目前接近
+随机**，发布它是为了展示机制正在累积，不是推荐。每行都标出场次，正是为此。
+
+| 插件 | 评级 | 场次 |
+| --- | --- | --- |
+<!-- census:begin rating-top -->
+| [0xKcyzz/dsh-local-project](https://github.com/0xKcyzz/dsh-local-project) | 1508 | 1 |
+| [121103qwq/dsh-vision-sidecar](https://github.com/121103qwq/dsh-vision-sidecar) | 1508 | 1 |
+| [863683348/dsh-memory-setup](https://github.com/863683348/dsh-memory-setup) | 1508 | 1 |
+| [863683348/dsh-plugin-gate](https://github.com/863683348/dsh-plugin-gate) | 1508 | 1 |
+| [A-G-guy/dsh-plus](https://github.com/A-G-guy/dsh-plus) | 1508 | 1 |
+| [bill9109/dsh-conversation-share](https://github.com/bill9109/dsh-conversation-share) | 1508 | 1 |
+| [bocha-ai/dsh-web-search-bocha](https://github.com/bocha-ai/dsh-web-search-bocha) | 1508 | 1 |
+| [btspoony/mstar-harness](https://github.com/btspoony/mstar-harness) | 1508 | 1 |
+| [chen-zz20/dsh-skill-stats](https://github.com/chen-zz20/dsh-skill-stats) | 1508 | 1 |
+| [chenw2759-wq/dsh-plugin-healthcheck](https://github.com/chenw2759-wq/dsh-plugin-healthcheck) | 1508 | 1 |
+| [chuyue-yue/dsh-plugin-manager](https://github.com/chuyue-yue/dsh-plugin-manager) | 1508 | 1 |
+| [codeMonkey-Pine/dsh-wallpaper](https://github.com/codeMonkey-Pine/dsh-wallpaper) | 1508 | 1 |
+| [couldbeme/dsh-write-gate](https://github.com/couldbeme/dsh-write-gate) | 1508 | 1 |
+| [CuteSamurai24/dsh-md-memory](https://github.com/CuteSamurai24/dsh-md-memory) | 1508 | 1 |
+| [dd2673/dsh-wending-ssh-manager](https://github.com/dd2673/dsh-wending-ssh-manager) | 1508 | 1 |
+<!-- census:end rating-top -->
+
+比较与枚举并行执行，两者花的是不同的 API 配额，所以 150 次比较只给整轮增加约 2% 时间，
+而不是额外的 13 分钟。有些对始终得不出结果：某一对在 8 次相同尝试里只成功 2 次，因为
+模型的思考过程与答案争抢 token 预算。未解决的对**只损失覆盖率，不损失正确性**——没有
+任何评级被移动。
+
 ## 已发布的包声明了什么
 
 契约验证读的是仓库里的 `package.json`。而用户执行 `dsh plugin add <name>` 装的是
@@ -365,6 +409,7 @@ owner、同时不误伤有权发布者、无关 scope 和形近 scope。两个�
 | `data/decay.jsonl` | 每个条目的失效状态 |
 | `data/reviews.jsonl` | 模型质量评分（均值、运行次数、各次原始分），固定到 commit 与 prompt 版本 |
 | `data/npm-manifest.jsonl` | 每个已发布包声明了什么，与其仓库的对比 |
+| `data/ratings.jsonl` | 成对比较得出的 Elo 评级，含每个条目的场次 |
 
 搜索 API 单次查询最多返回 1000 条结果。`scripts/enumerate-topic.mjs` 先按 star 桶、
 再按创建日期分片绕过这个上限，最终枚举到 <!-- census:begin n-enumerated -->11744<!-- census:end n-enumerated --> 个唯一仓库——
