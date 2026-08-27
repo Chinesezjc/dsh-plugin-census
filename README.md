@@ -232,8 +232,12 @@ its match count for exactly that reason.
 | [beimianism/Hermes-to-DSH](https://github.com/beimianism/Hermes-to-DSH) | 1508 | 1 |
 <!-- census:end rating-top -->
 
-Comparisons run alongside enumeration, which spends a different API allowance, so
-150 of them add about 2% to the run rather than a separate 13 minutes. Some pairs
+Comparisons are restricted to the entries the absolute score rated 5 — the set that
+score cannot separate. Without that bound, pairing the least-compared entries first
+spread across the whole catalogue and never deepened: after two runs every rated entry
+had exactly 1 match, and reaching 10 would have taken about 453 runs. Comparisons run
+alongside enumeration, which spends a different API allowance, so 150 of them add
+about 2% to the run rather than a separate 13 minutes. Some pairs
 never resolve: one produced a verdict in 2 of 8 identical attempts, because the
 model's reasoning competes with its answer for the token budget. An unresolved pair
 costs coverage, not correctness — no rating moves.

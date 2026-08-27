@@ -271,6 +271,48 @@ check(
   'the comparison prompt must not include popularity',
 )
 
+// Convergence. Pairing the least-compared entries first spread across the whole
+// catalogue and never deepened: after two real runs, all 332 rated entries had exactly
+// 1 match, because entries with 0 matches always sort ahead of entries with 1. At that
+// rate 10 matches would take about 453 runs. Bounding the pool is what makes depth
+// possible, so depth is asserted directly.
+{
+  const rows = [
+    { repo: 'o/a', package: 'a' },
+    { repo: 'o/b', package: 'b' },
+    { repo: 'o/c', package: 'c' },
+    { repo: 'o/d', package: 'd' },
+  ]
+  let carried = ''
+  const maxMatches = []
+  for (let round = 0; round < 3; round += 1) {
+    const result = runRank({ rows, limit: 2, existing: carried })
+    carried = `${result.records.map((r) => JSON.stringify(r)).join('\n')}\n`
+    maxMatches.push(result.records.reduce((max, r) => Math.max(max, r.matches ?? 0), 0))
+  }
+  check(
+    'repeated runs deepen existing entries rather than only adding new ones',
+    maxMatches[2] > maxMatches[0],
+    `max matches per round: ${maxMatches.join(' -> ')}`,
+  )
+}
+
+// A stored rating outside the current pool must survive. Emitting only the pool
+// discarded ratings earned before the pool criterion existed.
+{
+  const outside = { repo: 'o/outside', rating: 1620, matches: 6, promptVersion: 'p1' }
+  const kept = runRank({
+    rows: [{ repo: 'o/a', package: 'a' }, { repo: 'o/b', package: 'b' }],
+    existing: `${JSON.stringify(outside)}\n`,
+  })
+  const found = kept.records.find((r) => r.repo === 'o/outside')
+  check(
+    'a stored rating outside the pool is not discarded',
+    found?.rating === 1620 && found?.matches === 6,
+    JSON.stringify(found),
+  )
+}
+
 process.stdout.write(
   failures === 0
     ? `\nall ${checks} pairwise-ranking controls behaved as specified\n`

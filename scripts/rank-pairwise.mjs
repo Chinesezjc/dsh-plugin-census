@@ -59,6 +59,25 @@ const CONCURRENCY = Math.max(1, Number(process.env.CENSUS_RANK_CONCURRENCY ?? 4)
 /** Wall-clock budget in seconds; 0 disables. */
 const DEADLINE_SECONDS = Number(process.env.CENSUS_RANK_DEADLINE_SECONDS ?? 0)
 
+/**
+ * Path to the absolute reviews, used to bound the candidate pool.
+ *
+ * Without a bound, pairing the least-compared entries first spreads across the whole
+ * catalogue and never deepens: after two runs, 332 entries each had exactly 1 match,
+ * because 6187 entries with 0 matches always sort ahead of anything with 1. Reaching
+ * 10 matches that way would take about 453 runs. Breadth was the wrong objective —
+ * a rating needs depth to mean anything.
+ *
+ * The pool is the entries the absolute score rated 5, which is precisely the set the
+ * 1-5 scale cannot separate — 547 of 1078 reviews. That criterion defends itself:
+ * ranking is only useful where the cheaper signal has run out. Selecting by stars
+ * would import the popularity bias this census avoids everywhere else.
+ */
+const REVIEWS_PATH = process.env.CENSUS_REVIEWS_PATH ?? 'data/reviews.jsonl'
+
+/** Score at or above which an entry joins the ranking pool; 0 ranks everything. */
+const POOL_MIN_SCORE = Number(process.env.CENSUS_RANK_POOL_MIN_SCORE ?? 5)
+
 /** Elo K-factor. Low, because a single comparison is weak evidence. */
 const K_FACTOR = Number(process.env.CENSUS_RANK_K ?? 16)
 
@@ -307,6 +326,32 @@ async function main() {
   for (const entry of entries) if (!byRepo.has(entry.repo)) byRepo.set(entry.repo, entry)
   const catalogue = [...byRepo.values()]
 
+  // Restrict to the pool before pairing, so comparisons deepen a bounded set instead
+  // of recruiting new entries forever.
+  let pool = catalogue
+  if (POOL_MIN_SCORE > 0 && existsSync(REVIEWS_PATH)) {
+    const eligible = new Set()
+    for (const line of readFileSync(REVIEWS_PATH, 'utf8').split('\n')) {
+      if (!line.trim()) continue
+      try {
+        const review = JSON.parse(line)
+        if (review?.reviewed && Number(review.score) >= POOL_MIN_SCORE) eligible.add(review.repo)
+      } catch { /* skip unparseable stored row */ }
+    }
+    const restricted = catalogue.filter((entry) => eligible.has(entry.repo))
+    if (restricted.length >= 2) {
+      pool = restricted
+      process.stderr.write(
+        `pool: ${pool.length} entr(y/ies) scored ${POOL_MIN_SCORE} or above,`
+        + ` of ${catalogue.length} catalogued\n`,
+      )
+    } else {
+      process.stderr.write(
+        `pool would hold ${restricted.length} entr(y/ies); ranking the whole catalogue instead\n`,
+      )
+    }
+  }
+
   const stored = loadExisting(argValue('--existing', ''))
   const rating = new Map()
   const played = new Map()
@@ -318,7 +363,7 @@ async function main() {
 
   // Pair the least-compared plugins first, so coverage spreads instead of
   // deepening a few entries. Ties broken by a seeded hash for reproducibility.
-  const ordered = [...catalogue].sort((a, b) => {
+  const ordered = [...pool].sort((a, b) => {
     const pa = played.get(a.repo) ?? 0
     const pb = played.get(b.repo) ?? 0
     if (pa !== pb) return pa - pb
@@ -331,7 +376,7 @@ async function main() {
   for (let i = 0; i + 1 < ordered.length && pairs.length < limit; i += 2) {
     pairs.push([ordered[i], ordered[i + 1]])
   }
-  process.stderr.write(`playing ${pairs.length} comparison(s) over a ${catalogue.length}-entry catalogue\n`)
+  process.stderr.write(`playing ${pairs.length} comparison(s) over a ${pool.length}-entry pool\n`)
 
   const briefCache = new Map()
   const getBrief = async (entry) => {
@@ -414,7 +459,18 @@ async function main() {
 
   // Emit every catalogued entry that has a rating, so the file stays the complete
   // record rather than only this run's pairs.
-  for (const entry of catalogue) {
+  // Emit over the pool plus any stored entry outside it. Emitting only the pool
+  // silently discarded ratings earned before the pool existed, or after an entry left
+  // it because its absolute score changed — a rating is evidence already paid for and
+  // must not vanish because the selection criterion moved.
+  const emitted = new Set()
+  const outgoing = [...pool]
+  for (const repo of rating.keys()) {
+    if (!pool.some((entry) => entry.repo === repo)) outgoing.push({ repo })
+  }
+  for (const entry of outgoing) {
+    if (emitted.has(entry.repo)) continue
+    emitted.add(entry.repo)
     const matches = played.get(entry.repo) ?? 0
     if (matches === 0) continue
     process.stdout.write(`${JSON.stringify({
@@ -429,7 +485,7 @@ async function main() {
   const rated = [...played.values()].filter((n) => n > 0).length
   process.stderr.write(
     `\n${matchLog.length} comparison(s) applied, ${failed} failed of ${attempted} attempted;`
-    + ` ${rated} of ${catalogue.length} entries now rated\n`,
+    + ` ${rated} of ${pool.length} pooled entries now rated\n`,
   )
   if (matchLog.length > 0) {
     const spread = [...rating.values()].sort((x, y) => x - y)
