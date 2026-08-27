@@ -16,19 +16,19 @@
 **6923** 个仓库，四天前是 1064 个。GitHub 的话题页按 star 排序，而 star 最高的
 条目恰恰最不可能是插件。
 
-话题是被完整枚举的，不是采样：<!-- census:begin n-enumerated -->11744<!-- census:end n-enumerated --> 个唯一仓库，做法是围绕搜索 API
+话题是被完整枚举的，不是采样：<!-- census:begin n-enumerated -->11940<!-- census:end n-enumerated --> 个唯一仓库，做法是围绕搜索 API
 单次查询 1000 条的上限做分片。契约探测则跨运行累积，所以下表覆盖的是目前已探测的
-<!-- census:begin n-probed -->8698<!-- census:end n-probed --> 个仓库：
+<!-- census:begin n-probed -->9398<!-- census:end n-probed --> 个仓库：
 
 | Star | 符合插件契约的比例 |
 | --- | --- |
 <!-- census:begin compliance-zh -->
-| 0 | 65.3% |
-| 1-2 | 77.1% |
-| 3-9 | 83.3% |
-| 10-49 | 80.0% |
-| 50+ | **57.5%** |
-| 全部 | 75.1% |
+| 0 | 69.3% |
+| 1-2 | 77.8% |
+| 3-9 | 83.2% |
+| 10-49 | 80.1% |
+| 50+ | **58.5%** |
+| 全部 | 76.2% |
 <!-- census:end compliance-zh -->
 
 只有最高那一档偏低，其构成解释了原因：带这个话题的高 star 仓库大多是这个话题
@@ -44,29 +44,29 @@
 
 ## 样本构成
 
-全部 <!-- census:begin n-probed -->8698<!-- census:end n-probed --> 个被探测仓库，按判定分类：
+全部 <!-- census:begin n-probed -->9398<!-- census:end n-probed --> 个被探测仓库，按判定分类：
 
 | 判定 | 数量 | 占比 |
 | --- | --- | --- |
 <!-- census:begin verdicts -->
-| `CONTRACT_OK` | 6519 | 74.9% |
-| `NO_DSH_FIELD` | 883 | 10.2% |
-| `NO_PACKAGE_JSON` | 656 | 7.5% |
-| `DSH_WITHOUT_BUNDLE_PATCH` | 553 | 6.4% |
-| `VENDORED_HARNESS` | 32 | 0.4% |
-| `PATCH_FILE_EMPTY_OR_INVALID` | 23 | 0.3% |
+| `CONTRACT_OK` | 7140 | 76.0% |
+| `NO_DSH_FIELD` | 915 | 9.7% |
+| `NO_PACKAGE_JSON` | 679 | 7.2% |
+| `DSH_WITHOUT_BUNDLE_PATCH` | 571 | 6.1% |
+| `VENDORED_HARNESS` | 34 | 0.4% |
+| `PATCH_FILE_EMPTY_OR_INVALID` | 25 | 0.3% |
 | `MALFORMED_PACKAGE_JSON` | 15 | 0.2% |
-| `PATCH_FILE_MISSING` | 9 | 0.1% |
+| `PATCH_FILE_MISSING` | 10 | 0.1% |
 | `BUNDLE_UNDETERMINED` | 4 | 0.0% |
-| `TREE_UNREADABLE` | 3 | 0.0% |
+| `TREE_UNREADABLE` | 4 | 0.0% |
 | `FIRST_PARTY_HARNESS` | 1 | 0.0% |
 <!-- census:end verdicts -->
 
 探测是累积的：每次运行把 API 配额先花在从未探测过的仓库上，然后是最陈旧的，所以
-这张表覆盖的是 <!-- census:begin n-enumerated -->11744<!-- census:end n-enumerated --> 个已枚举仓库中不断增长的一部分，而不是每次重新采样。
+这张表覆盖的是 <!-- census:begin n-enumerated -->11940<!-- census:end n-enumerated --> 个已枚举仓库中不断增长的一部分，而不是每次重新采样。
 
 `VENDORED_HARNESS` 标记的是携带了 harness 副本、而非插件的仓库：它之所以满足
-契约，是因为它*内含* DSH 自己的 bundle 包。这 <!-- census:begin n-vendored -->32<!-- census:end n-vendored --> 个的 `fork` 全部为 false，
+契约，是因为它*内含* DSH 自己的 bundle 包。这 <!-- census:begin n-vendored -->34<!-- census:end n-vendored --> 个的 `fork` 全部为 false，
 即源码复制而非 GitHub fork，所以按 owner 查或按 fork 状态查都发现不了它们；
 它们只能按第一方包名识别。其中最大的是
 `fufankeji/deepseek-harness-studio`，260 star。
@@ -100,8 +100,8 @@
 
 只有达到 `PARSED` 的条目才被列为插件。
 
-**如实说明的局限：** 第 2、3 级在实践中拦下的很少——<!-- census:begin n-declared -->1634<!-- census:end n-declared --> 个声明了 patch
-的仓库中只有 <!-- census:begin n-tier23-fail -->32<!-- census:end n-tier23-fail --> 个在这两级失败。静态验证在第 1 级就基本到顶了，剩余的不确定性只能靠实际安装
+**如实说明的局限：** 第 2、3 级在实践中拦下的很少——<!-- census:begin n-declared -->1734<!-- census:end n-declared --> 个声明了 patch
+的仓库中只有 <!-- census:begin n-tier23-fail -->35<!-- census:end n-tier23-fail --> 个在这两级失败。静态验证在第 1 级就基本到顶了，剩余的不确定性只能靠实际安装
 插件来消除。安装验证尚未实现；本仓库不声称任何插件能运行。
 
 ## Surface 归因
@@ -111,15 +111,15 @@
 | 置信度 | 依据 | 数量 | 占比 |
 | --- | --- | --- | --- |
 <!-- census:begin surface-zh -->
-| `high` | 依赖 `@deepseek-ai/dsh-client-*`（client 侧）或 `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧） | 3763 | 57.7% |
-| `declared` | 插件自己的 `dsh.client` 或 `dsh.host` 块声明了该 surface | 1634 | 25.1% |
-| `medium` | 有 `@deepseek-ai/*` 依赖，但没有一个依赖能区分 client 与 host，surface 记为 `indeterminate` | 256 | 3.9% |
-| `low` | 没有 `@deepseek-ai/*` 依赖，surface 由名称或描述中的关键词猜测 | 602 | 9.2% |
-| `none` | 既无依赖证据也无关键词命中——**根本没有归因** | 264 | 4.0% |
+| `high` | 依赖 `@deepseek-ai/dsh-client-*`（client 侧）或 `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧） | 4229 | 59.2% |
+| `declared` | 插件自己的 `dsh.client` 或 `dsh.host` 块声明了该 surface | 1734 | 24.3% |
+| `medium` | 有 `@deepseek-ai/*` 依赖，但没有一个依赖能区分 client 与 host，surface 记为 `indeterminate` | 269 | 3.8% |
+| `low` | 没有 `@deepseek-ai/*` 依赖，surface 由名称或描述中的关键词猜测 | 629 | 8.8% |
+| `none` | 既无依赖证据也无关键词命中——**根本没有归因** | 279 | 3.9% |
 <!-- census:end surface-zh -->
 
-`high` 与 `medium` 这 <!-- census:begin n-dep-evidence -->4019<!-- census:end n-dep-evidence --> 行基于**已安装的依赖**。另有
-<!-- census:begin n-declared -->1634<!-- census:end n-declared --> 行为 `declared`：插件自己的 `dsh` 块声明了 surface——这是作者的
+`high` 与 `medium` 这 <!-- census:begin n-dep-evidence -->4498<!-- census:end n-dep-evidence --> 行基于**已安装的依赖**。另有
+<!-- census:begin n-declared -->1734<!-- census:end n-declared --> 行为 `declared`：插件自己的 `dsh` 块声明了 surface——这是作者的
 声明而非已安装的包，所以排在依赖证据之下、猜测之上。
 
 归因此前只读依赖，因而丢掉了这些声明，并用猜测取而代之。**这些猜测里有 52% 把
@@ -143,13 +143,13 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 | 判定 | 含义 | 数量 |
 | --- | --- | --- |
 <!-- census:begin install-zh -->
-| `published` | 声明的包名可在 npm registry 解析 | 3214 |
-| `git-only` | 不在 npm 上；只能用 Git specifier 安装 | 3171 |
-| `unpublishable-scope` | 仓库不属于该组织，却用 `@deepseek-ai/` 命名自己 | 132 |
+| `published` | 声明的包名可在 npm registry 解析 | 3397 |
+| `git-only` | 不在 npm 上；只能用 Git specifier 安装 | 3603 |
+| `unpublishable-scope` | 仓库不属于该组织，却用 `@deepseek-ai/` 命名自己 | 138 |
 | `unknown` | **registry 没有给出结论**——这不是对该包的判断 | 2 |
 <!-- census:end install-zh -->
 
-另有 <!-- census:begin n-vendored -->32<!-- census:end n-vendored --> 个仓库原样携带 `@deepseek-ai/dsh-base`（样本外至少还有两个：
+另有 <!-- census:begin n-vendored -->34<!-- census:end n-vendored --> 个仓库原样携带 `@deepseek-ai/dsh-base`（样本外至少还有两个：
 `my-dsh/oh-my-dsh` 与 `BenHuHuan/dhs-tuicode`）。它们不是命名错误的插件，而是
 **harness 的源码副本**，因此被归为 `VENDORED_HARNESS` 并从目录中排除，不计入上表。
 
@@ -176,7 +176,7 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 评级用 Elo，**只由真实发生过的比较驱动**。**不施加任何目标分布。** 强行凑成正态意味着
 把几百个插件压到证据不支持的低分上，而这些判断写着别人仓库的名字。
 
-**这些评级还不构成排名。** 目前 <!-- census:begin n-rated -->188<!-- census:end n-rated --> 个条目有评级，平均每个只比过
+**这些评级还不构成排名。** 目前 <!-- census:begin n-rated -->332<!-- census:end n-rated --> 个条目有评级，平均每个只比过
 <!-- census:begin rating-matches-mean -->1.0<!-- census:end rating-matches-mean --> 场（最多 <!-- census:begin rating-matches-max -->1<!-- census:end rating-matches-max --> 场），跨度仅
 <!-- census:begin rating-spread -->1492 to 1508<!-- census:end rating-spread -->。Elo 大约需要 10-20 场才有意义，所以**下面的顺序目前接近
 随机**，发布它是为了展示机制正在累积，不是推荐。每行都标出场次，正是为此。
@@ -185,20 +185,20 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 | --- | --- | --- |
 <!-- census:begin rating-top -->
 | [0xKcyzz/dsh-local-project](https://github.com/0xKcyzz/dsh-local-project) | 1508 | 1 |
+| [1052326311/dsh-instruction-audit](https://github.com/1052326311/dsh-instruction-audit) | 1508 | 1 |
 | [121103qwq/dsh-vision-sidecar](https://github.com/121103qwq/dsh-vision-sidecar) | 1508 | 1 |
+| [2128627267/dsh-qapproval-timeout](https://github.com/2128627267/dsh-qapproval-timeout) | 1508 | 1 |
+| [2h0n/dsh-web-notification](https://github.com/2h0n/dsh-web-notification) | 1508 | 1 |
 | [863683348/dsh-memory-setup](https://github.com/863683348/dsh-memory-setup) | 1508 | 1 |
 | [863683348/dsh-plugin-gate](https://github.com/863683348/dsh-plugin-gate) | 1508 | 1 |
 | [A-G-guy/dsh-plus](https://github.com/A-G-guy/dsh-plus) | 1508 | 1 |
-| [bill9109/dsh-conversation-share](https://github.com/bill9109/dsh-conversation-share) | 1508 | 1 |
-| [bocha-ai/dsh-web-search-bocha](https://github.com/bocha-ai/dsh-web-search-bocha) | 1508 | 1 |
-| [btspoony/mstar-harness](https://github.com/btspoony/mstar-harness) | 1508 | 1 |
-| [chen-zz20/dsh-skill-stats](https://github.com/chen-zz20/dsh-skill-stats) | 1508 | 1 |
-| [chenw2759-wq/dsh-plugin-healthcheck](https://github.com/chenw2759-wq/dsh-plugin-healthcheck) | 1508 | 1 |
-| [chuyue-yue/dsh-plugin-manager](https://github.com/chuyue-yue/dsh-plugin-manager) | 1508 | 1 |
-| [codeMonkey-Pine/dsh-wallpaper](https://github.com/codeMonkey-Pine/dsh-wallpaper) | 1508 | 1 |
-| [couldbeme/dsh-write-gate](https://github.com/couldbeme/dsh-write-gate) | 1508 | 1 |
-| [CuteSamurai24/dsh-md-memory](https://github.com/CuteSamurai24/dsh-md-memory) | 1508 | 1 |
-| [dd2673/dsh-wending-ssh-manager](https://github.com/dd2673/dsh-wending-ssh-manager) | 1508 | 1 |
+| [aa2246740/dsh-oauth-login](https://github.com/aa2246740/dsh-oauth-login) | 1508 | 1 |
+| [AIMFllyYS/dsh-operating-context](https://github.com/AIMFllyYS/dsh-operating-context) | 1508 | 1 |
+| [AKS1st/dsh-sysmon](https://github.com/AKS1st/dsh-sysmon) | 1508 | 1 |
+| [AlphaGodzilla/ag-dsh-coding-plugins](https://github.com/AlphaGodzilla/ag-dsh-coding-plugins) | 1508 | 1 |
+| [Anionex/dsh-turn-rewind](https://github.com/Anionex/dsh-turn-rewind) | 1508 | 1 |
+| [Apageoflove/DSH-arena](https://github.com/Apageoflove/DSH-arena) | 1508 | 1 |
+| [beimianism/Hermes-to-DSH](https://github.com/beimianism/Hermes-to-DSH) | 1508 | 1 |
 <!-- census:end rating-top -->
 
 比较与枚举并行执行，两者花的是不同的 API 配额，所以 150 次比较只给整轮增加约 2% 时间，
@@ -211,18 +211,18 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 契约验证读的是仓库里的 `package.json`。而用户执行 `dsh plugin add <name>` 装的是
 **已发布的 tarball**。**这是两个不同的产物，而它们并不一致。**
 
-在 <!-- census:begin n-npm-checked -->3214<!-- census:end n-npm-checked --> 个能在 npm 上解析的包中：
+在 <!-- census:begin n-npm-checked -->3397<!-- census:end n-npm-checked --> 个能在 npm 上解析的包中：
 
 | 状态 | 含义 | 数量 | 占比 |
 | --- | --- | --- | --- |
 <!-- census:begin npm-manifest-zh -->
-| `bundle-ok` | 已发布的清单声明了 `dsh.bundle` | 2767 | 86.1% |
-| `bundle-missing` | **已发布的清单没有 `dsh.bundle`**——DSH 会拒绝把它作为 profile bundle 加载 | 164 | 5.1% |
-| `package-missing` | 声明的包名已无法在 registry 上解析 | 16 | 0.5% |
-| `unreadable` | registry 读取失败；这不是对该包的判断 | 267 | 8.3% |
+| `bundle-ok` | 已发布的清单声明了 `dsh.bundle` | 3035 | 89.3% |
+| `bundle-missing` | **已发布的清单没有 `dsh.bundle`**——DSH 会拒绝把它作为 profile bundle 加载 | 174 | 5.1% |
+| `package-missing` | 声明的包名已无法在 registry 上解析 | 17 | 0.5% |
+| `unreadable` | registry 读取失败；这不是对该包的判断 | 171 | 5.0% |
 <!-- census:end npm-manifest-zh -->
 
-其中 <!-- census:begin n-npm-broken -->180<!-- census:end n-npm-broken --> 个（<!-- census:begin pct-npm-broken -->5.6%<!-- census:end pct-npm-broken -->）**按包名装不上**，尽管它们
+其中 <!-- census:begin n-npm-broken -->191<!-- census:end n-npm-broken --> 个（<!-- census:begin pct-npm-broken -->5.6%<!-- census:end pct-npm-broken -->）**按包名装不上**，尽管它们
 的仓库满足契约。`bobcat848/dsh-calculator` 的仓库里有 `dsh.bundle` 和完整的
 `dsh.client` 块，而已发布的 `dsh-calculator@0.0.1` **连 `dsh` 字段都没有**；
 `orriduck/dsh-tui` 在 `0.2.19` 上同样如此。装上并注册为 profile bundle 会失败并报
@@ -240,17 +240,17 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 `unbundled`（契约已不成立）。无法得出结论的探测被报为 `inconclusive`，
 而绝不报为失效——因为每个失效状态都会促使他人删除条目，而证据可能并不支持。
 
-全部 <!-- census:begin n-catalog-rows -->6519<!-- census:end n-catalog-rows --> 个条目：
+全部 <!-- census:begin n-catalog-rows -->7140<!-- census:end n-catalog-rows --> 个条目：
 
 | 状态 | 数量 |
 | --- | --- |
 <!-- census:begin decay -->
-| `live` | 6440 |
-| `archived` | 16 |
-| `gone` | 10 |
+| `live` | 7023 |
+| `archived` | 17 |
+| `gone` | 12 |
 | `unbundled` | 7 |
 | `dormant` | 0 |
-| `inconclusive` | 46 |
+| `inconclusive` | 81 |
 <!-- census:end decay -->
 
 **`dormant: 0` 反映的是话题的年龄，不是它的健康度。** 目录条目中最久的一次 push 距今
@@ -258,7 +258,7 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 采样偏差——枚举现在覆盖整个话题，而不是「最近更新的那一页」——但这个数字仍然说明
 不了长期维护情况，因为这个生态里还没有任何项目有时间沉寂下来。
 
-**`inconclusive` 有 <!-- census:begin n-inconclusive -->46<!-- census:end n-inconclusive --> 个（<!-- census:begin pct-inconclusive -->0.7%<!-- census:end pct-inconclusive -->），这是扫描本身的局限，不是对那些仓库的判定。**
+**`inconclusive` 有 <!-- census:begin n-inconclusive -->81<!-- census:end n-inconclusive --> 个（<!-- census:begin pct-inconclusive -->1.1%<!-- census:end pct-inconclusive -->），这是扫描本身的局限，不是对那些仓库的判定。**
 失效扫描与探针共用同一份每小时 API 配额，配额耗尽的那次运行会如实报告「没查成」而不是
 去猜。拒绝阈值是 40%，所以这次仍然发布了；读者应把失效表理解为「覆盖了实际能查到的
 那些条目」。
@@ -269,7 +269,7 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 中的某个状态可能来自比上面那些数字更早的一次运行。
 
 <!-- census:begin decay-flagged-zh -->
-被判定为失效的 33 个条目（`inconclusive` 不是失效，已排除）：
+被判定为失效的 36 个条目（`inconclusive` 不是失效，已排除）：
 
 | 条目 | 状态 |
 | --- | --- |
@@ -277,16 +277,16 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 | `brunhildzhou/dsh-all-warmup` | archived — repository is archived |
 | `ccch1mneyyy/dsh-working-activity` | archived — repository is archived |
 | `Diluka/dsh-side-session` | archived — repository is archived |
+| `guaguasong/dsh-attachment-s3` | archived — repository is archived |
 | `haiyoucuv/dsh-model-provider-label` | archived — repository is archived |
 | `Hanihahaha/deepseek-harness-plugins` | archived — repository is archived |
-| `hyls9527/dsh-plugins` | archived — repository is archived |
 | `IZRINO/dsh-token-stats` | archived — repository is archived |
 | `myg133/anspire-ai-search` | archived — repository is archived |
 | `nathannli/dsh-fish-shell` | archived — repository is archived |
 | `nickhelion/dsh-serverchan-notify` | archived — repository is archived |
 | `orangeofcarl0-sys/dsh-fork-perf` | archived — repository is archived |
 
-……另有 21 个见 `data/decay.jsonl`。
+……另有 24 个见 `data/decay.jsonl`。
 <!-- census:end decay-flagged-zh -->
 
 ## 质量评审
@@ -347,7 +347,7 @@ commit 不同的样本会被丢弃而不是并入均值。
 这个数字仍是暂定的。重复采样只在两次抽样撞上同一条目时才增长，所以计数上升很慢；
 `runs: 1` 的分数仍然只是一次观测而非稳定值——优先看 `runs` 更大的条目。
 
-覆盖率是 <!-- census:begin n-catalogued -->6519<!-- census:end n-catalogued --> 中的 <!-- census:begin n-reviewed -->1078<!-- census:end n-reviewed -->，并随每次定时运行增长——每次按小时派生的
+覆盖率是 <!-- census:begin n-catalogued -->7140<!-- census:end n-catalogued --> 中的 <!-- census:begin n-reviewed -->1078<!-- census:end n-reviewed -->，并随每次定时运行增长——每次按小时派生的
 种子最多评审 180 个条目。实际批量取「这个上限」与「剩余每小时 API 配额支持的数量」
 中较小的那个，且评审器在 15 分钟处停止，使得慢速运行不会超出 job 超时并把普查一起
 拖死。
@@ -412,7 +412,7 @@ owner、同时不误伤有权发布者、无关 scope 和形近 scope。两个�
 | `data/ratings.jsonl` | 成对比较得出的 Elo 评级，含每个条目的场次 |
 
 搜索 API 单次查询最多返回 1000 条结果。`scripts/enumerate-topic.mjs` 先按 star 桶、
-再按创建日期分片绕过这个上限，最终枚举到 <!-- census:begin n-enumerated -->11744<!-- census:end n-enumerated --> 个唯一仓库——
+再按创建日期分片绕过这个上限，最终枚举到 <!-- census:begin n-enumerated -->11940<!-- census:end n-enumerated --> 个唯一仓库——
 即整个话题，不是样本。日期边界取自结果计数而非排序，因为这个搜索后端根本不支持
 按创建时间排序。
 
@@ -451,7 +451,7 @@ owner、同时不误伤有权发布者、无关 scope 和形近 scope。两个�
   `dormant` 和 `unbundled`，并把探测不成功的情况报为 `inconclusive` 而不是失效，
   因为每一个失效状态都会促使他人删除条目，而证据可能并不支持这个删除。
 - **公布整个样本的分布**而非精选列表：判定占比、按 star 档的合格率、以及全部
-  <!-- census:begin n-probed -->8698<!-- census:end n-probed --> 个被探测仓库的可安装性，探针脚本一并提供。
+  <!-- census:begin n-probed -->9398<!-- census:end n-probed --> 个被探测仓库的可安装性，探针脚本一并提供。
 
 更深入的单仓库审计已经存在，但**未发布**——见
 [AUDIT-EXPERIMENTAL.md](AUDIT-EXPERIMENTAL.md)。它的首个实现在每一个被测仓库上
