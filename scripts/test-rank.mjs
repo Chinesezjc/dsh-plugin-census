@@ -313,6 +313,15 @@ check(
   )
 }
 
+// The pool threshold must cover the whole collapsed region, not just its top. 97% of
+// absolute reviews land on 4 or 5, and 9 of 116 repeat-sampled entries scored both,
+// so a threshold at 5 would select the pool partly by noise.
+check(
+  'the pool threshold covers every score the absolute scale could not separate',
+  /CENSUS_RANK_POOL_MIN_SCORE \?\? 4\b/.test(SOURCE),
+  'the default pool threshold must be 4, since 4 and 5 are both in the collapsed band',
+)
+
 process.stdout.write(
   failures === 0
     ? `\nall ${checks} pairwise-ranking controls behaved as specified\n`

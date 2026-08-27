@@ -232,8 +232,11 @@ its match count for exactly that reason.
 | [beimianism/Hermes-to-DSH](https://github.com/beimianism/Hermes-to-DSH) | 1508 | 1 |
 <!-- census:end rating-top -->
 
-Comparisons are restricted to the entries the absolute score rated 5 — the set that
-score cannot separate. Without that bound, pairing the least-compared entries first
+Comparisons are restricted to the entries the absolute score could not separate,
+meaning 4 and 5 together: 97% of reviews land on one of those two, and 9 of 116
+entries sampled more than once scored both, so a threshold at 5 alone would select the
+pool partly by noise. Entries at 3 or below are excluded because the score already
+separated them. Without that bound, pairing the least-compared entries first
 spread across the whole catalogue and never deepened: after two runs every rated entry
 had exactly 1 match, and reaching 10 would have taken about 453 runs. Comparisons run
 alongside enumeration, which spends a different API allowance, so 150 of them add

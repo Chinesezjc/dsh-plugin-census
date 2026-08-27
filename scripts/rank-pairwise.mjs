@@ -68,15 +68,27 @@ const DEADLINE_SECONDS = Number(process.env.CENSUS_RANK_DEADLINE_SECONDS ?? 0)
  * 10 matches that way would take about 453 runs. Breadth was the wrong objective —
  * a rating needs depth to mean anything.
  *
- * The pool is the entries the absolute score rated 5, which is precisely the set the
- * 1-5 scale cannot separate — 547 of 1078 reviews. That criterion defends itself:
- * ranking is only useful where the cheaper signal has run out. Selecting by stars
- * would import the popularity bias this census avoids everywhere else.
+ * The pool is every entry the absolute score could not separate, which means 4 and 5
+ * together — 1050 of 1078 reviews. Restricting it to 5 was inconsistent with that
+ * reasoning: the 503 entries at 4 are equally unseparated, and 97% of all reviews land
+ * on one of the two.
+ *
+ * Worse, `score === 5` is partly noise. Of 116 entries sampled more than once, 9
+ * scored both 5 and 4 across identical runs — `yangl326-Dylan/learning-dsh` returned
+ * 5, 5, 5 and then 4 — so a threshold at 5 admits or excludes those entries on a coin
+ * flip. A pool selected by a boundary that moves is a pool selected by noise.
+ *
+ * Entries scoring 3 or below stay out: the absolute score already separated them, so
+ * comparisons there buy nothing. That is 28 of 1078.
+ *
+ * The cost is real and accepted: 73 runs to reach 10 matches instead of 38. Selecting
+ * by stars would be cheaper still and is rejected outright, because it would import
+ * the popularity bias avoided everywhere else in this census.
  */
 const REVIEWS_PATH = process.env.CENSUS_REVIEWS_PATH ?? 'data/reviews.jsonl'
 
 /** Score at or above which an entry joins the ranking pool; 0 ranks everything. */
-const POOL_MIN_SCORE = Number(process.env.CENSUS_RANK_POOL_MIN_SCORE ?? 5)
+const POOL_MIN_SCORE = Number(process.env.CENSUS_RANK_POOL_MIN_SCORE ?? 4)
 
 /** Elo K-factor. Low, because a single comparison is weak evidence. */
 const K_FACTOR = Number(process.env.CENSUS_RANK_K ?? 16)
