@@ -316,10 +316,14 @@ check(
 // The pool threshold must cover the whole collapsed region, not just its top. 97% of
 // absolute reviews land on 4 or 5, and 9 of 116 repeat-sampled entries scored both,
 // so a threshold at 5 would select the pool partly by noise.
+// The default must rank the whole catalogue. The earlier bound rested on a simulation
+// whose tie-breaking used array index while index also encoded true strength, which made
+// every first round pair near-equals; with random tie-breaking, 7140 entries reach
+// Spearman 0.87 at 10 matches each.
 check(
-  'the pool threshold covers every score the absolute scale could not separate',
-  /CENSUS_RANK_POOL_MIN_SCORE \?\? 4\b/.test(SOURCE),
-  'the default pool threshold must be 4, since 4 and 5 are both in the collapsed band',
+  'the whole catalogue is ranked by default',
+  /CENSUS_RANK_POOL_MIN_SCORE \?\? 0\b/.test(SOURCE),
+  'the default pool threshold must be 0 so no catalogued entry is excluded',
 )
 
 process.stdout.write(

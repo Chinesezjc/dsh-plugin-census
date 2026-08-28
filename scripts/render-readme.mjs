@@ -344,15 +344,25 @@ const REGIONS = {
     const values = ratings.map((r) => r.rating ?? 0)
     return `${Math.round(Math.min(...values))} to ${Math.round(Math.max(...values))}`
   },
-  // Ordered by rating and capped, but every row carries its match count: with one
-  // match each the order is alphabetical rather than meaningful, and the count is
-  // what tells a reader that.
-  'rating-top': () => {
+  // Bands, not a leaderboard. Simulated against known strengths, overall
+  // stratification converges long before exact positions: at Spearman 0.87 the top
+  // fifteen by rating contained 0 to 1 of the true top fifteen. Publishing a ranked
+  // list would assert precision the method does not have, so entries are grouped into
+  // quartiles by rating and only the band populations are stated.
+  'rating-bands': () => {
     if (ratings.length === 0) return '_No comparisons have been played yet._'
-    return [...ratings]
-      .sort((x, y) => (y.rating ?? 0) - (x.rating ?? 0) || x.repo.localeCompare(y.repo))
-      .slice(0, 15)
-      .map((r) => `| [${r.repo}](https://github.com/${r.repo}) | ${Math.round(r.rating)} | ${r.matches ?? 0} |`)
+    const sorted = [...ratings].sort((x, y) => (y.rating ?? 0) - (x.rating ?? 0))
+    const size = Math.ceil(sorted.length / 4)
+    const labels = ['top quartile', 'second quartile', 'third quartile', 'bottom quartile']
+    return labels
+      .map((label, i) => {
+        const band = sorted.slice(i * size, (i + 1) * size)
+        if (band.length === 0) return null
+        const values = band.map((r) => r.rating ?? 0)
+        const matches = band.reduce((sum, r) => sum + (r.matches ?? 0), 0) / band.length
+        return `| ${label} | ${band.length} | ${Math.round(Math.min(...values))}\u2013${Math.round(Math.max(...values))} | ${matches.toFixed(1)} |`
+      })
+      .filter(Boolean)
       .join('\n')
   },
   'n-inconclusive': () => String(decay.filter((row) => row.state === 'inconclusive').length),

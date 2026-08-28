@@ -60,35 +60,28 @@ const CONCURRENCY = Math.max(1, Number(process.env.CENSUS_RANK_CONCURRENCY ?? 4)
 const DEADLINE_SECONDS = Number(process.env.CENSUS_RANK_DEADLINE_SECONDS ?? 0)
 
 /**
- * Path to the absolute reviews, used to bound the candidate pool.
+ * Path to the absolute reviews, used only when a pool bound is configured.
  *
- * Without a bound, pairing the least-compared entries first spreads across the whole
- * catalogue and never deepens: after two runs, 332 entries each had exactly 1 match,
- * because 6187 entries with 0 matches always sort ahead of anything with 1. Reaching
- * 10 matches that way would take about 453 runs. Breadth was the wrong objective —
- * a rating needs depth to mean anything.
+ * The default ranks the whole catalogue. A bound was introduced on the belief that a
+ * large pool could not converge, and that belief came from a simulation with a bug in
+ * it: ties were broken by array index while the index also encoded true strength, so
+ * every first round paired near-equals and the comparisons carried almost no
+ * information. With ties broken randomly, ranking all 7140 catalogued entries reaches
+ * Spearman 0.87 against known strengths at 10 matches each and 0.93 at 20.
  *
- * The pool is every entry the absolute score could not separate, which means 4 and 5
- * together — 1050 of 1078 reviews. Restricting it to 5 was inconsistent with that
- * reasoning: the 503 entries at 4 are equally unseparated, and 97% of all reviews land
- * on one of the two.
+ * The real pairing here orders by match count and breaks ties with a seeded hash, so it
+ * never had the simulation's defect. Measured against Swiss pairing on 7140 entries it
+ * is marginally better, 0.89 against 0.87 at 10 matches, because pairing the
+ * least-compared entries spreads evidence rather than concentrating it.
  *
- * Worse, `score === 5` is partly noise. Of 116 entries sampled more than once, 9
- * scored both 5 and 4 across identical runs — `yangl326-Dylan/learning-dsh` returned
- * 5, 5, 5 and then 4 — so a threshold at 5 admits or excludes those entries on a coin
- * flip. A pool selected by a boundary that moves is a pool selected by noise.
- *
- * Entries scoring 3 or below stay out: the absolute score already separated them, so
- * comparisons there buy nothing. That is 28 of 1078.
- *
- * The cost is real and accepted: 73 runs to reach 10 matches instead of 38. Selecting
- * by stars would be cheaper still and is rejected outright, because it would import
- * the popularity bias avoided everywhere else in this census.
+ * What the simulation does still say is that overall stratification converges long
+ * before exact positions do: at rho 0.87 the top fifteen contained 0 to 1 of the true
+ * top fifteen. The ranking is therefore reported as bands, not as a leaderboard.
  */
 const REVIEWS_PATH = process.env.CENSUS_REVIEWS_PATH ?? 'data/reviews.jsonl'
 
-/** Score at or above which an entry joins the ranking pool; 0 ranks everything. */
-const POOL_MIN_SCORE = Number(process.env.CENSUS_RANK_POOL_MIN_SCORE ?? 4)
+/** Score at or above which an entry joins the pool; 0 ranks the whole catalogue. */
+const POOL_MIN_SCORE = Number(process.env.CENSUS_RANK_POOL_MIN_SCORE ?? 0)
 
 /** Elo K-factor. Low, because a single comparison is weak evidence. */
 const K_FACTOR = Number(process.env.CENSUS_RANK_K ?? 16)

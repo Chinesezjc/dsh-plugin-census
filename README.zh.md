@@ -181,29 +181,23 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 <!-- census:begin rating-spread -->1492 to 1508<!-- census:end rating-spread -->。Elo 大约需要 10-20 场才有意义，所以**下面的顺序目前接近
 随机**，发布它是为了展示机制正在累积，不是推荐。每行都标出场次，正是为此。
 
-| 插件 | 评级 | 场次 |
-| --- | --- | --- |
-<!-- census:begin rating-top -->
-| [0xKcyzz/dsh-local-project](https://github.com/0xKcyzz/dsh-local-project) | 1508 | 1 |
-| [1052326311/dsh-instruction-audit](https://github.com/1052326311/dsh-instruction-audit) | 1508 | 1 |
-| [1052326311/dsh-plan-lattice](https://github.com/1052326311/dsh-plan-lattice) | 1508 | 1 |
-| [121103qwq/dsh-vision-sidecar](https://github.com/121103qwq/dsh-vision-sidecar) | 1508 | 1 |
-| [2128627267/dsh-qapproval-timeout](https://github.com/2128627267/dsh-qapproval-timeout) | 1508 | 1 |
-| [2h0n/dsh-web-notification](https://github.com/2h0n/dsh-web-notification) | 1508 | 1 |
-| [314857493/dsh-vision](https://github.com/314857493/dsh-vision) | 1508 | 1 |
-| [3274375092/dsh-voice](https://github.com/3274375092/dsh-voice) | 1508 | 1 |
-| [7dgroup-ai/dsh-skill-7d-code-reviewer](https://github.com/7dgroup-ai/dsh-skill-7d-code-reviewer) | 1508 | 1 |
-| [863683348/dsh-memory-setup](https://github.com/863683348/dsh-memory-setup) | 1508 | 1 |
-| [863683348/dsh-plugin-gate](https://github.com/863683348/dsh-plugin-gate) | 1508 | 1 |
-| [A-G-guy/dsh-plus](https://github.com/A-G-guy/dsh-plus) | 1508 | 1 |
-| [A3Boy/dsh-web-tools](https://github.com/A3Boy/dsh-web-tools) | 1508 | 1 |
-| [aa2246740/dsh-oauth-login](https://github.com/aa2246740/dsh-oauth-login) | 1508 | 1 |
-| [ai-eks/dsh-auth-tunnel](https://github.com/ai-eks/dsh-auth-tunnel) | 1508 | 1 |
-<!-- census:end rating-top -->
+| 分档 | 条目数 | 评级区间 | 平均场次 |
+| --- | --- | --- | --- |
+<!-- census:begin rating-bands -->
+| top quartile | 118 | 1508–1508 | 1.0 |
+| second quartile | 118 | 1500–1508 | 1.0 |
+| third quartile | 118 | 1492–1500 | 1.0 |
+| bottom quartile | 116 | 1492–1492 | 1.0 |
+<!-- census:end rating-bands -->
 
-比较只在绝对分**无法区分**的条目之间进行，也就是 4 分和 5 分合起来：97% 的评审落在这
-两档，而且 116 个被重复采样的条目里有 9 个**既得过 5 又得过 4**，所以只取 5 分会让选
-池部分取决于噪声。3 分及以下不入池，因为绝对分已经把它们区分开了。没有这个限制时，
+**目录内所有条目都参与排名。** 早先的版本只在「绝对分无法区分」的条目之间比较，理由是
+「池太大无法收敛」——**这个判断是错的**，它来自一个有 bug 的模拟：同分时按数组下标配对，
+而下标同时又编码了真实实力，于是每轮第一次都让实力最接近的对打，比较几乎不携带信息。
+把同分改成随机配对后，全目录排名在每个条目 10 场时达到 Spearman **0.87**、20 场时 0.93。
+
+结果以**分档**而非排名列表发布，因为同一个模拟显示：**整体分层的收敛远早于精确名次**
+——在 rho=0.87 时，按评级取的前 15 名里只有 0-1 个属于真实前 15。发布排行榜会宣称这套
+方法并不具备的精度。没有这个限制时，
 「优先配对比较次数最少的」会在整个目录上铺开而永远不深化：跑了两轮之后，每个有评级的
 条目都恰好只有 1 场，按此速度要到 10 场需要约 453 轮。比较与枚举并行执行，两者花的是
 不同的 API 配额，所以 150 次比较只给整轮增加约 2% 时间，而不是额外的 13 分钟。有些对始终得不出结果：某一对在 8 次相同尝试里只成功 2 次，因为

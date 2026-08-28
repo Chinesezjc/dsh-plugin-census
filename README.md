@@ -212,31 +212,27 @@ carries meaning, so the order below is close to arbitrary at present and is publ
 to show the mechanism accumulating rather than to recommend anything. Each row states
 its match count for exactly that reason.
 
-| Plugin | Rating | Matches |
-| --- | --- | --- |
-<!-- census:begin rating-top -->
-| [0xKcyzz/dsh-local-project](https://github.com/0xKcyzz/dsh-local-project) | 1508 | 1 |
-| [1052326311/dsh-instruction-audit](https://github.com/1052326311/dsh-instruction-audit) | 1508 | 1 |
-| [1052326311/dsh-plan-lattice](https://github.com/1052326311/dsh-plan-lattice) | 1508 | 1 |
-| [121103qwq/dsh-vision-sidecar](https://github.com/121103qwq/dsh-vision-sidecar) | 1508 | 1 |
-| [2128627267/dsh-qapproval-timeout](https://github.com/2128627267/dsh-qapproval-timeout) | 1508 | 1 |
-| [2h0n/dsh-web-notification](https://github.com/2h0n/dsh-web-notification) | 1508 | 1 |
-| [314857493/dsh-vision](https://github.com/314857493/dsh-vision) | 1508 | 1 |
-| [3274375092/dsh-voice](https://github.com/3274375092/dsh-voice) | 1508 | 1 |
-| [7dgroup-ai/dsh-skill-7d-code-reviewer](https://github.com/7dgroup-ai/dsh-skill-7d-code-reviewer) | 1508 | 1 |
-| [863683348/dsh-memory-setup](https://github.com/863683348/dsh-memory-setup) | 1508 | 1 |
-| [863683348/dsh-plugin-gate](https://github.com/863683348/dsh-plugin-gate) | 1508 | 1 |
-| [A-G-guy/dsh-plus](https://github.com/A-G-guy/dsh-plus) | 1508 | 1 |
-| [A3Boy/dsh-web-tools](https://github.com/A3Boy/dsh-web-tools) | 1508 | 1 |
-| [aa2246740/dsh-oauth-login](https://github.com/aa2246740/dsh-oauth-login) | 1508 | 1 |
-| [ai-eks/dsh-auth-tunnel](https://github.com/ai-eks/dsh-auth-tunnel) | 1508 | 1 |
-<!-- census:end rating-top -->
+| Band | Entries | Rating range | Mean matches |
+| --- | --- | --- | --- |
+<!-- census:begin rating-bands -->
+| top quartile | 118 | 1508–1508 | 1.0 |
+| second quartile | 118 | 1500–1508 | 1.0 |
+| third quartile | 118 | 1492–1500 | 1.0 |
+| bottom quartile | 116 | 1492–1492 | 1.0 |
+<!-- census:end rating-bands -->
 
-Comparisons are restricted to the entries the absolute score could not separate,
-meaning 4 and 5 together: 97% of reviews land on one of those two, and 9 of 116
-entries sampled more than once scored both, so a threshold at 5 alone would select the
-pool partly by noise. Entries at 3 or below are excluded because the score already
-separated them. Without that bound, pairing the least-compared entries first
+Every catalogued entry is ranked. An earlier version restricted comparisons to the
+entries the absolute score could not separate, on the belief that a larger pool could
+not converge. That belief was wrong, and it came from a simulation with a bug: ties
+were broken by array index while the index also encoded true strength, so every first
+round paired near-equals and the comparisons carried almost no information. With ties
+broken randomly, ranking all catalogued entries reaches Spearman 0.87 against known
+strengths at 10 matches each, and 0.93 at 20.
+
+The results are reported as bands rather than a ranked list because the same
+simulation shows overall stratification converging long before exact positions: at
+Spearman 0.87 the top fifteen by rating contained 0 to 1 of the true top fifteen.
+A leaderboard would assert precision this method does not have. Without that bound, pairing the least-compared entries first
 spread across the whole catalogue and never deepened: after two runs every rated entry
 had exactly 1 match, and reaching 10 would have taken about 453 runs. Comparisons run
 alongside enumeration, which spends a different API allowance, so 150 of them add

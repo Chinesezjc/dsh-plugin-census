@@ -295,7 +295,7 @@ check(
 // misrepresent the data in the direction of overclaiming.
 {
   const readme = readFileSync(`${ROOT}README.md`, 'utf8')
-  for (const region of ['n-rated', 'rating-matches-mean', 'rating-matches-max', 'rating-spread', 'rating-top']) {
+  for (const region of ['n-rated', 'rating-matches-mean', 'rating-matches-max', 'rating-spread', 'rating-bands']) {
     check(
       `the ratings region ${region} is generated`,
       new RegExp(`census:begin ${region} -->`).test(readme),
@@ -305,18 +305,25 @@ check(
   const zh = readFileSync(`${ROOT}README.zh.md`, 'utf8')
   check(
     'the Chinese README carries the same ratings figures',
-    ['n-rated', 'rating-matches-mean', 'rating-matches-max', 'rating-spread', 'rating-top']
+    ['n-rated', 'rating-matches-mean', 'rating-matches-max', 'rating-spread', 'rating-bands']
       .every((r) => new RegExp(`census:begin ${r} -->`).test(zh)),
     'README.zh.md must carry every ratings marker',
   )
-  // Every published rating row must state its match count, since the count is what
-  // tells a reader the order is not yet meaningful.
-  const table = readme.split('census:begin rating-top -->')[1]?.split('<!-- census:end')[0] ?? ''
+  // Bands must state their mean match count, which is what tells a reader how little
+  // evidence stands behind the stratification. They must NOT name individual plugins:
+  // simulated at Spearman 0.87 the top fifteen by rating held 0 to 1 of the true top
+  // fifteen, so naming entries in rank order would assert precision the method lacks.
+  const table = readme.split('census:begin rating-bands -->')[1]?.split('<!-- census:end')[0] ?? ''
   const rows = table.split('\n').filter((l) => l.trim().startsWith('|'))
   check(
-    'every published rating row states its match count',
-    rows.length === 0 || rows.every((l) => /\|\s*\d+\s*\|\s*\d+\s*\|/.test(l)),
+    'every published band states its mean match count',
+    rows.length === 0 || rows.every((l) => /\|\s*[\d.]+\s*\|\s*$/.test(l)),
     `${rows.length} row(s); first: ${rows[0] ?? '(none)'}`,
+  )
+  check(
+    'the ratings section does not publish a ranked list of plugins',
+    !/census:begin rating-top/.test(readme) && !/github\.com\/[^)]+\) \| \d{4} \|/.test(table),
+    'bands must not name individual plugins in rank order',
   )
 }
 
