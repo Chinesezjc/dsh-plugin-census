@@ -815,6 +815,25 @@ else out({})
   )
 }
 
+// The workflow must not size the review batch from `rate_limit`. On 2026-08-27 that
+// endpoint reported "core remaining: 4999" while every one of 180 reviews failed with
+// "API rate limit exceeded for installation", so the batch was sized against a pool
+// that was not the one being spent.
+{
+  const workflow = readFileSync(new URL('../.github/workflows/refresh.yml', import.meta.url).pathname, 'utf8')
+  const reviewStep = workflow.split('name: Review catalogued plugins with a model')[1]?.split('\n      - name:')[0] ?? ''
+  check(
+    'the review step does not budget from the rate_limit endpoint',
+    !/gh api rate_limit/.test(reviewStep),
+    'rate_limit reports `core`, which does not govern the installation pool these calls spend',
+  )
+  check(
+    'the review step probes the real pool before spending it',
+    /git\/trees\/HEAD/.test(reviewStep),
+    'the only reliable signal is a request against the same pool',
+  )
+}
+
 process.stdout.write(
   failures === 0
     ? `\nall ${checks} review controls behaved as specified\n`

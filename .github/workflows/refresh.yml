@@ -248,7 +248,12 @@ jobs:
           CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
           CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
           CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}
-          CENSUS_RANK_LIMIT: '150'
+          # 150 comparisons cost about 432 installation calls, which exhausted the
+          # allowance before the review step ran: review produced 144 of 180 in the last
+          # run before ranking existed and 0 in all three runs after. Ranking is the
+          # newer and weaker signal, so it yields. 40 comparisons cost about 240 calls
+          # and still accumulate, just more slowly.
+          CENSUS_RANK_LIMIT: '40'
           CENSUS_RANK_DEADLINE_SECONDS: '820'
           CENSUS_RANK_CONCURRENCY: '4'
         run: |
@@ -466,16 +471,24 @@ jobs:
           # the average is 3.0 over a sample of fresh reviews). The steps before
           # this one spend most of the hourly 5000, and the catalogue keeps
           # growing, so a hardcoded limit either wastes headroom or overruns it.
-          remaining=$(gh api rate_limit --jq '.resources.core.remaining')
-          reserve=200
-          budget=$(( (remaining - reserve) / 3 ))
-          limit="${CENSUS_REVIEW_MAX}"
-          if [ "${budget}" -lt "${limit}" ]; then limit="${budget}"; fi
-          echo "core remaining: ${remaining}; review limit: ${limit} (cap ${CENSUS_REVIEW_MAX})"
-          if [ "${limit}" -lt 1 ]; then
-            echo "::warning::not enough core allowance left to review anything this run"
+          # `rate_limit` does not report the pool these calls spend. The run on
+          # 2026-08-27 read "core remaining: 4999" here and then failed all 180
+          # reviews with "API rate limit exceeded for installation" — the same
+          # mismatch the pre-flight step already documents. Budgeting from `core`
+          # therefore sized a batch that could not run, so the only reliable signal
+          # is a real request against the same pool.
+          if ! gh api repos/${GITHUB_REPOSITORY}/git/trees/HEAD --jq '.sha' \
+              >/dev/null 2>/tmp/review-probe.err; then
+            if grep -qi 'rate limit' /tmp/review-probe.err; then
+              echo "::warning::the installation allowance is spent; skipping the review this run"
+              exit 0
+            fi
+            echo "::warning::a probe request failed for a reason other than rate limiting:"
+            sed 's/^/  /' /tmp/review-probe.err
             exit 0
           fi
+          limit="${CENSUS_REVIEW_MAX}"
+          echo "installation allowance open; review limit: ${limit}"
           seed=$(date -u +%Y%m%d%H)
           echo "review seed: ${seed}"
           if node scripts/ai-review.mjs --limit "${limit}" --seed "${seed}" \
