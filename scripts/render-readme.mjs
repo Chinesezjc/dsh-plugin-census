@@ -73,9 +73,22 @@ const BANDS = [
 
 const starsByRepo = new Map(raw.map((row) => [row.full_name, row.stars ?? 0]))
 
+/**
+ * Markdown table header plus separator for the given language.
+ * @param en - English column names.
+ * @param zh - Chinese column names.
+ * @param lang - 'en' or 'zh'.
+ * @returns the header and separator lines.
+ */
+function headerFor(en, zh, lang) {
+  const cols = lang === 'zh' ? zh : en
+  const n = cols.split('|').filter((cell) => cell.trim()).length
+  return `${cols}\n| ${Array(n).fill('---').join(' | ')} |`
+}
+
 /** Compliance share per star band, plus the overall row. */
 function complianceRows(labels) {
-  const rows = []
+  const rows = [labels.header, '| --- | --- |']
   let okAll = 0
   let nAll = 0
   for (const [label, inBand] of BANDS) {
@@ -97,26 +110,28 @@ function complianceRows(labels) {
 }
 
 /** Verdict table, ordered by count then name so ties are stable. */
-function verdictRows() {
-  return [...verdicts.entries()]
+function verdictRows(lang) {
+  const rows = [...verdicts.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .map(([verdict, count]) => `| \`${verdict}\` | ${count} | ${share(count, contract.length)} |`)
     .join('\n')
+  return `${headerFor('| Verdict | Count | Share |', '| 判定 | 数量 | 占比 |', lang)}\n${rows}`
 }
 
 /** Surface-attribution table with a fixed row order and localised bases. */
-function surfaceRows(basis) {
+function surfaceRows(basis, lang) {
   const counts = tally(surface, 'confidence')
-  return ['high', 'declared', 'medium', 'low', 'none']
+  const rows = ['high', 'declared', 'medium', 'low', 'none']
     .map((level) => {
       const count = counts.get(level) ?? 0
       return `| \`${level}\` | ${basis[level]} | ${count} | ${share(count, surface.length)} |`
     })
     .join('\n')
+  return `${headerFor('| Confidence | Basis | Count | Share |', '| 置信度 | 依据 | 数量 | 占比 |', lang)}\n${rows}`
 }
 
 /** Installability table. */
-function installRows(meanings) {
+function installRows(meanings, lang) {
   const counts = tally(install, 'installable')
   const ordered = ['published', 'git-only', 'unpublishable-scope', 'unknown', 'unnamed']
   // Every state present in the data must appear. A hardcoded three-state list
@@ -128,18 +143,20 @@ function installRows(meanings) {
       `installability state(s) ${missing.join(', ')} have no row; add them to installRows`,
     )
   }
-  return ordered
+  const rows = ordered
     .filter((state) => (counts.get(state) ?? 0) > 0 || state !== 'unnamed')
     .map((state) => `| \`${state}\` | ${meanings[state]} | ${counts.get(state) ?? 0} |`)
     .join('\n')
+  return `${headerFor('| Verdict | Meaning | Count |', '| 判定 | 含义 | 数量 |', lang)}\n${rows}`
 }
 
 /** Decay table, with the never-observed states pinned at zero. */
-function decayRows() {
+function decayRows(lang) {
   const counts = tally(decay, 'state')
-  return ['live', 'archived', 'gone', 'unbundled', 'dormant', 'inconclusive']
+  const rows = ['live', 'archived', 'gone', 'unbundled', 'dormant', 'inconclusive']
     .map((state) => `| \`${state}\` | ${counts.get(state) ?? 0} |`)
     .join('\n')
+  return `${headerFor('| State | Count |', '| 状态 | 数量 |', lang)}\n${rows}`
 }
 
 /**
@@ -177,18 +194,19 @@ function decayFlagged(labels) {
 }
 
 /** Score distribution over mean scores, rounded to the nearest whole score. */
-function scoreRows(meanings) {
+function scoreRows(meanings, lang) {
   const counts = new Map()
   for (const row of reviewed) {
     const bucket = Math.round(row.score)
     counts.set(bucket, (counts.get(bucket) ?? 0) + 1)
   }
-  return [5, 4, 3, 2, 1]
+  const rows = [5, 4, 3, 2, 1]
     .map((score) => {
       const count = counts.get(score) ?? 0
       return `| ${score} | ${meanings[score]} | ${count} | ${share(count, reviewed.length)} |`
     })
     .join('\n')
+  return `${headerFor('| Score | Meaning | Count | Share |', '| 分数 | 含义 | 数量 | 占比 |', lang)}\n${rows}`
 }
 
 const multiSampled = reviewed.filter((row) => (row.runs ?? 1) > 1)
@@ -212,38 +230,44 @@ const NPM_MEANINGS_ZH = {
 
 /** Regions for both files. Keys must match the markers in the documents. */
 const REGIONS = {
-  'compliance-en': () => complianceRows({ all: 'all' }),
-  'compliance-zh': () => complianceRows({ all: '全部' }),
-  'verdicts': verdictRows,
+  'compliance-en': () => complianceRows({
+    header: '| Stars | Satisfies the plugin contract |',
+    all: 'all',
+  }),
+  'compliance-zh': () => complianceRows({
+    header: '| Star | 符合插件契约的比例 |',
+    all: '全部',
+  }),
+  'verdicts': (lang) => verdictRows(lang),
   'surface-en': () => surfaceRows({
     high: 'depends on `@deepseek-ai/dsh-client-*` (client) or `@deepseek-ai/dsh-host-*` and host-only packages (host)',
     declared: "the plugin's own `dsh.client` or `dsh.host` block declares the surface",
     medium: 'depends on `@deepseek-ai/*`, but no dependency distinguishes client from host — surface `indeterminate`',
     low: 'no `@deepseek-ai/*` dependency; surface guessed from a name or description keyword',
     none: 'no dependency evidence and no keyword match — **not attributed at all**',
-  }),
+  }, 'en'),
   'surface-zh': () => surfaceRows({
     high: '依赖 `@deepseek-ai/dsh-client-*`（client 侧）或 `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧）',
     declared: '插件自己的 `dsh.client` 或 `dsh.host` 块声明了该 surface',
     medium: '有 `@deepseek-ai/*` 依赖，但没有一个依赖能区分 client 与 host，surface 记为 `indeterminate`',
     low: '没有 `@deepseek-ai/*` 依赖，surface 由名称或描述中的关键词猜测',
     none: '既无依赖证据也无关键词命中——**根本没有归因**',
-  }),
+  }, 'zh'),
   'install-en': () => installRows({
     published: 'the declared name resolves on the npm registry',
     'git-only': 'absent from npm; installable from a Git specifier',
     'unpublishable-scope': 'names itself under `@deepseek-ai/` from a repository outside that organisation',
     unknown: '**the registry did not answer** — not a statement about the package',
     unnamed: 'the manifest declares no package name',
-  }),
+  }, 'en'),
   'install-zh': () => installRows({
     published: '声明的包名可在 npm registry 解析',
     'git-only': '不在 npm 上；只能用 Git specifier 安装',
     'unpublishable-scope': '仓库不属于该组织，却用 `@deepseek-ai/` 命名自己',
     unknown: '**registry 没有给出结论**——这不是对该包的判断',
     unnamed: '清单没有声明包名',
-  }),
-  'decay': decayRows,
+  }, 'zh'),
+  'decay': (lang) => decayRows(lang),
   'decay-flagged-en': () => decayFlagged({
     header: (n) => `The ${n} entries flagged as decayed (\`inconclusive\` is not decay and is excluded):`,
     entry: 'Entry',
@@ -264,14 +288,14 @@ const REGIONS = {
     3: 'ordinary, thin, undocumented',
     2: 'barely a plugin',
     1: 'empty or broken',
-  }),
+  }, 'en'),
   'scores-zh': () => scoreRows({
     5: '扎实、有文档、有测试',
     4: '可用，文档足以让人采用',
     3: '一般，实现单薄、缺文档',
     2: '勉强算插件',
     1: '空的或坏的',
-  }),
+  }, 'zh'),
   // Inline figures, kept as single-value regions so prose can wrap around them.
   'n-enumerated': () => String(raw.length),
   'n-probed': () => String(contract.length),
@@ -307,22 +331,24 @@ const REGIONS = {
   'npm-manifest': () => {
     const counts = tally(npmManifest, 'state')
     const total = npmManifest.length
-    return ['bundle-ok', 'bundle-missing', 'package-missing', 'unreadable']
+    const rows = ['bundle-ok', 'bundle-missing', 'package-missing', 'unreadable']
       .map((state) => {
         const count = counts.get(state) ?? 0
         return `| \`${state}\` | ${NPM_MEANINGS[state]} | ${count} | ${share(count, total)} |`
       })
       .join('\n')
+    return `${headerFor('| State | Meaning | Count | Share |', '| 状态 | 含义 | 数量 | 占比 |', 'en')}\n${rows}`
   },
   'npm-manifest-zh': () => {
     const counts = tally(npmManifest, 'state')
     const total = npmManifest.length
-    return ['bundle-ok', 'bundle-missing', 'package-missing', 'unreadable']
+    const rows = ['bundle-ok', 'bundle-missing', 'package-missing', 'unreadable']
       .map((state) => {
         const count = counts.get(state) ?? 0
         return `| \`${state}\` | ${NPM_MEANINGS_ZH[state]} | ${count} | ${share(count, total)} |`
       })
       .join('\n')
+    return `${headerFor('| State | Meaning | Count | Share |', '| 状态 | 含义 | 数量 | 占比 |', 'zh')}\n${rows}`
   },
   'n-npm-checked': () => String(npmManifest.length),
   'n-npm-broken': () => {
@@ -349,12 +375,12 @@ const REGIONS = {
   // fifteen by rating contained 0 to 1 of the true top fifteen. Publishing a ranked
   // list would assert precision the method does not have, so entries are grouped into
   // quartiles by rating and only the band populations are stated.
-  'rating-bands': () => {
+  'rating-bands': (lang) => {
     if (ratings.length === 0) return '_No comparisons have been played yet._'
     const sorted = [...ratings].sort((x, y) => (y.rating ?? 0) - (x.rating ?? 0))
     const size = Math.ceil(sorted.length / 4)
     const labels = ['top quartile', 'second quartile', 'third quartile', 'bottom quartile']
-    return labels
+    const rows = labels
       .map((label, i) => {
         const band = sorted.slice(i * size, (i + 1) * size)
         if (band.length === 0) return null
@@ -364,6 +390,7 @@ const REGIONS = {
       })
       .filter(Boolean)
       .join('\n')
+    return `${headerFor('| Band | Entries | Rating range | Mean matches |', '| 分档 | 条目数 | 评级区间 | 平均场次 |', lang)}\n${rows}`
   },
   'n-inconclusive': () => String(decay.filter((row) => row.state === 'inconclusive').length),
   'pct-inconclusive': () => share(decay.filter((row) => row.state === 'inconclusive').length, decay.length),
@@ -375,10 +402,11 @@ const REGIONS = {
 /**
  * Replace every marked region in a document.
  * @param text - document contents.
- * @param path - path, for error messages.
+ * @param path - path, for error messages and the region language.
  * @returns the rewritten document.
  */
 function rewrite(text, path) {
+  const lang = path === 'README.zh.md' ? 'zh' : 'en'
   const seen = new Set()
   const pattern = /<!-- census:begin ([a-z0-9-]+) -->\n?([\s\S]*?)<!-- census:end \1 -->/g
   const out = text.replace(pattern, (match, name) => {
@@ -387,7 +415,7 @@ function rewrite(text, path) {
       throw new Error(`${path}: region "${name}" has no generator; add it to REGIONS or fix the marker`)
     }
     seen.add(name)
-    const body = build()
+    const body = build(lang)
     // Single-value regions stay on one line so surrounding prose reads normally.
     return body.includes('\n')
       ? `<!-- census:begin ${name} -->\n${body}\n<!-- census:end ${name} -->`

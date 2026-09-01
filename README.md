@@ -24,9 +24,9 @@ repositories, by sharding around the search API's 1000-result per-query ceiling.
 Contract probing then accumulates across runs, so the verdict figures below cover
 the <!-- census:begin n-probed -->12898<!-- census:end n-probed --> repositories probed so far:
 
+<!-- census:begin compliance-en -->
 | Stars | Satisfies the plugin contract |
 | --- | --- |
-<!-- census:begin compliance-en -->
 | 0 | 77.0% |
 | 1-2 | 79.7% |
 | 3-9 | 84.8% |
@@ -51,9 +51,9 @@ subpackages, which the earlier one missed.
 
 All <!-- census:begin n-probed -->12898<!-- census:end n-probed --> probed repositories, by verdict:
 
+<!-- census:begin verdicts -->
 | Verdict | Count | Share |
 | --- | --- | --- |
-<!-- census:begin verdicts -->
 | `CONTRACT_OK` | 10179 | 78.9% |
 | `NO_DSH_FIELD` | 1106 | 8.6% |
 | `NO_PACKAGE_JSON` | 807 | 6.3% |
@@ -121,9 +121,9 @@ not implemented; nothing here claims a plugin runs.
 Each verified plugin is attributed to the surface it extends, with the evidence
 ranked by strength and the confidence published alongside:
 
+<!-- census:begin surface-en -->
 | Confidence | Basis | Count | Share |
 | --- | --- | --- | --- |
-<!-- census:begin surface-en -->
 | `high` | depends on `@deepseek-ai/dsh-client-*` (client) or `@deepseek-ai/dsh-host-*` and host-only packages (host) | 6081 | 59.7% |
 | `declared` | the plugin's own `dsh.client` or `dsh.host` block declares the surface | 2388 | 23.5% |
 | `medium` | depends on `@deepseek-ai/*`, but no dependency distinguishes client from host — surface `indeterminate` | 332 | 3.3% |
@@ -161,9 +161,9 @@ Contract compliance says a plugin declares a valid patch. It does not say the
 package can be obtained. Two failure modes are decidable without installing
 anything:
 
+<!-- census:begin install-en -->
 | Verdict | Meaning | Count |
 | --- | --- | --- |
-<!-- census:begin install-en -->
 | `published` | the declared name resolves on the npm registry | 4456 |
 | `git-only` | absent from npm; installable from a Git specifier | 5558 |
 | `unpublishable-scope` | names itself under `@deepseek-ai/` from a repository outside that organisation | 163 |
@@ -212,9 +212,9 @@ carries meaning, so the order below is close to arbitrary at present and is publ
 to show the mechanism accumulating rather than to recommend anything. Each row states
 its match count for exactly that reason.
 
+<!-- census:begin rating-bands -->
 | Band | Entries | Rating range | Mean matches |
 | --- | --- | --- | --- |
-<!-- census:begin rating-bands -->
 | top quartile | 196 | 1508–1508 | 1.0 |
 | second quartile | 196 | 1500–1508 | 1.0 |
 | third quartile | 196 | 1492–1500 | 1.0 |
@@ -249,9 +249,9 @@ different artefacts and they disagree.**
 
 Over <!-- census:begin n-npm-checked -->4456<!-- census:end n-npm-checked --> packages that resolve on npm:
 
+<!-- census:begin npm-manifest -->
 | State | Meaning | Count | Share |
 | --- | --- | --- | --- |
-<!-- census:begin npm-manifest -->
 | `bundle-ok` | the published manifest declares `dsh.bundle` | 4101 | 92.0% |
 | `bundle-missing` | **the published manifest declares no `dsh.bundle`** — DSH refuses it as a profile bundle | 215 | 4.8% |
 | `package-missing` | the declared name no longer resolves on the registry | 30 | 0.7% |
@@ -281,9 +281,9 @@ because every decay state invites a deletion the evidence may not support.
 
 Over all <!-- census:begin n-catalog-rows -->10179<!-- census:end n-catalog-rows --> entries:
 
+<!-- census:begin decay -->
 | State | Count |
 | --- | --- |
-<!-- census:begin decay -->
 | `live` | 9896 |
 | `archived` | 26 |
 | `gone` | 19 |
@@ -357,9 +357,9 @@ the first entry to be drawn twice under the new mechanism
 
 Over <!-- census:begin n-reviewed -->1078<!-- census:end n-reviewed --> reviewed entries, by mean score:
 
+<!-- census:begin scores-en -->
 | Score | Meaning | Count | Share |
 | --- | --- | --- | --- |
-<!-- census:begin scores-en -->
 | 5 | substantial, documented, tested | 547 | 50.7% |
 | 4 | solid and usable | 503 | 46.7% |
 | 3 | ordinary, thin, undocumented | 18 | 1.7% |

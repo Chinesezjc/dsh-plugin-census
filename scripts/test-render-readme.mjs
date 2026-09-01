@@ -314,7 +314,12 @@ check(
   // simulated at Spearman 0.87 the top fifteen by rating held 0 to 1 of the true top
   // fifteen, so naming entries in rank order would assert precision the method lacks.
   const table = readme.split('census:begin rating-bands -->')[1]?.split('<!-- census:end')[0] ?? ''
-  const rows = table.split('\n').filter((l) => l.trim().startsWith('|'))
+  const rows = table
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.startsWith('|'))
+    .filter((l) => !/^\|(\s*---\s*\|)+\s*$/.test(l))
+    .slice(1) // skip the header row, which is part of the region now
   check(
     'every published band states its mean match count',
     rows.length === 0 || rows.every((l) => /\|\s*[\d.]+\s*\|\s*$/.test(l)),

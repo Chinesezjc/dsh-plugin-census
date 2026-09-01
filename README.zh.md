@@ -20,9 +20,9 @@
 单次查询 1000 条的上限做分片。契约探测则跨运行累积，所以下表覆盖的是目前已探测的
 <!-- census:begin n-probed -->12898<!-- census:end n-probed --> 个仓库：
 
+<!-- census:begin compliance-zh -->
 | Star | 符合插件契约的比例 |
 | --- | --- |
-<!-- census:begin compliance-zh -->
 | 0 | 77.0% |
 | 1-2 | 79.7% |
 | 3-9 | 84.8% |
@@ -46,9 +46,9 @@
 
 全部 <!-- census:begin n-probed -->12898<!-- census:end n-probed --> 个被探测仓库，按判定分类：
 
+<!-- census:begin verdicts -->
 | 判定 | 数量 | 占比 |
 | --- | --- | --- |
-<!-- census:begin verdicts -->
 | `CONTRACT_OK` | 10179 | 78.9% |
 | `NO_DSH_FIELD` | 1106 | 8.6% |
 | `NO_PACKAGE_JSON` | 807 | 6.3% |
@@ -108,9 +108,9 @@
 
 每个已验证插件都被归因到它所扩展的 surface，证据按强度分级，且置信度一并公布：
 
+<!-- census:begin surface-zh -->
 | 置信度 | 依据 | 数量 | 占比 |
 | --- | --- | --- | --- |
-<!-- census:begin surface-zh -->
 | `high` | 依赖 `@deepseek-ai/dsh-client-*`（client 侧）或 `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧） | 6081 | 59.7% |
 | `declared` | 插件自己的 `dsh.client` 或 `dsh.host` 块声明了该 surface | 2388 | 23.5% |
 | `medium` | 有 `@deepseek-ai/*` 依赖，但没有一个依赖能区分 client 与 host，surface 记为 `indeterminate` | 332 | 3.3% |
@@ -140,9 +140,9 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 符合契约说明插件声明了合法的 patch，但不说明这个包能被获取。有两种失败模式无需
 安装即可判定：
 
+<!-- census:begin install-zh -->
 | 判定 | 含义 | 数量 |
 | --- | --- | --- |
-<!-- census:begin install-zh -->
 | `published` | 声明的包名可在 npm registry 解析 | 4456 |
 | `git-only` | 不在 npm 上；只能用 Git specifier 安装 | 5558 |
 | `unpublishable-scope` | 仓库不属于该组织，却用 `@deepseek-ai/` 命名自己 | 163 |
@@ -181,9 +181,9 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 <!-- census:begin rating-spread -->1492 to 1508<!-- census:end rating-spread -->。Elo 大约需要 10-20 场才有意义，所以**下面的顺序目前接近
 随机**，发布它是为了展示机制正在累积，不是推荐。每行都标出场次，正是为此。
 
+<!-- census:begin rating-bands -->
 | 分档 | 条目数 | 评级区间 | 平均场次 |
 | --- | --- | --- | --- |
-<!-- census:begin rating-bands -->
 | top quartile | 196 | 1508–1508 | 1.0 |
 | second quartile | 196 | 1500–1508 | 1.0 |
 | third quartile | 196 | 1492–1500 | 1.0 |
@@ -211,9 +211,9 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 
 在 <!-- census:begin n-npm-checked -->4456<!-- census:end n-npm-checked --> 个能在 npm 上解析的包中：
 
+<!-- census:begin npm-manifest-zh -->
 | 状态 | 含义 | 数量 | 占比 |
 | --- | --- | --- | --- |
-<!-- census:begin npm-manifest-zh -->
 | `bundle-ok` | 已发布的清单声明了 `dsh.bundle` | 4101 | 92.0% |
 | `bundle-missing` | **已发布的清单没有 `dsh.bundle`**——DSH 会拒绝把它作为 profile bundle 加载 | 215 | 4.8% |
 | `package-missing` | 声明的包名已无法在 registry 上解析 | 30 | 0.7% |
@@ -240,9 +240,9 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 
 全部 <!-- census:begin n-catalog-rows -->10179<!-- census:end n-catalog-rows --> 个条目：
 
+<!-- census:begin decay -->
 | 状态 | 数量 |
 | --- | --- |
-<!-- census:begin decay -->
 | `live` | 9896 |
 | `archived` | 26 |
 | `gone` | 19 |
@@ -306,9 +306,9 @@ commit 不同的样本会被丢弃而不是并入均值。
 
 <!-- census:begin n-reviewed -->1078<!-- census:end n-reviewed --> 个已评条目，按均值分布：
 
+<!-- census:begin scores-zh -->
 | 分数 | 含义 | 数量 | 占比 |
 | --- | --- | --- | --- |
-<!-- census:begin scores-zh -->
 | 5 | 扎实、有文档、有测试 | 547 | 50.7% |
 | 4 | 可用，文档足以让人采用 | 503 | 46.7% |
 | 3 | 一般，实现单薄、缺文档 | 18 | 1.7% |
