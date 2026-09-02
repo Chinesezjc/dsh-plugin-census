@@ -64,14 +64,6 @@ jobs:
       - name: Verify enumeration refuses a fragment of the topic
         run: node scripts/test-enumerate.mjs
 
-      # The review run itself needs model credentials and does not execute here.
-      # These controls drive the reviewer against a stub model and a stub `gh`,
-      # so they check the guarantees that do not depend on a live model: a failed
-      # review never becomes a score, out-of-range scores are rejected, reuse is
-      # keyed on commit SHA and prompt version, and sampling is star-neutral.
-      - name: Verify the quality reviewer never publishes a failure as a score
-        run: node scripts/test-review.mjs
-
       # Every figure in both READMEs is generated from data/. They used to be typed
       # by hand while a scheduled workflow regenerated the data, so they could only
       # drift: measured once at 6929/1698/1167 published against 7111/2398/1660 in
@@ -249,10 +241,9 @@ jobs:
           CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
           CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}
           # 150 comparisons cost about 432 installation calls, which exhausted the
-          # allowance before the review step ran: review produced 144 of 180 in the last
-          # run before ranking existed and 0 in all three runs after. Ranking is the
-          # newer and weaker signal, so it yields. 40 comparisons cost about 240 calls
-          # and still accumulate, just more slowly.
+          # allowance for the rest of the job. Ranking yields to the probe steps:
+          # 40 comparisons cost about 240 calls and still accumulate, just more
+          # slowly.
           CENSUS_RANK_LIMIT: '40'
           CENSUS_RANK_DEADLINE_SECONDS: '820'
           CENSUS_RANK_CONCURRENCY: '4'
@@ -370,7 +361,7 @@ jobs:
           node scripts/render.mjs
 
       # Decay runs after the catalogue is rebuilt, over the entries just
-      # published. Findings are recorded for review and never remove an entry,
+      # published. Findings are flagged and never remove an entry,
       # but the step is NOT continue-on-error: the scan refuses to publish when
       # most entries could not be checked, and swallowing that exit would put the
       # meaningless scan back into the commit it was written to prevent.
@@ -414,90 +405,6 @@ jobs:
           if [ "${count}" -lt 100 ]; then
             echo "refusing to publish a catalogue with ${count} entries" >&2
             exit 1
-          fi
-
-      # Quality review runs after the catalogue is known good, and deliberately
-      # cannot fail the job: the census is decidable evidence, the review is a
-      # model's opinion, and a model outage must not stop the former from
-      # publishing. `continue-on-error` keeps a failed review out of the data
-      # while leaving the run green — the reviewer itself already refuses to
-      # publish a score it did not obtain.
-      #
-      # The seed changes every run, so draws overlap partially: new entries widen
-      # coverage and re-drawn entries accumulate a second sample to average.
-      # Skipped entirely when no key is configured, so a fork without the secret
-      # still gets a full census.
-      - name: Review catalogued plugins with a model
-        id: review
-        continue-on-error: true
-        env:
-          # The reviewer reads each repository's head commit, README and tree
-          # through `gh api`, so it needs the same token as every other step.
-          # Without it every review failed as HEAD_UNREADABLE in 0.7 seconds,
-          # which looked like a model problem and was an auth problem.
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
-          CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
-          CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}
-          # Upper bound on reviews per run. The effective batch is the smaller of
-          # this and what the remaining core allowance affords, and the reviewer
-          # also stops at the wall-clock deadline below.
-          #
-          # Reviews now run in a pool, measured at 4.83 s each against the live
-          # endpoint rather than 17.6 s sequentially. Both constraints land near
-          # the same place: 15 minutes affords ~186 reviews, and the allowance left
-          # after the census work affords a similar number at 3 calls each. The cap
-          # sits just under that, and the deadline enforces it if a run is slower
-          # than measured. The budget is computed from a fresh `rate_limit` read in
-          # the step body, so a depleted allowance shrinks the batch automatically.
-          CENSUS_REVIEW_MAX: '180'
-          CENSUS_REVIEW_DEADLINE_SECONDS: '900'
-          # Bounded pool. Kept below what the endpoint tolerated (24 concurrent
-          # calls returned 200 with no latency change) because the `gh` fetches
-          # share GitHub's allowance with the probe, and a burst risks secondary
-          # rate limiting that no per-hour figure predicts.
-          CENSUS_REVIEW_CONCURRENCY: '4'
-        run: |
-          # The `secrets` context is not available in a step-level `if`, so the
-          # skip is decided here instead. Using `if: secrets.X != ''` would make
-          # this step skip unconditionally and silently.
-          if [ -z "${CENSUS_API_KEY}" ]; then
-            echo "no CENSUS_API_KEY configured; skipping the model review"
-            exit 0
-          fi
-          # Size the batch from the allowance actually left, not a fixed guess.
-          # Measured: 3 core calls per review (head commit, README, tree; the
-          # manifest read is served from the same tree request often enough that
-          # the average is 3.0 over a sample of fresh reviews). The steps before
-          # this one spend most of the hourly 5000, and the catalogue keeps
-          # growing, so a hardcoded limit either wastes headroom or overruns it.
-          # `rate_limit` does not report the pool these calls spend. The run on
-          # 2026-08-27 read "core remaining: 4999" here and then failed all 180
-          # reviews with "API rate limit exceeded for installation" — the same
-          # mismatch the pre-flight step already documents. Budgeting from `core`
-          # therefore sized a batch that could not run, so the only reliable signal
-          # is a real request against the same pool.
-          if ! gh api repos/${GITHUB_REPOSITORY}/git/trees/HEAD --jq '.sha' \
-              >/dev/null 2>/tmp/review-probe.err; then
-            if grep -qi 'rate limit' /tmp/review-probe.err; then
-              echo "::warning::the installation allowance is spent; skipping the review this run"
-              exit 0
-            fi
-            echo "::warning::a probe request failed for a reason other than rate limiting:"
-            sed 's/^/  /' /tmp/review-probe.err
-            exit 0
-          fi
-          limit="${CENSUS_REVIEW_MAX}"
-          echo "installation allowance open; review limit: ${limit}"
-          seed=$(date -u +%Y%m%d%H)
-          echo "review seed: ${seed}"
-          if node scripts/ai-review.mjs --limit "${limit}" --seed "${seed}" \
-              --existing data/reviews.jsonl \
-              < data/catalog.jsonl > /tmp/reviews.jsonl; then
-            mv /tmp/reviews.jsonl data/reviews.jsonl
-            echo "reviews: $(wc -l < data/reviews.jsonl)"
-          else
-            echo "::warning::review run refused its own output; data/reviews.jsonl left unchanged"
           fi
 
       # Rewrite the figures from the data just produced. Without this the commit

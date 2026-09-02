@@ -188,16 +188,12 @@ is a different concern this catalogue does not adjudicate.
 
 ## Pairwise ranking, still converging
 
-The 1-5 quality score above cannot separate plugins: 97% of reviews land on 4 or 5,
-and the mean moves only 0.7 points between plugins under 10 files and plugins of 31
-to 100. The model perceives the difference and does not express it.
-
-Asking which of two plugins a competent user would trust does separate them. Two
-plugins both scored 5 — `FengYangXun123/dsh-opencode-usage` at 7 files and
-`GongYuanCaiJi/dsh-claude-code-templates` at 5057 — produced a clear winner, and the
-smaller one won: 5031 of the larger repository's files sit under `skills/` and 3
-under `lib/`, so it mostly vendors someone else's work. Absolute scoring was
-flattened by size; the comparison was not.
+Ranking asks which of two plugins a competent user would trust. The question
+separates cases a one-dimensional score could not: `FengYangXun123/dsh-opencode-usage`
+at 7 files beat `GongYuanCaiJi/dsh-claude-code-templates` at 5057 with a clear
+winner, and the smaller one won — 5031 of the larger repository's files sit under
+`skills/` and 3 under `lib/`, so it mostly vendors someone else's work. A
+size-flattened absolute score had called them equal; the comparison did not.
 
 Ratings are Elo, updated only by comparisons that actually ran. **No target
 distribution is imposed.** Forcing a normal curve would mean moving several hundred
@@ -221,13 +217,13 @@ its match count for exactly that reason.
 | bottom quartile | 214 | 1492–1492 | 1.0 |
 <!-- census:end rating-bands -->
 
-Every catalogued entry is ranked. An earlier version restricted comparisons to the
-entries the absolute score could not separate, on the belief that a larger pool could
-not converge. That belief was wrong, and it came from a simulation with a bug: ties
-were broken by array index while the index also encoded true strength, so every first
-round paired near-equals and the comparisons carried almost no information. With ties
-broken randomly, ranking all catalogued entries reaches Spearman 0.87 against known
-strengths at 10 matches each, and 0.93 at 20.
+Every catalogued entry is ranked. An earlier version restricted comparisons to a
+subset of entries, on the belief that a larger pool could not converge. That belief
+was wrong, and it came from a simulation with a bug: ties were broken by array index
+while the index also encoded true strength, so every first round paired near-equals
+and the comparisons carried almost no information. With ties broken randomly, ranking
+all catalogued entries reaches Spearman 0.87 against known strengths at 10 matches
+each, and 0.93 at 20.
 
 The results are reported as bands rather than a ranked list because the same
 simulation shows overall stratification converging long before exact positions: at
@@ -334,94 +330,6 @@ The 57 entries flagged as decayed (`inconclusive` is not decay and is excluded):
 ...and 45 more in `data/decay.jsonl`.
 <!-- census:end decay-flagged-en -->
 
-## Quality review
-
-Everything above is decidable. This section is not: `scripts/ai-review.mjs`
-asks a model to score a plugin 1-5 on how much a competent DSH user would trust
-it, and publishes the result as the subjective judgement it is. The rubric lives
-in the script, and every review records the commit SHA it read, the SHA of the
-README bytes it was shown, and the prompt version that produced it, so any score
-can be re-derived from that exact commit.
-
-A published score is the **mean of repeated samples**, not a single verdict. Each
-run re-draws its sample, so an entry drawn again is scored again and the scores
-accumulate; the record carries the mean, the number of runs, and every raw score.
-Samples taken under a different prompt version or against a different commit are
-discarded rather than averaged in.
-
-This is a correction, not a refinement. Scoring once and never re-asking assumed
-the verdict is a function of the content. It is not: `dsh-toolkit` and `dsh-TUI`
-once scored 4 and 3 on an identical commit SHA and identical README bytes, and
-the first entry to be drawn twice under the new mechanism
-(`wangzhuo-coding/geo-content-optimizer`) scored 5 then 4 on unchanged bytes.
-
-Over <!-- census:begin n-reviewed -->1078<!-- census:end n-reviewed --> reviewed entries, by mean score:
-
-<!-- census:begin scores-en -->
-| Score | Meaning | Count | Share |
-| --- | --- | --- | --- |
-| 5 | substantial, documented, tested | 547 | 50.7% |
-| 4 | solid and usable | 503 | 46.7% |
-| 3 | ordinary, thin, undocumented | 18 | 1.7% |
-| 2 | barely a plugin | 8 | 0.7% |
-| 1 | empty or broken | 2 | 0.2% |
-<!-- census:end scores-en -->
-
-**This distribution is the finding, and it makes the score nearly useless as a
-filter.** Almost nothing scores below 4. Two explanations were tested and only
-one survived:
-
-- *The rubric cannot reach low scores.* False. Given a synthetic 3-file plugin
-  with an 18-byte README and no dependencies, the same prompt returns 2.
-- *The population is already filtered.* Supported. Every entry here cleared all
-  three tiers of the bundle contract, which excludes stubs before review begins.
-
-Two hand-checks confirmed the scores rather than the suspicion that produced
-them. `fengs2021/dsh-plugin-catalog` has 5 files and no tests, which looks thin
-until the files are opened: 30 KB of implementation across `lib/index.js` and
-`lib/client.js`, two documented HTTP endpoints, and a rollback path for its only
-write. It scored 4, correctly. `AngelosZou/dsh-python-env` has a null GitHub
-description — and 42 files, 21 `lib/` modules, 12 test files, a CHANGELOG and
-bilingual docs. It scored 5, correctly. **File count and description length are
-bad proxies for depth**, which is the reason a model is asked at all.
-
-Sampling is star-neutral by construction, because an earlier version of this
-feature was not: selecting the catalogue head drew a sample averaging 1055 stars
-from a catalogue averaging 26 and containing none of its 326 zero-star entries.
-Selection is now a seeded shuffle over repository names, re-drawn per run. The
-published sample has median 2 stars and includes 21 zero-star entries of 79.
-
-**Repeated samples agree more often than not.** Of the <!-- census:begin n-multi -->116<!-- census:end n-multi --> entries sampled
-more than once, <!-- census:begin n-identical -->104<!-- census:end n-identical --> returned an identical score and
-<!-- census:begin n-disagree -->12<!-- census:end n-disagree --> moved, with a mean spread of <!-- census:begin mean-spread -->0.11<!-- census:end mean-spread --> points and a
-maximum of <!-- census:begin max-spread -->2<!-- census:end max-spread -->. An earlier reading of this table, taken when only two
-entries had been sampled twice and both had moved, described the scores as noisy;
-that reading was too small to support the claim and this one supersedes it.
-
-The figure is still provisional. Repeat samples accumulate only where two draws
-collide, so the count grows slowly, and a single-run score (`runs: 1`) remains one
-observation rather than a stable value — prefer entries with a higher `runs`
-count.
-
-Coverage is <!-- census:begin n-reviewed -->1078<!-- census:end n-reviewed --> of <!-- census:begin n-catalogued -->10561<!-- census:end n-catalogued --> and grows with each scheduled run,
-which reviews up to 180 entries under a seed derived from the hour. The batch is
-the smaller of that cap and what the remaining hourly API allowance affords, and
-the reviewer stops at a 15-minute deadline so a slow run cannot exceed the job
-timeout and take the census down with it.
-
-Reviews run in a pool of four rather than one at a time, measured at 4.83 seconds
-each against the live endpoint instead of 17.6 sequentially. Output order follows
-the draw, not completion, so the same seed produces byte-identical ordering. A failed review is recorded with
-`reviewed: false` and no score, and a run in which more than 30% of reviews fail
-exits non-zero rather than publishing a transport failure as an opinion about
-someone's code.
-
-The reviewer calls the Messages API directly when `CENSUS_API_KEY` is set, and
-falls back to a local model CLI otherwise. The scheduled workflow uses the API
-path and **cannot fail the job**: the census is decidable evidence and the review
-is an opinion, so a model outage leaves `data/reviews.jsonl` untouched rather than
-blocking the catalogue from publishing.
-
 ## Reproducing
 
 ```sh
@@ -440,19 +348,13 @@ node scripts/installability.mjs < data/contract.jsonl > data/installability.json
 # 5. decay scan over the catalogue
 node scripts/scan-decay.mjs < data/catalog.jsonl > data/decay.jsonl
 
-# 6. model quality review (needs a model CLI; CENSUS_MODEL_CLI overrides `claude`)
-# change the seed between runs: draws overlap, and overlapping entries average
-node scripts/ai-review.mjs --limit 20 --seed 1 \
-  --existing data/reviews.jsonl < data/catalog.jsonl > data/reviews.next.jsonl
-
-# 7. negative controls for every gate
+# 6. negative controls for every gate
 node scripts/test-gates.mjs
 node scripts/test-monorepo.mjs
 node scripts/test-inconclusive.mjs
 node scripts/test-decay.mjs
 node scripts/test-attribution.mjs
 node scripts/test-queue.mjs
-node scripts/test-review.mjs
 ./scripts/test-fetch.sh
 ```
 
@@ -474,7 +376,6 @@ suite turns red.
 | `data/installability-v3.jsonl` | npm resolution and reserved-scope verdicts |
 | `data/catalog.jsonl` | joined, classified catalogue |
 | `data/decay.jsonl` | per-entry decay state |
-| `data/reviews.jsonl` | model quality scores (mean, run count, raw samples), pinned to a commit and prompt version |
 | `data/npm-manifest.jsonl` | what each published package declares, versus its repository |
 | `data/ratings.jsonl` | Elo ratings from pairwise comparisons, with each entry's match count |
 
