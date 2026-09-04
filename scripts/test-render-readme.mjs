@@ -173,7 +173,7 @@ check(
     )
     return match ? match[1] : null
   }
-  const shared = ['n-enumerated', 'n-probed', 'n-catalogued', 'n-reviewed', 'n-vendored']
+  const shared = ['n-enumerated', 'n-probed', 'n-vendored']
   const mismatched = shared.filter((name) => read(en, name) !== read(zh, name))
   check(
     'both languages publish identical counts',

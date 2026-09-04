@@ -2,9 +2,9 @@
 /**
  * Controls for scripts/rank-pairwise.mjs.
  *
- * The ranker exists because the 1-5 absolute scale collapsed onto 4 and 5. Its own
- * risk is different: a comparison that fails must not move a rating, and a rating
- * must never be reshaped toward a target distribution. Both are asserted here.
+ * The ranker's own risk is that a comparison that fails must not move a rating,
+ * and a rating must never be reshaped toward a target distribution. Both are
+ * asserted here.
  *
  * Every control runs against stub `gh` and a stub model endpoint, so none touch the
  * network. Each was verified by injecting the corresponding defect.
@@ -274,8 +274,7 @@ check(
 // Convergence. Pairing the least-compared entries first spread across the whole
 // catalogue and never deepened: after two real runs, all 332 rated entries had exactly
 // 1 match, because entries with 0 matches always sort ahead of entries with 1. At that
-// rate 10 matches would take about 453 runs. Bounding the pool is what makes depth
-// possible, so depth is asserted directly.
+// rate 10 matches would take about 453 runs, so depth is asserted directly.
 {
   const rows = [
     { repo: 'o/a', package: 'a' },
@@ -297,8 +296,9 @@ check(
   )
 }
 
-// A stored rating outside the current pool must survive. Emitting only the pool
-// discarded ratings earned before the pool criterion existed.
+// A stored rating for an entry absent from the current catalogue must survive.
+// Emitting only the catalogue would discard evidence already paid for, whenever an
+// entry leaves the enumeration or the catalogue file is rebuilt from a fresh run.
 {
   const outside = { repo: 'o/outside', rating: 1620, matches: 6, promptVersion: 'p1' }
   const kept = runRank({
@@ -307,23 +307,20 @@ check(
   })
   const found = kept.records.find((r) => r.repo === 'o/outside')
   check(
-    'a stored rating outside the pool is not discarded',
+    'a stored rating outside the current catalogue is not discarded',
     found?.rating === 1620 && found?.matches === 6,
     JSON.stringify(found),
   )
 }
 
-// The pool threshold must cover the whole collapsed region, not just its top. 97% of
-// absolute reviews land on 4 or 5, and 9 of 116 repeat-sampled entries scored both,
-// so a threshold at 5 would select the pool partly by noise.
-// The default must rank the whole catalogue. The earlier bound rested on a simulation
-// whose tie-breaking used array index while index also encoded true strength, which made
-// every first round pair near-equals; with random tie-breaking, 7140 entries reach
-// Spearman 0.87 at 10 matches each.
+// The whole catalogue is ranked: no pool restriction may exclude entries. The earlier
+// bound rested on a simulation whose tie-breaking used array index while index also
+// encoded true strength, which made every first round pair near-equals; with random
+// tie-breaking, 7140 entries reach Spearman 0.87 at 10 matches each.
 check(
   'the whole catalogue is ranked by default',
-  /CENSUS_RANK_POOL_MIN_SCORE \?\? 0\b/.test(SOURCE),
-  'the default pool threshold must be 0 so no catalogued entry is excluded',
+  !/POOL_MIN_SCORE|REVIEWS_PATH|pool threshold|pool bound/.test(SOURCE),
+  'no pool threshold may exclude catalogued entries from ranking',
 )
 
 process.stdout.write(

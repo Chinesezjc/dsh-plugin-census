@@ -164,14 +164,11 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 
 ## 成对比较排名（尚在收敛中）
 
-上面那个 1-5 质量分**无法区分插件**：97% 的评审落在 4 或 5，而按文件数分组，均值只
-从 4.05 走到 4.77。模型感知到了差异，却没有表达出来。
-
-改成问「两个插件里，有经验的 DSH 用户更信任哪个」就能区分。两个绝对分都是 5 的插件
-——`FengYangXun123/dsh-opencode-usage`（7 个文件）与
-`GongYuanCaiJi/dsh-claude-code-templates`（5057 个文件）——给出了明确胜者，而且
-**赢的是小的那个**：后者 5057 个文件里有 5031 个在 `skills/` 下、`lib/` 只有 3 个，
-主要是在打包别人的东西。绝对打分被规模带偏了，成对比较没有。
+排名问的是「两个插件里，有经验的 DSH 用户更信任哪个」。这个问题能区分一维分数区分
+不了的案例：`FengYangXun123/dsh-opencode-usage`（7 个文件）赢了
+`GongYuanCaiJi/dsh-claude-code-templates`（5057 个文件），而且**赢的是小的那个**
+——后者 5057 个文件里有 5031 个在 `skills/` 下、`lib/` 只有 3 个，主要是在打包别人的
+东西。被规模带偏的一维绝对分把两者判为相等，成对比较没有。
 
 评级用 Elo，**只由真实发生过的比较驱动**。**不施加任何目标分布。** 强行凑成正态意味着
 把几百个插件压到证据不支持的低分上，而这些判断写着别人仓库的名字。
@@ -190,7 +187,7 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 | bottom quartile | 245 | 1492–1492 | 1.0 |
 <!-- census:end rating-bands -->
 
-**目录内所有条目都参与排名。** 早先的版本只在「绝对分无法区分」的条目之间比较，理由是
+**目录内所有条目都参与排名。** 早先的版本只在部分条目之间比较，理由是
 「池太大无法收敛」——**这个判断是错的**，它来自一个有 bug 的模拟：同分时按数组下标配对，
 而下标同时又编码了真实实力，于是每轮第一次都让实力最接近的对打，比较几乎不携带信息。
 把同分改成随机配对后，全目录排名在每个条目 10 场时达到 Spearman **0.87**、20 场时 0.93。
@@ -287,78 +284,6 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 ……另有 70 个见 `data/decay.jsonl`。
 <!-- census:end decay-flagged-zh -->
 
-## 质量评审
-
-以上所有内容都是可判定的，这一节不是：`scripts/ai-review.mjs` 让模型按 1-5 分
-评价「一个熟练的 DSH 用户会有多信任并使用这个插件」，并把结果当作它本来的样子
-——主观判断——公布出来。评分标准写在脚本源码里；每条评审都记录它读取的 commit
-SHA、它看到的 README 字节的 SHA、以及产生该评分的 prompt 版本，因此任何评分都能
-从那个确切的 commit 重新推导出来。
-
-公布的分数是**多次采样的均值**，不是单次判定。每次运行都重新抽样，所以被再次抽到的
-条目会被再次评分并累加；记录里带均值、运行次数和每一次的原始分。prompt 版本不同或
-commit 不同的样本会被丢弃而不是并入均值。
-
-这是一次纠正，不是优化。「评一次就不再问」的做法假定判定是内容的函数——它不是：
-`dsh-toolkit` 与 `dsh-TUI` 曾在**完全相同的 commit SHA 和 README 字节**上得到 4 分和
-3 分；新机制下第一个被抽到两次的条目（`wangzhuo-coding/geo-content-optimizer`）在字节
-未变的情况下先 5 分后 4 分。
-
-<!-- census:begin n-reviewed -->1383<!-- census:end n-reviewed --> 个已评条目，按均值分布：
-
-<!-- census:begin scores-zh -->
-| 分数 | 含义 | 数量 | 占比 |
-| --- | --- | --- | --- |
-| 5 | 扎实、有文档、有测试 | 687 | 49.7% |
-| 4 | 可用，文档足以让人采用 | 614 | 44.4% |
-| 3 | 一般，实现单薄、缺文档 | 65 | 4.7% |
-| 2 | 勉强算插件 | 14 | 1.0% |
-| 1 | 空的或坏的 | 3 | 0.2% |
-<!-- census:end scores-zh -->
-
-**这个分布本身就是结论，而它让这个分数几乎无法用作筛选条件。** 几乎没有低于 4 分的。对此测试了两种解释，只有一种成立：
-
-- *评分标准到不了低分。* 不成立。给同一个 prompt 一个虚构的 3 文件插件、18 字节
-  README、零依赖，它返回 2。
-- *样本本身已经被筛过了。* 成立。这里每个条目都通过了 bundle 契约的全部三级，
-  而这一步在评审开始之前就已经排除了空壳。
-
-两次人工核对支持的是评分本身，而不是引发怀疑的那个直觉。
-`fengs2021/dsh-plugin-catalog` 只有 5 个文件、没有测试，看起来很单薄——直到把
-文件打开：`lib/index.js` 与 `lib/client.js` 合计 30 KB 实现、两个有文档的 HTTP
-端点、以及它唯一那处写操作的回滚路径。它得 4 分，是对的。
-`AngelosZou/dsh-python-env` 的 GitHub 描述是空的——但它有 42 个文件、21 个
-`lib/` 模块、12 个测试文件、CHANGELOG 和双语文档。它得 5 分，也是对的。
-**文件数量和描述长度都不是实现深度的好代理指标**，这正是要问模型的原因。
-
-采样在构造上是 star 中立的，因为这个功能的早期版本不是：直接取目录头部会得到一个
-均值 1055 star 的样本，而目录均值是 26，且其中 326 个零 star 条目一个都没被选中。
-现在的选择方式是对仓库名做带种子的洗牌。已公布的样本 star 中位数为 1，目录中位数
-同为 1；40 个中有 14 个是零 star；与 star 的 Spearman 相关系数为 0.22。
-
-**重复采样的结果多数一致。** 被抽到一次以上的 <!-- census:begin n-multi -->130<!-- census:end n-multi --> 个条目中，
-<!-- census:begin n-identical -->115<!-- census:end n-identical --> 个两次分数完全相同，<!-- census:begin n-disagree -->15<!-- census:end n-disagree --> 个发生了变化，
-平均跨度 <!-- census:begin mean-spread -->0.12<!-- census:end mean-spread --> 分，最大跨度 <!-- census:begin max-spread -->2<!-- census:end max-spread --> 分。本表更早的一次读数
-是在只有两个条目被抽到两次、且两个都变化时得出的，当时据此称这些分数「有噪声」——
-那个样本量不足以支撑该结论，现以本次读数为准。
-
-这个数字仍是暂定的。重复采样只在两次抽样撞上同一条目时才增长，所以计数上升很慢；
-`runs: 1` 的分数仍然只是一次观测而非稳定值——优先看 `runs` 更大的条目。
-
-覆盖率是 <!-- census:begin n-catalogued -->10856<!-- census:end n-catalogued --> 中的 <!-- census:begin n-reviewed -->1383<!-- census:end n-reviewed -->，并随每次定时运行增长——每次按小时派生的
-种子最多评审 180 个条目。实际批量取「这个上限」与「剩余每小时 API 配额支持的数量」
-中较小的那个，且评审器在 15 分钟处停止，使得慢速运行不会超出 job 超时并把普查一起
-拖死。
-
-评审以 4 路并发执行而非逐条串行，对真实端点实测单条 4.83 秒（串行时是 17.6 秒）。
-输出顺序按抽样顺序而非完成顺序，所以同一种子产出逐字节一致的排列。
-
-评审器在设置了 `CENSUS_API_KEY` 时直接调用 Messages API，否则回退到本地模型 CLI。
-定时 workflow 走 API 这条路，且**不会让整个任务失败**：普查是可判定的证据，评审是
-意见，所以模型侧故障只会让 `data/reviews.jsonl` 保持原样，而不会挡住目录发布。评审失败的条目记为 `reviewed: false` 且不带任何分数；一次
-运行中若超过 30% 的评审失败，脚本以非零状态退出，而不是把一次传输失败当成对别人
-代码的评价发布出去。
-
 ## 复现
 
 ```sh
@@ -376,11 +301,6 @@ node scripts/installability.mjs < data/contract.jsonl > data/installability.json
 
 # 5. 对目录做失效扫描
 node scripts/scan-decay.mjs < data/catalog.jsonl > data/decay.jsonl
-
-# 6. 模型质量评审（需要模型 CLI；CENSUS_MODEL_CLI 可覆盖默认的 `claude`）
-# 每次运行换一个种子：抽样会部分重叠，重叠的条目取均值
-node scripts/ai-review.mjs --limit 20 --seed 1 \
-  --existing data/reviews.jsonl < data/catalog.jsonl > data/reviews.next.jsonl
 
 # 6. 每个门禁的负例控制
 node scripts/test-gates.mjs
@@ -405,7 +325,6 @@ owner、同时不误伤有权发布者、无关 scope 和形近 scope。两个�
 | `data/installability-v3.jsonl` | npm 解析与保留 scope 判定 |
 | `data/catalog.jsonl` | 合并、分类后的目录 |
 | `data/decay.jsonl` | 每个条目的失效状态 |
-| `data/reviews.jsonl` | 模型质量评分（均值、运行次数、各次原始分），固定到 commit 与 prompt 版本 |
 | `data/npm-manifest.jsonl` | 每个已发布包声明了什么，与其仓库的对比 |
 | `data/ratings.jsonl` | 成对比较得出的 Elo 评级，含每个条目的场次 |
 

@@ -54,13 +54,10 @@ const surface = load('surface-v3')
 const install = load('installability-v3')
 const decay = load('decay')
 const catalog = load('catalog')
-const reviews = load('reviews')
 const npmManifest = load('npm-manifest') ?? []
 const ratings = load('ratings') ?? []
 
 const verdicts = tally(contract, 'verdict')
-const catalogued = verdicts.get('CONTRACT_OK') ?? 0
-const reviewed = reviews.filter((row) => row.reviewed)
 
 /** Star band membership, in the order published. */
 const BANDS = [
@@ -193,25 +190,6 @@ function decayFlagged(labels) {
   return lines.join('\n')
 }
 
-/** Score distribution over mean scores, rounded to the nearest whole score. */
-function scoreRows(meanings, lang) {
-  const counts = new Map()
-  for (const row of reviewed) {
-    const bucket = Math.round(row.score)
-    counts.set(bucket, (counts.get(bucket) ?? 0) + 1)
-  }
-  const rows = [5, 4, 3, 2, 1]
-    .map((score) => {
-      const count = counts.get(score) ?? 0
-      return `| ${score} | ${meanings[score]} | ${count} | ${share(count, reviewed.length)} |`
-    })
-    .join('\n')
-  return `${headerFor('| Score | Meaning | Count | Share |', '| 分数 | 含义 | 数量 | 占比 |', lang)}\n${rows}`
-}
-
-const multiSampled = reviewed.filter((row) => (row.runs ?? 1) > 1)
-const disagreeing = multiSampled.filter((row) => Math.max(...row.scores) !== Math.min(...row.scores))
-
 /** Meanings for the published-manifest states, kept beside the region. */
 const NPM_MEANINGS = {
   'bundle-ok': 'the published manifest declares `dsh.bundle`',
@@ -282,37 +260,9 @@ const REGIONS = {
     empty: '当前没有条目被判定为失效。',
     more: (n) => `……另有 ${n} 个见 \`data/decay.jsonl\`。`,
   }),
-  'scores-en': () => scoreRows({
-    5: 'substantial, documented, tested',
-    4: 'solid and usable',
-    3: 'ordinary, thin, undocumented',
-    2: 'barely a plugin',
-    1: 'empty or broken',
-  }, 'en'),
-  'scores-zh': () => scoreRows({
-    5: '扎实、有文档、有测试',
-    4: '可用，文档足以让人采用',
-    3: '一般，实现单薄、缺文档',
-    2: '勉强算插件',
-    1: '空的或坏的',
-  }, 'zh'),
   // Inline figures, kept as single-value regions so prose can wrap around them.
   'n-enumerated': () => String(raw.length),
   'n-probed': () => String(contract.length),
-  'n-catalogued': () => String(catalogued),
-  'n-reviewed': () => String(reviewed.length),
-  'n-multi': () => String(multiSampled.length),
-  'n-disagree': () => String(disagreeing.length),
-  'n-identical': () => String(multiSampled.length - disagreeing.length),
-  'mean-spread': () => (multiSampled.length === 0
-    ? 'n/a'
-    : (
-      multiSampled.reduce((sum, row) => sum + (Math.max(...row.scores) - Math.min(...row.scores)), 0)
-      / multiSampled.length
-    ).toFixed(2)),
-  'max-spread': () => (multiSampled.length === 0
-    ? 'n/a'
-    : String(Math.max(...multiSampled.map((row) => Math.max(...row.scores) - Math.min(...row.scores))))),
   'n-declared': () => String(contract.filter((row) => (row.tier ?? 0) >= 1).length),
   'n-tier23-fail': () => String(
     contract.filter((row) => ['PATCH_FILE_MISSING', 'PATCH_FILE_EMPTY_OR_INVALID'].includes(row.verdict)).length,
@@ -394,9 +344,6 @@ const REGIONS = {
   },
   'n-inconclusive': () => String(decay.filter((row) => row.state === 'inconclusive').length),
   'pct-inconclusive': () => share(decay.filter((row) => row.state === 'inconclusive').length, decay.length),
-  'review-mean': () => (reviewed.length === 0
-    ? 'n/a'
-    : (reviewed.reduce((sum, row) => sum + row.score, 0) / reviewed.length).toFixed(2)),
 }
 
 /**

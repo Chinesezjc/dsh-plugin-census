@@ -1,18 +1,14 @@
 #!/usr/bin/env node
 /**
- * Rank catalogued plugins by pairwise comparison rather than absolute scoring.
+ * Rank catalogued plugins by pairwise comparison.
  *
- * The 1-5 scale collapsed: 97% of 1078 reviews landed on 4 or 5, and the mean
- * moved only 0.7 points between plugins with under 10 files and plugins with 31 to
- * 100. The model was perceiving the difference and refusing to express it.
- *
- * Asking which of two plugins a competent user would trust separates cases the
- * scale could not. Measured on two plugins both scored 5:
+ * Asking which of two plugins a competent user would trust separates cases a
+ * one-dimensional score could not. Measured on two plugins:
  * `FengYangXun123/dsh-opencode-usage` (7 files) beat
  * `GongYuanCaiJi/dsh-claude-code-templates` (5057 files) with a clear margin,
  * because the latter is a vendored skill bundle — verified afterwards: 5031 of its
- * 5057 files sit under `skills/` and only 3 under `lib/`. Absolute scoring had been
- * flattened by size; the comparison was not.
+ * 5057 files sit under `skills/` and only 3 under `lib/`. A size-flattened
+ * absolute score had called them equal; the comparison did not.
  *
  * Ratings use Elo because it needs no global ordering and tolerates a sparse,
  * growing set of comparisons: each run plays a bounded batch and the ratings
@@ -29,9 +25,7 @@
  * 16-point spread with every entry at exactly plus or minus 8, two matches widen it
  * to 32 and entries begin to separate. Elo conventionally needs 10 to 20 matches
  * before a rating means anything, so a rating with a low `matches` count is not yet
- * a finding. At 150 comparisons per run, ranking the 1078 already-reviewed entries
- * to 10 matches each takes about 36 runs; ranking the whole 5307-entry catalogue
- * would take about 177. Ratings are therefore published with their match count and
+ * a finding. Ratings are therefore published with their match count and
  * are not presented as a verdict until that count is high enough.
  *
  *   node scripts/rank-pairwise.mjs --limit 150 \
@@ -45,12 +39,12 @@ import { createInterface } from 'node:readline'
 /** Prompt version. Bump when the question changes; invalidates stored matches. */
 const PROMPT_VERSION = 'p1'
 
-/** API credentials, shared with the absolute reviewer. */
+/** API credentials. */
 const API_KEY = process.env.CENSUS_API_KEY ?? process.env.ANTHROPIC_AUTH_TOKEN ?? ''
 const API_BASE = (process.env.CENSUS_API_BASE ?? 'https://api.deepseek.com/anthropic').replace(/\/+$/, '')
 const API_MODEL = process.env.CENSUS_API_MODEL ?? 'deepseek-v4-flash'
 
-/** Response ceiling. The reasoning block counts against it, as in ai-review. */
+/** Response ceiling. The reasoning block counts against it. */
 const MAX_TOKENS = Number(process.env.CENSUS_MAX_TOKENS ?? 8192)
 
 /** Comparisons run at once. */
@@ -60,28 +54,15 @@ const CONCURRENCY = Math.max(1, Number(process.env.CENSUS_RANK_CONCURRENCY ?? 4)
 const DEADLINE_SECONDS = Number(process.env.CENSUS_RANK_DEADLINE_SECONDS ?? 0)
 
 /**
- * Path to the absolute reviews, used only when a pool bound is configured.
- *
- * The default ranks the whole catalogue. A bound was introduced on the belief that a
- * large pool could not converge, and that belief came from a simulation with a bug in
- * it: ties were broken by array index while the index also encoded true strength, so
- * every first round paired near-equals and the comparisons carried almost no
- * information. With ties broken randomly, ranking all 7140 catalogued entries reaches
- * Spearman 0.87 against known strengths at 10 matches each and 0.93 at 20.
- *
- * The real pairing here orders by match count and breaks ties with a seeded hash, so it
- * never had the simulation's defect. Measured against Swiss pairing on 7140 entries it
- * is marginally better, 0.89 against 0.87 at 10 matches, because pairing the
- * least-compared entries spreads evidence rather than concentrating it.
+ * The pairing orders by match count and breaks ties with a seeded hash. Measured
+ * against Swiss pairing on 7140 entries it is marginally better, 0.89 against 0.87
+ * at 10 matches, because pairing the least-compared entries spreads evidence rather
+ * than concentrating it.
  *
  * What the simulation does still say is that overall stratification converges long
  * before exact positions do: at rho 0.87 the top fifteen contained 0 to 1 of the true
  * top fifteen. The ranking is therefore reported as bands, not as a leaderboard.
  */
-const REVIEWS_PATH = process.env.CENSUS_REVIEWS_PATH ?? 'data/reviews.jsonl'
-
-/** Score at or above which an entry joins the pool; 0 ranks the whole catalogue. */
-const POOL_MIN_SCORE = Number(process.env.CENSUS_RANK_POOL_MIN_SCORE ?? 0)
 
 /** Elo K-factor. Low, because a single comparison is weak evidence. */
 const K_FACTOR = Number(process.env.CENSUS_RANK_K ?? 16)
@@ -331,32 +312,7 @@ async function main() {
   for (const entry of entries) if (!byRepo.has(entry.repo)) byRepo.set(entry.repo, entry)
   const catalogue = [...byRepo.values()]
 
-  // Restrict to the pool before pairing, so comparisons deepen a bounded set instead
-  // of recruiting new entries forever.
-  let pool = catalogue
-  if (POOL_MIN_SCORE > 0 && existsSync(REVIEWS_PATH)) {
-    const eligible = new Set()
-    for (const line of readFileSync(REVIEWS_PATH, 'utf8').split('\n')) {
-      if (!line.trim()) continue
-      try {
-        const review = JSON.parse(line)
-        if (review?.reviewed && Number(review.score) >= POOL_MIN_SCORE) eligible.add(review.repo)
-      } catch { /* skip unparseable stored row */ }
-    }
-    const restricted = catalogue.filter((entry) => eligible.has(entry.repo))
-    if (restricted.length >= 2) {
-      pool = restricted
-      process.stderr.write(
-        `pool: ${pool.length} entr(y/ies) scored ${POOL_MIN_SCORE} or above,`
-        + ` of ${catalogue.length} catalogued\n`,
-      )
-    } else {
-      process.stderr.write(
-        `pool would hold ${restricted.length} entr(y/ies); ranking the whole catalogue instead\n`,
-      )
-    }
-  }
-
+  const pool = catalogue
   const stored = loadExisting(argValue('--existing', ''))
   const rating = new Map()
   const played = new Map()
@@ -464,10 +420,10 @@ async function main() {
 
   // Emit every catalogued entry that has a rating, so the file stays the complete
   // record rather than only this run's pairs.
-  // Emit over the pool plus any stored entry outside it. Emitting only the pool
-  // silently discarded ratings earned before the pool existed, or after an entry left
-  // it because its absolute score changed — a rating is evidence already paid for and
-  // must not vanish because the selection criterion moved.
+  // Emit over the catalogue plus any stored entry outside it. Emitting only the
+  // catalogue silently discarded ratings earned before an entry left the
+  // enumeration — a rating is evidence already paid for and must not vanish
+  // because the selection criterion moved.
   const emitted = new Set()
   const outgoing = [...pool]
   for (const repo of rating.keys()) {
