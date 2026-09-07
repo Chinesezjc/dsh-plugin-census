@@ -58,6 +58,21 @@ const MAX_SHARD_DEPTH = 2
  */
 const RECENT_DAYS = Number(process.env.CENSUS_RECENT_DAYS ?? 21)
 
+/**
+ * How many single days may be peeled off an over-cap catch-all before the
+ * remainder is left to the capped read.
+ *
+ * Peeling converts a dense surge (hundreds of repositories a day) into one
+ * qualifier per day, which is what keeps the catch-all under the cap. The days
+ * that overflow the catch-all sit next to the recent window — the window cutoff
+ * moved past a surge that is still growing — so peeling at most one window's
+ * worth of days covers any such overflow. A tail still over the cap after that
+ * is a genuinely long sparse tail, where peeling spends the allowance for
+ * little gain; the shard loop reads it up to the cap and reports the
+ * truncation instead.
+ */
+const MAX_PEEL_DAYS = Number(process.env.CENSUS_MAX_PEEL_DAYS ?? 21)
+
 /** Retries for a transient count failure; 0 disables retrying. */
 const COUNT_RETRIES = Number(process.env.CENSUS_COUNT_RETRIES ?? 2)
 
@@ -183,7 +198,14 @@ async function shard(base, depth = 0) {
   if (total === null) return { queries: [], oversized: [], unreadable: [{ query: base }] }
   if (total === 0) return { queries: [], oversized: [], unreadable: [] }
   if (total <= RESULT_CAP) return { queries: [{ query: base, total }], oversized: [], unreadable: [] }
-  if (depth >= MAX_SHARD_DEPTH) {
+  // A `created:` qualifier reaching this point at depth 1 has already been
+  // handled as finely as this method splits: a single day cannot be split by
+  // date again, and a `created:<` catch-all has already been peeled inside
+  // populatedDays until it fit the cap or the peel ceiling stopped it. Splitting
+  // either again would strip the qualifier and re-run the same day loop —
+  // repeated work for the same answer, which on a uniform stub distribution
+  // grows without bound. Cap it here like any bucket at maximum depth.
+  if (depth >= MAX_SHARD_DEPTH || (depth > 0 && /created:/.test(base))) {
     // Still over the cap with no split left to try. Keep the query anyway: it
     // reaches RESULT_CAP of its `total`, and dropping it discarded those results
     // entirely. Run 32098089814 refused at 47.1% coverage because two `stars:0`
@@ -250,11 +272,22 @@ function addDays(day, days) {
 /**
  * Build day qualifiers covering everything a query can match.
  *
- * The window is bounded rather than derived from the earliest repository: this
- * topic was created days before the census and its population is concentrated in
- * that span (measured over `stars:0`: 126 repositories before 2026-08-14 and
- * 2741 after it). A `created:<cutoff` catch-all carries the older tail, so the
- * union of the returned qualifiers is the whole query with no gap.
+ * The recent window is bounded rather than derived from the earliest repository:
+ * this topic was created days before the census and its population is
+ * concentrated in that span (measured over `stars:0`: 126 repositories before
+ * 2026-08-14 and 2741 after it). A `created:<cutoff` catch-all carries the older
+ * tail, so the union of the returned qualifiers is the whole query with no gap.
+ *
+ * The catch-all itself is peeled, newest day first, until it fits under the
+ * result cap. A static window alone is not enough: the population surge sits
+ * inside the window on one run and outside it on the next, so a catch-all
+ * holding everything before the cutoff grew past the cap and truncated the
+ * overflow silently (2026-09-07: `stars:0 created:<2026-08-17` held 1231 while
+ * the cap is 1000). The overflow is the surge's newest days, which sit next to
+ * the window cutoff, so peeling at most one window's worth of days covers any
+ * such overflow; the peeled days become their own qualifiers. A tail still over
+ * the cap after that is a genuinely long sparse tail and is left for the shard
+ * loop's capped read, which reports the truncation.
  *
  * Days with no repositories are skipped, which keeps the shard count and the
  * search spend proportional to the days that actually hold data.
@@ -274,12 +307,52 @@ async function populatedDays(stem) {
   const today = new Date().toISOString().slice(0, 10)
   const cutoff = addDays(today, -RECENT_DAYS)
 
-  const older = await count(`${stem} created:<${cutoff}`)
-  // The catch-all carries the older tail; if it cannot be read, include it
-  // rather than dropping everything before the cutoff.
-  const spans = older === null || older > 0 ? [`created:<${cutoff}`] : []
+  const spans = []
   let unreadableDays = 0
   let readableDays = 0
+
+  // Peel the older tail, newest day first, until what remains fits under the
+  // cap. Each peeled day becomes its own qualifier when it holds repositories.
+  let cursor = cutoff
+  let peeled = 0
+  for (;;) {
+    const older = await count(`${stem} created:<${cursor}`)
+    if (older === null) {
+      // The remainder cannot be read. Include it as a catch-all anyway and stop
+      // peeling: a real 502 is transient and the shard loop reports it separately.
+      spans.push(`created:<${cursor}`)
+      unreadableDays += 1
+      break
+    }
+    if (older <= RESULT_CAP) {
+      if (older > 0) spans.push(`created:<${cursor}`)
+      break
+    }
+    // Over the cap: peel the day just before the cursor. The overflow is the
+    // surge's newest days, so peeling the days adjacent to the window cutoff
+    // recovers it. Stop at the peel ceiling: a tail that is still over the cap
+    // after a full window of days is a genuinely long sparse tail, which the
+    // shard loop reads capped and reports rather than spending the whole
+    // allowance walking it.
+    if (peeled >= MAX_PEEL_DAYS) {
+      process.stderr.write(
+        `  ${stem}: catch-all still over the cap after ${peeled} peeled day(s); leaving it to the capped read\n`,
+      )
+      spans.push(`created:<${cursor}`)
+      break
+    }
+    cursor = addDays(cursor, -1)
+    peeled += 1
+    const onDay = await count(`${stem} created:${cursor}`)
+    if (onDay === null) {
+      unreadableDays += 1
+      spans.push(`created:${cursor}`)
+      continue
+    }
+    readableDays += 1
+    if (onDay > 0) spans.push(`created:${cursor}`)
+  }
+
   for (let offset = 0; offset <= RECENT_DAYS; offset += 1) {
     const day = addDays(cutoff, offset)
     if (day > today) break
