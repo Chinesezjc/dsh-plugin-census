@@ -302,7 +302,12 @@ check(
   const countFile = join(dir, 'calls')
   writeFileSync(countFile, '0')
   // Fail exactly one specific day count, permanently (every retry too), and
-  // serve everything else normally.
+  // serve everything else normally. The day must sit inside the run's
+  // RECENT_DAYS window ([today-20, today]); picking it relative to the run date
+  // keeps this control date-independent — a fixed calendar day drifts out of the
+  // window for ~10 days every month and the failure branch never fires, which
+  // made the control fail on 2026-09-05 and 2026-09-06.
+  const failDay = new Date(Date.now() - 5 * 86_400_000).toISOString().slice(0, 10)
   writeFileSync(
     join(dir, 'gh'),
     `#!/usr/bin/env node
@@ -310,7 +315,7 @@ const fs = require('node:fs')
 const path = decodeURIComponent(process.argv.slice(2).join(' '))
 fs.writeFileSync(${JSON.stringify(countFile)}, String(Number(fs.readFileSync(${JSON.stringify(countFile)}, 'utf8')) + 1))
 const day = (path.match(/created:(\\d{4}-\\d{2}-\\d{2})(?![.\\d])/) || [])[1]
-if (day && day.endsWith('-15')) {
+if (day && day === ${JSON.stringify(failDay)}) {
   process.stderr.write('gh: Server Error (HTTP 502)')
   process.exit(1)
 }
