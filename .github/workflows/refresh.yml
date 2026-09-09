@@ -241,12 +241,17 @@ jobs:
           CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
           CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}
           # 150 comparisons cost about 432 installation calls, which exhausted the
-          # allowance for the rest of the job. Ranking yields to the probe steps:
-          # 40 comparisons cost about 240 calls and still accumulate, just more
-          # slowly.
-          CENSUS_RANK_LIMIT: '40'
+          # allowance for the rest of the job while the model review still ran.
+          # The review is gone (2026-09), so ranking no longer shares its budget
+          # with a second model step: 100 comparisons cost about 600 calls, the
+          # probe steps still run, and the review's former ~540 calls are free.
+          # Half the budget deepens entries that already have comparisons, so
+          # ratings converge past a single match; the rest opens new entries.
+          CENSUS_RANK_LIMIT: '100'
           CENSUS_RANK_DEADLINE_SECONDS: '820'
           CENSUS_RANK_CONCURRENCY: '4'
+          CENSUS_RANK_DEEPEN_SHARE: '0.5'
+          CENSUS_RANK_DEEPEN_MIN_MATCHES: '10'
         run: |
           # Start ranking first so it uses the whole enumeration window. Its failure
           # must not fail this step: enumeration is the census, ranking is an extra

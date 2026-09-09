@@ -228,14 +228,18 @@ each, and 0.93 at 20.
 The results are reported as bands rather than a ranked list because the same
 simulation shows overall stratification converging long before exact positions: at
 Spearman 0.87 the top fifteen by rating contained 0 to 1 of the true top fifteen.
-A leaderboard would assert precision this method does not have. Without that bound, pairing the least-compared entries first
-spread across the whole catalogue and never deepened: after two runs every rated entry
-had exactly 1 match, and reaching 10 would have taken about 453 runs. Comparisons run
-alongside enumeration, which spends a different API allowance, so 150 of them add
-about 2% to the run rather than a separate 13 minutes. Some pairs
-never resolve: one produced a verdict in 2 of 8 identical attempts, because the
-model's reasoning competes with its answer for the token budget. An unresolved pair
-costs coverage, not correctness — no rating moves.
+A leaderboard would assert precision this method does not have.
+
+Pairing deepens entries that already have comparisons before opening new ones, so
+a rating advances past its first match instead of stopping there — an earlier
+strategy that spread first-time comparisons across the whole catalogue left every
+rated entry at exactly 1 match, and reaching 10 would have taken about 453 runs.
+Half of each run's budget re-pairs entries below 10 matches; the rest opens new
+entries. Comparisons run alongside enumeration, which spends a different API
+allowance, so 100 of them add about 2% to the run rather than a separate 13
+minutes. Some pairs never resolve: one produced a verdict in 2 of 8 identical
+attempts, because the model's reasoning competes with its answer for the token
+budget. An unresolved pair costs coverage, not correctness — no rating moves.
 
 ## What the published package declares
 
