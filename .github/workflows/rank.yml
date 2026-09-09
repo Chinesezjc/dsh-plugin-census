@@ -1,0 +1,89 @@
+# Run the pairwise ranking more often than the daily refresh does.
+#
+# The refresh runs ranking once per day alongside enumeration, which is enough
+# to accumulate ratings but slow to converge: Elo needs 10-20 matches per entry
+# before a rating means anything. This workflow re-runs only the ranker — it
+# does not re-enumerate the topic or re-probe repositories — so each run costs
+# model calls and a few hundred GitHub reads rather than a full census. The
+# ranker reads the catalogue and ratings committed by previous runs, which is
+# the same contract the in-refresh ranker relies on.
+#
+# Shares the `refresh` concurrency group so it never writes ratings.jsonl at
+# the same moment the daily refresh does: a rank run that starts during a
+# refresh queues behind it. GitHub queues scheduled workflows heavily at :00,
+# so the schedule sits off the hour.
+name: rank
+
+on:
+  schedule:
+    - cron: '17 1,7,13,19 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  rank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The ranker's guarantees are asserted the same way they are in the daily
+      # refresh: a failed comparison must never move a rating.
+      - name: Verify pairwise ranking never turns a failed comparison into a rating
+        run: node scripts/test-rank.mjs
+
+      - name: Rank the catalogue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+          CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
+          CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}
+          CENSUS_RANK_LIMIT: '100'
+          CENSUS_RANK_DEADLINE_SECONDS: '820'
+          CENSUS_RANK_CONCURRENCY: '4'
+          CENSUS_RANK_DEEPEN_SHARE: '0.5'
+          CENSUS_RANK_DEEPEN_MIN_MATCHES: '10'
+          CENSUS_RANK_LADDER_SHARE: '0.4'
+        run: |
+          if [ -z "${CENSUS_API_KEY}" ] || [ ! -s data/catalog.jsonl ]; then
+            echo "no model key or no catalogue yet; skipping the ranking"
+            exit 0
+          fi
+          if ! node scripts/rank-pairwise.mjs \
+              --limit "${CENSUS_RANK_LIMIT}" \
+              --existing data/ratings.jsonl \
+              < data/catalog.jsonl > /tmp/ratings.jsonl; then
+            echo "::error::the ranking refused its own output; ratings are unchanged"
+            exit 1
+          fi
+          mv /tmp/ratings.jsonl data/ratings.jsonl
+          wc -l data/ratings.jsonl
+
+      # The rating figures in both READMEs are generated from data/ratings.jsonl.
+      # No --check here: that gate asserts every figure matches its data, which
+      # is the refresh's job after it rebuilds the data. This workflow only
+      # updates ratings, so it rewrites just the rating regions and commits them.
+      - name: Regenerate the published rating figures
+        run: node scripts/render-readme.mjs
+
+      - name: Commit updated ratings
+        run: |
+          if git diff --quiet; then
+            echo "ratings are already current"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/ratings.jsonl README.md README.zh.md
+          git commit -m 'Run the pairwise ranking'
+          git push
