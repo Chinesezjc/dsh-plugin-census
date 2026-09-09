@@ -224,7 +224,7 @@ check(
 )
 check(
   'day boundaries come from counts',
-  /async function populatedDays\(/.test(SOURCE) && /created:<\$\{cutoff\}/.test(SOURCE),
+  /async function populatedDays\(/.test(SOURCE) && /created:<\$\{cursor\}/.test(SOURCE),
 )
 check(
   'a finer created qualifier replaces the coarser one',
@@ -365,6 +365,70 @@ process.stdout.write(JSON.stringify({ total_count: over ? 4000 : 40, items }))
     'no bucket is reported as yielding zero shards',
     !/: 0 shard\(s\)/.test(String(result.stderr)),
     String(result.stderr).split('\n').filter((l) => /shard\(s\)/.test(l)).join(' | '),
+  )
+}
+
+// A catch-all that outgrows the cap must be peeled into its newest days rather
+// than truncated. The population surge sits inside the recent window on one run
+// and outside it on the next; when it is outside, the single `created:<cutoff`
+// catch-all holds more than the 1000-result cap and every repository beyond it
+// was silently dropped (2026-09-07: four star buckets, ~1096 repositories).
+// Peeling one day at a time from the cutoff recovers the surge as per-day
+// shards and stops once the remainder fits.
+{
+  const dir = mkdtempSync(join(tmpdir(), 'peel-'))
+  writeFileSync(
+    join(dir, 'gh'),
+    `#!/usr/bin/env node
+const path = decodeURIComponent(process.argv.slice(2).join(' '))
+const day = (path.match(/created:(\\d{4}-\\d{2}-\\d{2})(?![.\\d])/) || [])[1]
+const lt = (path.match(/created:<(\\d{4}-\\d{2}-\\d{2})/) || [])[1]
+let total
+if (day) {
+  // Every concrete day holds 150; each peeled day shrinks the remainder by that.
+  total = 150
+} else if (lt) {
+  // The catch-all starts 300 over the cap and loses 150 per peeled day, so two
+  // peels bring it to exactly 1000 — inside the cap, where peeling stops.
+  const cutoff = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10)
+  const daysSince = Math.max(0, Math.round((Date.parse(cutoff) - Date.parse(lt)) / 86400000))
+  total = 1300 - daysSince * 150
+} else if (/stars:(0|1|11)/.test(path)) {
+  total = 3000
+} else {
+  total = 40
+}
+// Serve one item per fetch page so the run has something to emit.
+const page = Number((path.match(/[&?]page=(\\d+)/) || [])[1] || 1)
+const items = page === 1 ? [{ full_name: 'peel/r', stargazers_count: 0, pushed_at: '2026-08-16T00:00:00Z', created_at: '2026-08-16T00:00:00Z', archived: false, fork: false, description: null, language: 'TS', topics: ['dsh-plugin'] }] : []
+process.stdout.write(JSON.stringify({ total_count: total, items }))
+`,
+    { mode: 0o755 },
+  )
+  const result = spawnSync(process.execPath, [SCRIPT, '--plan'], {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `${dir}:${process.env.PATH}`,
+      CENSUS_SEARCH_INTERVAL_MS: '0',
+      CENSUS_RETRY_DELAY_MS: '5',
+      CENSUS_RECENT_DAYS: '7',
+    },
+    timeout: 120_000,
+  })
+  const planLines = String(result.stdout ?? '').split('\n').filter((l) => l.trim())
+  const catchAlls = planLines.filter((l) => l.includes('created:<'))
+  const peeledDays = planLines.filter((l) => /created:\d{4}-\d{2}-\d{2}/.test(l)).length
+  check(
+    'an over-cap catch-all is peeled into per-day shards',
+    catchAlls.length > 0 && Number(catchAlls[0].split('\t')[0]) <= 1000
+      && peeledDays >= 2,
+    `catch-alls: ${catchAlls.join(' | ')}; peeled days: ${peeledDays}; exit=${result.status}`,
+  )
+  check(
+    'peeling leaves no oversized bucket warning',
+    !/exceed the 1000 cap/.test(String(result.stderr)),
+    String(result.stderr).split('\n').filter((l) => /cap|peel/i.test(l)).join(' | '),
   )
 }
 
