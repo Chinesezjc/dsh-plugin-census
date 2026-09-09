@@ -296,6 +296,36 @@ check(
   )
 }
 
+// The deepen share must go to entries that already have comparisons, not to
+// first-time entries, or a rating never advances past its first match. With four
+// entries at one match and four fresh, half the budget (limit 4, share 0.5) deepens
+// the four one-match entries to two, and the other half opens two fresh entries.
+{
+  const existing = ['o/a', 'o/b', 'o/c', 'o/d']
+    .map((repo) => JSON.stringify({ repo, rating: 1500, matches: 1, promptVersion: 'p1' }))
+    .join('\n') + '\n'
+  const rows = [
+    { repo: 'o/a', package: 'a' }, { repo: 'o/b', package: 'b' },
+    { repo: 'o/c', package: 'c' }, { repo: 'o/d', package: 'd' },
+    { repo: 'o/e', package: 'e' }, { repo: 'o/f', package: 'f' },
+    { repo: 'o/g', package: 'g' }, { repo: 'o/h', package: 'h' },
+  ]
+  const result = runRank({ rows, limit: 4, existing })
+  const matches = Object.fromEntries(result.records.map((r) => [r.repo, r.matches]))
+  const deepened = ['o/a', 'o/b', 'o/c', 'o/d'].filter((repo) => matches[repo] === 2)
+  const opened = ['o/e', 'o/f', 'o/g', 'o/h'].filter((repo) => (matches[repo] ?? 0) === 1)
+  check(
+    'the deepen budget re-pairs entries that already have comparisons',
+    deepened.length >= 2,
+    `deepened to 2 matches: ${deepened.join(', ')}; all: ${JSON.stringify(matches)}`,
+  )
+  check(
+    'fresh entries still enter the ranking with the remaining budget',
+    opened.length >= 1,
+    `opened: ${opened.join(', ')}; all: ${JSON.stringify(matches)}`,
+  )
+}
+
 // A stored rating for an entry absent from the current catalogue must survive.
 // Emitting only the catalogue would discard evidence already paid for, whenever an
 // entry leaves the enumeration or the catalogue file is rebuilt from a fresh run.

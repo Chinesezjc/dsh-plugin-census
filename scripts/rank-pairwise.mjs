@@ -54,14 +54,20 @@ const CONCURRENCY = Math.max(1, Number(process.env.CENSUS_RANK_CONCURRENCY ?? 4)
 const DEADLINE_SECONDS = Number(process.env.CENSUS_RANK_DEADLINE_SECONDS ?? 0)
 
 /**
- * The pairing orders by match count and breaks ties with a seeded hash. Measured
- * against Swiss pairing on 7140 entries it is marginally better, 0.89 against 0.87
- * at 10 matches, because pairing the least-compared entries spreads evidence rather
- * than concentrating it.
+ * The pairing deepens entries that already have comparisons before opening new
+ * ones, so ratings converge instead of every entry stopping at one match.
+ * Measured against the alternative — pairing the least-compared entries first
+ * spread across the whole catalogue and never deepened: after two real runs all
+ * 332 rated entries had exactly 1 match, and reaching 10 would have taken about
+ * 453 runs. A rating with a single match is only ever at plus or minus 8 of the
+ * base, which is why the published ranking was close to arbitrary.
  *
- * What the simulation does still say is that overall stratification converges long
- * before exact positions do: at rho 0.87 the top fifteen contained 0 to 1 of the true
- * top fifteen. The ranking is therefore reported as bands, not as a leaderboard.
+ * Entries below DEEPEN_MIN_MATCHES comparisons form the deepen group and are
+ * paired first; the share of the run's budget they receive is bounded by
+ * DEEPEN_SHARE so fresh entries still enter the ranking. What the simulation
+ * does still say is that overall stratification converges long before exact
+ * positions do: at rho 0.87 the top fifteen contained 0 to 1 of the true top
+ * fifteen. The ranking is therefore reported as bands, not as a leaderboard.
  */
 
 /** Elo K-factor. Low, because a single comparison is weak evidence. */
@@ -69,6 +75,21 @@ const K_FACTOR = Number(process.env.CENSUS_RANK_K ?? 16)
 
 /** Starting rating for an unranked plugin. */
 const BASE_RATING = 1500
+
+/**
+ * Comparisons an entry needs before it stops being preferred for re-pairing.
+ * Elo conventionally needs 10 to 20 before a rating means anything, so entries
+ * below this are the ones the deepen share is spent on.
+ */
+const DEEPEN_MIN_MATCHES = Number(process.env.CENSUS_RANK_DEEPEN_MIN_MATCHES ?? 10)
+
+/**
+ * Share of the run's comparison budget spent deepening entries that already have
+ * comparisons, before any budget goes to first-time entries. The remainder opens
+ * new entries, so coverage and depth advance together rather than one starving
+ * the other.
+ */
+const DEEPEN_SHARE = Number(process.env.CENSUS_RANK_DEEPEN_SHARE ?? 0.5)
 
 /**
  * Fraction of attempted comparisons that may fail before the run is refused.
@@ -322,20 +343,38 @@ async function main() {
     played.set(repo, record.matches ?? 0)
   }
 
-  // Pair the least-compared plugins first, so coverage spreads instead of
-  // deepening a few entries. Ties broken by a seeded hash for reproducibility.
-  const ordered = [...pool].sort((a, b) => {
+  // Deepen entries that already have comparisons before opening new ones, so a
+  // rating advances past its first match instead of every entry stopping there.
+  // Within each group the least-compared pair first, ties broken by a seeded
+  // hash for reproducibility.
+  const byExperience = (a, b) => {
     const pa = played.get(a.repo) ?? 0
     const pb = played.get(b.repo) ?? 0
     if (pa !== pb) return pa - pb
     return hash32(`${seed}:${a.repo}`) - hash32(`${seed}:${b.repo}`)
-  })
+  }
+  const deepenGroup = pool
+    .filter((entry) => {
+      const matches = played.get(entry.repo) ?? 0
+      return matches > 0 && matches < DEEPEN_MIN_MATCHES
+    })
+    .sort(byExperience)
+  const freshGroup = pool
+    .filter((entry) => (played.get(entry.repo) ?? 0) === 0)
+    .sort(byExperience)
 
-  // Adjacent pairs from that order: similar experience, which is what makes an
+  // Adjacent pairs from each group: similar experience, which is what makes an
   // Elo update informative rather than a foregone conclusion.
+  const deepenBudget = Math.floor(limit * DEEPEN_SHARE)
   const pairs = []
-  for (let i = 0; i + 1 < ordered.length && pairs.length < limit; i += 2) {
-    pairs.push([ordered[i], ordered[i + 1]])
+  // Deepen first: re-pair entries that already have comparisons, so their
+  // ratings converge toward the matches Elo needs.
+  for (let i = 0; i + 1 < deepenGroup.length && pairs.length < deepenBudget; i += 2) {
+    pairs.push([deepenGroup[i], deepenGroup[i + 1]])
+  }
+  // Then open first-time entries with whatever budget remains.
+  for (let i = 0; i + 1 < freshGroup.length && pairs.length < limit; i += 2) {
+    pairs.push([freshGroup[i], freshGroup[i + 1]])
   }
   process.stderr.write(`playing ${pairs.length} comparison(s) over a ${pool.length}-entry pool\n`)
 
