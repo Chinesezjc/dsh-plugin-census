@@ -343,6 +343,35 @@ check(
   )
 }
 
+// The king-of-the-hill ladder lets a winner keep challenging stronger entries in
+// one run. The stub model always awards the match to side A (the champion, the
+// first argument of each ladder rung), so a low-rated champion that keeps winning
+// should accumulate more matches than a single rung would give it. With five
+// deepen entries, limit 10, share 0.5 and ladder share 0.4, the ladder budget is
+// floor(5 * 0.4) = 2, so up to three rungs (candidates = budget + 1) are played
+// and the winning champion ends with 3 matches, not 1.
+{
+  const existing = ['o/w', 'o/x', 'o/y', 'o/z', 'o/v']
+    .map((repo, i) => JSON.stringify({ repo, rating: 1480 + i * 10, matches: 1, promptVersion: 'p1' }))
+    .join('\n') + '\n'
+  const rows = ['o/w', 'o/x', 'o/y', 'o/z', 'o/v']
+    .map((repo) => ({ repo, package: repo }))
+  const result = runRank({
+    rows,
+    limit: 10,
+    existing,
+    env: { CENSUS_RANK_DEEPEN_SHARE: '0.5', CENSUS_RANK_LADDER_SHARE: '0.4' },
+  })
+  const matches = Object.fromEntries(result.records.map((r) => [r.repo, r.matches]))
+  const ladderRungs = (result.stderr.match(/\n  ladder /g) ?? []).length
+  const championMatches = matches['o/w'] ?? 0
+  check(
+    'a winning champion climbs more than one ladder rung',
+    ladderRungs > 1 && championMatches > 1,
+    `champion o/w matches=${championMatches}; ladder rungs=${ladderRungs}; all: ${JSON.stringify(matches)}`,
+  )
+}
+
 // The whole catalogue is ranked: no pool restriction may exclude entries. The earlier
 // bound rested on a simulation whose tie-breaking used array index while index also
 // encoded true strength, which made every first round pair near-equals; with random
