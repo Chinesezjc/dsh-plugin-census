@@ -92,6 +92,19 @@ const DEEPEN_MIN_MATCHES = Number(process.env.CENSUS_RANK_DEEPEN_MIN_MATCHES ?? 
 const DEEPEN_SHARE = Number(process.env.CENSUS_RANK_DEEPEN_SHARE ?? 0.5)
 
 /**
+ * Share of the deepen budget spent on a serial king-of-the-hill ladder.
+ *
+ * On a ladder the weakest rated entry challenges the next stronger one; the
+ * winner stays on and challenges the next stronger still, so a plugin that keeps
+ * winning climbs past several stronger opponents in one run instead of winning
+ * once against a neighbour and stopping. The ladder is serial — each match's
+ * opponent depends on the previous match's winner — so it cannot share the
+ * parallel worker pool; it runs alongside it and consumes this share of the
+ * deepen budget.
+ */
+const LADDER_SHARE = Number(process.env.CENSUS_RANK_LADDER_SHARE ?? 0.4)
+
+/**
  * Fraction of attempted comparisons that may fail before the run is refused.
  *
  * 0.45 rather than a tidier number: persistent truncation is real and measured, so a
@@ -363,20 +376,37 @@ async function main() {
     .filter((entry) => (played.get(entry.repo) ?? 0) === 0)
     .sort(byExperience)
 
-  // Adjacent pairs from each group: similar experience, which is what makes an
-  // Elo update informative rather than a foregone conclusion.
+  // The deepen budget splits into a serial king-of-the-hill ladder and ordinary
+  // adjacent pairs. The ladder lets a winner keep challenging stronger entries
+  // in one run rather than stopping after a single win against a neighbour.
+  // Its candidates are the lowest-rated entries of the deepen group, ordered by
+  // rating so each rung is stronger than the last; a win climbs the ladder.
   const deepenBudget = Math.floor(limit * DEEPEN_SHARE)
+  const ladderBudget = Math.floor(deepenBudget * LADDER_SHARE)
+  const pairsBudget = deepenBudget - ladderBudget
+
+  const byRating = (a, b) => {
+    const ra = rating.get(a.repo) ?? BASE_RATING
+    const rb = rating.get(b.repo) ?? BASE_RATING
+    if (ra !== rb) return ra - rb
+    return hash32(`${seed}:${a.repo}`) - hash32(`${seed}:${b.repo}`)
+  }
+  const ladderCandidates = [...deepenGroup].sort(byRating).slice(0, ladderBudget + 1)
+
+  // Adjacent pairs from the deepen group after the ladder entries are reserved:
+  // similar experience, which is what makes an Elo update informative rather
+  // than a foregone conclusion.
   const pairs = []
   // Deepen first: re-pair entries that already have comparisons, so their
   // ratings converge toward the matches Elo needs.
-  for (let i = 0; i + 1 < deepenGroup.length && pairs.length < deepenBudget; i += 2) {
+  for (let i = 0; i + 1 < deepenGroup.length && pairs.length < pairsBudget; i += 2) {
     pairs.push([deepenGroup[i], deepenGroup[i + 1]])
   }
   // Then open first-time entries with whatever budget remains.
-  for (let i = 0; i + 1 < freshGroup.length && pairs.length < limit; i += 2) {
+  for (let i = 0; i + 1 < freshGroup.length && pairs.length < limit - ladderBudget; i += 2) {
     pairs.push([freshGroup[i], freshGroup[i + 1]])
   }
-  process.stderr.write(`playing ${pairs.length} comparison(s) over a ${pool.length}-entry pool\n`)
+  process.stderr.write(`playing ${pairs.length} pair(s) plus a ${ladderCandidates.length}-entry ladder over a ${pool.length}-entry pool\n`)
 
   const briefCache = new Map()
   const getBrief = async (entry) => {
@@ -384,6 +414,36 @@ async function main() {
     const value = await brief(entry)
     briefCache.set(entry.repo, value)
     return value
+  }
+
+  /**
+   * Run one comparison with retries, sharing the brief cache.
+   * @param a - first catalogue entry.
+   * @param b - second catalogue entry.
+   * @returns the outcome record, or null when the pair could not be decided.
+   */
+  async function playOne(a, b) {
+    const [ba, bb] = await Promise.all([getBrief(a), getBrief(b)])
+    if (!ba || !bb) {
+      process.stderr.write(`  FAILED unreadable  ${a.repo} vs ${b.repo}\n`)
+      return null
+    }
+    // Retry once. Truncation is non-deterministic: the same pair produced a
+    // verdict twice and hit the ceiling once across three identical attempts,
+    // because the reasoning block competes with the answer for the token budget.
+    // Two comparable plugins invite the longest deliberation, which is why the
+    // prompt states that a tie is a real answer.
+    let verdict = null
+    for (let attempt = 0; attempt <= RETRY_ATTEMPTS; attempt += 1) {
+      if (attempt > 0) await new Promise((resolve) => { setTimeout(resolve, RETRY_DELAY_MS) })
+      verdict = await compare(ba, bb)
+      if (verdict) break
+    }
+    if (!verdict) {
+      process.stderr.write(`  FAILED no verdict  ${a.repo} vs ${b.repo}\n`)
+      return null
+    }
+    return { a: a.repo, b: b.repo, ...verdict, shaA: ba.sha, shaB: bb.sha }
   }
 
   const results = new Array(pairs.length)
@@ -404,41 +464,63 @@ async function main() {
       if (index >= pairs.length) return
       const [a, b] = pairs[index]
       attempted += 1
-      const [ba, bb] = await Promise.all([getBrief(a), getBrief(b)])
-      if (!ba || !bb) {
+      const outcome = await playOne(a, b)
+      if (!outcome) {
         failed += 1
-        process.stderr.write(`  FAILED unreadable  ${a.repo} vs ${b.repo}\n`)
         continue
       }
-      // Retry once. Truncation is non-deterministic: the same pair produced a
-      // verdict twice and hit the ceiling once across three identical attempts,
-      // because the reasoning block competes with the answer for the token budget.
-      // Two comparable plugins invite the longest deliberation, which is why the
-      // prompt states that a tie is a real answer.
-      let verdict = null
-      for (let attempt = 0; attempt <= RETRY_ATTEMPTS; attempt += 1) {
-        if (attempt > 0) await new Promise((resolve) => { setTimeout(resolve, RETRY_DELAY_MS) })
-        verdict = await compare(ba, bb)
-        if (verdict) break
-      }
-      if (!verdict) {
-        failed += 1
-        process.stderr.write(`  FAILED no verdict  ${a.repo} vs ${b.repo}\n`)
-        continue
-      }
-      results[index] = { a: a.repo, b: b.repo, ...verdict, shaA: ba.sha, shaB: bb.sha }
+      results[index] = outcome
       process.stderr.write(
-        `  ${verdict.winner === 'tie' ? 'tie ' : verdict.winner + '   '} ${verdict.margin.padEnd(6)} ${a.repo} vs ${b.repo}\n`,
+        `  ${outcome.winner === 'tie' ? 'tie ' : outcome.winner + '   '} ${outcome.margin.padEnd(6)} ${outcome.a} vs ${outcome.b}\n`,
       )
     }
   }
-  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, pairs.length) }, worker))
+
+  // King-of-the-hill ladder: the weakest rated candidate challenges the next
+  // stronger one; whoever wins stays on and challenges the next stronger still,
+  // so a streak of wins climbs several rungs in one run. Serial by nature — the
+  // next opponent depends on who won — so it runs outside the parallel pool.
+  async function ladder() {
+    const ladders = []
+    let champion = ladderCandidates[0]
+    for (let rung = 1; rung < ladderCandidates.length; rung += 1) {
+      if (DEADLINE_SECONDS > 0 && (Date.now() - startedAt) / 1000 > DEADLINE_SECONDS) {
+        stopped = true
+        break
+      }
+      if (!champion) break
+      const challenger = ladderCandidates[rung]
+      attempted += 1
+      const outcome = await playOne(champion, challenger)
+      if (!outcome) {
+        failed += 1
+        // An undecided rung does not end the ladder: the champion keeps its
+        // seat and the next rung challenges instead.
+        continue
+      }
+      ladders.push(outcome)
+      process.stderr.write(
+        `  ladder ${outcome.winner === 'tie' ? 'tie ' : outcome.winner + '   '} ${outcome.margin.padEnd(6)} ${outcome.a} vs ${outcome.b}\n`,
+      )
+      // The winner stays on the ladder to face the next stronger rung; a loser
+      // is eliminated. A tie keeps the champion (the weaker side of the ladder
+      // failed to prove itself stronger).
+      if (outcome.winner === 'B') champion = challenger
+    }
+    return ladders
+  }
+
+  const [ladderResults] = await Promise.all([
+    ladder(),
+    Promise.all(Array.from({ length: Math.min(CONCURRENCY, pairs.length) }, worker)),
+  ])
   if (stopped) {
     process.stderr.write(`stopping at the ${DEADLINE_SECONDS}s deadline after ${attempted} comparison(s)\n`)
   }
 
   // Apply Elo in a deterministic order, so the same matches always produce the
-  // same ratings regardless of which worker finished first.
+  // same ratings regardless of which worker finished first. Ladder outcomes
+  // append after the parallel pairs, in the order the rungs were played.
   const matchLog = []
   for (const outcome of results) {
     if (!outcome) continue
@@ -448,6 +530,19 @@ async function main() {
     const scoreA = outcome.winner === 'A' ? 1 : outcome.winner === 'B' ? 0 : 0.5
     // A slight margin moves ratings less than a clear one: the model's own
     // confidence is evidence about how much the comparison should count.
+    const weight = outcome.margin === 'clear' ? 1 : 0.5
+    const delta = K_FACTOR * weight * (scoreA - expectedA)
+    rating.set(outcome.a, ra + delta)
+    rating.set(outcome.b, rb - delta)
+    played.set(outcome.a, (played.get(outcome.a) ?? 0) + 1)
+    played.set(outcome.b, (played.get(outcome.b) ?? 0) + 1)
+    matchLog.push(outcome)
+  }
+  for (const outcome of ladderResults) {
+    const ra = rating.get(outcome.a) ?? BASE_RATING
+    const rb = rating.get(outcome.b) ?? BASE_RATING
+    const expectedA = 1 / (1 + 10 ** ((rb - ra) / 400))
+    const scoreA = outcome.winner === 'A' ? 1 : outcome.winner === 'B' ? 0 : 0.5
     const weight = outcome.margin === 'clear' ? 1 : 0.5
     const delta = K_FACTOR * weight * (scoreA - expectedA)
     rating.set(outcome.a, ra + delta)

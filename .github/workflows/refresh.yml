@@ -247,11 +247,16 @@ jobs:
           # probe steps still run, and the review's former ~540 calls are free.
           # Half the budget deepens entries that already have comparisons, so
           # ratings converge past a single match; the rest opens new entries.
+          # A share of the deepen budget runs a serial king-of-the-hill ladder:
+          # the winner keeps challenging the next stronger entry, so a plugin
+          # that keeps winning climbs several rungs in one run instead of
+          # stopping after a single win against a neighbour.
           CENSUS_RANK_LIMIT: '100'
           CENSUS_RANK_DEADLINE_SECONDS: '820'
           CENSUS_RANK_CONCURRENCY: '4'
           CENSUS_RANK_DEEPEN_SHARE: '0.5'
           CENSUS_RANK_DEEPEN_MIN_MATCHES: '10'
+          CENSUS_RANK_LADDER_SHARE: '0.4'
         run: |
           # Start ranking first so it uses the whole enumeration window. Its failure
           # must not fail this step: enumeration is the census, ranking is an extra

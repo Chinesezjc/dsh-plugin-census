@@ -235,7 +235,11 @@ a rating advances past its first match instead of stopping there — an earlier
 strategy that spread first-time comparisons across the whole catalogue left every
 rated entry at exactly 1 match, and reaching 10 would have taken about 453 runs.
 Half of each run's budget re-pairs entries below 10 matches; the rest opens new
-entries. Comparisons run alongside enumeration, which spends a different API
+entries. Part of the deepening budget runs a king-of-the-hill ladder: the
+lowest-rated entries challenge the next stronger one in turn, and whoever wins
+stays on to challenge the next stronger still, so a plugin that keeps winning
+climbs several rungs in one run rather than winning once against a neighbour and
+stopping. Comparisons run alongside enumeration, which spends a different API
 allowance, so 100 of them add about 2% to the run rather than a separate 13
 minutes. Some pairs never resolve: one produced a verdict in 2 of 8 identical
 attempts, because the model's reasoning competes with its answer for the token
