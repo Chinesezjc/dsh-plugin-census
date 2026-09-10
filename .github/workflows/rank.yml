@@ -86,4 +86,38 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add data/ratings.jsonl README.md README.zh.md
           git commit -m 'Run the pairwise ranking'
-          git push
+          # The daily refresh, another rank run, or an operator can push while
+          # this run is working. Rebase onto whatever landed and retry rather
+          # than discarding a completed run.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "push rejected (attempt ${attempt}); rebasing onto origin/main"
+            git fetch origin main
+            if git rebase origin/main; then
+              continue
+            fi
+            # Only files this run generated are resolvable here: its output is
+            # newer than whatever landed. A conflict anywhere else means the
+            # run's scripts no longer match main, so stop rather than silently
+            # reverting someone's change.
+            resolved=yes
+            for file in $(git diff --name-only --diff-filter=U); do
+              case "${file}" in
+                data/*|README.md|README.zh.md|PLUGINS.md)
+                  echo "keeping this run's ${file}"
+                  git checkout --theirs -- "${file}" && git add -- "${file}" ;;
+                *)
+                  echo "::error::the rebase conflicts in ${file}, which this run did not generate"
+                  resolved=no ;;
+              esac
+            done
+            if [ "${resolved}" != "yes" ]; then
+              git rebase --abort
+              exit 1
+            fi
+            GIT_EDITOR=true git rebase --continue || { git rebase --abort; exit 1; }
+          done
+          echo "::error::the push was rejected three times; the run's output is not committed"
+          exit 1
