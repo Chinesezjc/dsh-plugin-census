@@ -200,10 +200,10 @@ distribution is imposed.** Forcing a normal curve would mean moving several hund
 plugins to a lower score than any evidence supports, about repositories this census
 does not own.
 
-**These ratings are not yet a ranking.** <!-- census:begin n-rated -->1616<!-- census:end n-rated --> entries have a rating,
-averaging <!-- census:begin rating-matches-mean -->1.2<!-- census:end rating-matches-mean --> comparisons each with a maximum of
+**These ratings are not yet a ranking.** <!-- census:begin n-rated -->1690<!-- census:end n-rated --> entries have a rating,
+averaging <!-- census:begin rating-matches-mean -->1.3<!-- census:end rating-matches-mean --> comparisons each with a maximum of
 <!-- census:begin rating-matches-max -->18<!-- census:end rating-matches-max -->, and the spread is only
-<!-- census:begin rating-spread -->1454 to 1603<!-- census:end rating-spread -->. Elo needs roughly 10 to 20 matches before a rating
+<!-- census:begin rating-spread -->1450 to 1603<!-- census:end rating-spread -->. Elo needs roughly 10 to 20 matches before a rating
 carries meaning, so the order below is close to arbitrary at present and is published
 to show the mechanism accumulating rather than to recommend anything. Each row states
 its match count for exactly that reason.
@@ -211,10 +211,10 @@ its match count for exactly that reason.
 <!-- census:begin rating-bands -->
 | Band | Entries | Rating range | Mean matches |
 | --- | --- | --- | --- |
-| top quartile | 404 | 1508–1603 | 1.4 |
-| second quartile | 404 | 1500–1508 | 1.1 |
-| third quartile | 404 | 1492–1500 | 1.1 |
-| bottom quartile | 404 | 1454–1492 | 1.3 |
+| top quartile | 423 | 1508–1603 | 1.5 |
+| second quartile | 423 | 1500–1508 | 1.1 |
+| third quartile | 423 | 1492–1500 | 1.1 |
+| bottom quartile | 421 | 1450–1492 | 1.4 |
 <!-- census:end rating-bands -->
 
 Every catalogued entry is ranked. An earlier version restricted comparisons to a
