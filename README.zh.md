@@ -173,18 +173,18 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 评级用 Elo，**只由真实发生过的比较驱动**。**不施加任何目标分布。** 强行凑成正态意味着
 把几百个插件压到证据不支持的低分上，而这些判断写着别人仓库的名字。
 
-**这些评级还不构成排名。** 目前 <!-- census:begin n-rated -->1446<!-- census:end n-rated --> 个条目有评级，平均每个只比过
-<!-- census:begin rating-matches-mean -->1.1<!-- census:end rating-matches-mean --> 场（最多 <!-- census:begin rating-matches-max -->18<!-- census:end rating-matches-max --> 场），跨度仅
-<!-- census:begin rating-spread -->1469 to 1603<!-- census:end rating-spread -->。Elo 大约需要 10-20 场才有意义，所以**下面的顺序目前接近
+**这些评级还不构成排名。** 目前 <!-- census:begin n-rated -->1532<!-- census:end n-rated --> 个条目有评级，平均每个只比过
+<!-- census:begin rating-matches-mean -->1.2<!-- census:end rating-matches-mean --> 场（最多 <!-- census:begin rating-matches-max -->18<!-- census:end rating-matches-max --> 场），跨度仅
+<!-- census:begin rating-spread -->1462 to 1603<!-- census:end rating-spread -->。Elo 大约需要 10-20 场才有意义，所以**下面的顺序目前接近
 随机**，发布它是为了展示机制正在累积，不是推荐。每行都标出场次，正是为此。
 
 <!-- census:begin rating-bands -->
 | 分档 | 条目数 | 评级区间 | 平均场次 |
 | --- | --- | --- | --- |
-| top quartile | 362 | 1508–1603 | 1.2 |
-| second quartile | 362 | 1500–1508 | 1.0 |
-| third quartile | 362 | 1492–1500 | 1.1 |
-| bottom quartile | 360 | 1469–1492 | 1.2 |
+| top quartile | 383 | 1508–1603 | 1.3 |
+| second quartile | 383 | 1500–1508 | 1.1 |
+| third quartile | 383 | 1492–1500 | 1.1 |
+| bottom quartile | 383 | 1462–1492 | 1.3 |
 <!-- census:end rating-bands -->
 
 **目录内所有条目都参与排名。** 早先的版本只在部分条目之间比较，理由是
