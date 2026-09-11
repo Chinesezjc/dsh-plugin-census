@@ -311,6 +311,7 @@ const REGIONS = {
     return share(bad, npmManifest.length)
   },
   'n-rated': () => String(ratings.length),
+  'n-onematch': () => String(ratings.filter((row) => (row.matches ?? 0) === 1).length),
   'rating-matches-max': () => String(ratings.reduce((max, r) => Math.max(max, r.matches ?? 0), 0)),
   'rating-matches-mean': () => (ratings.length === 0
     ? '0'
@@ -320,27 +321,103 @@ const REGIONS = {
     const values = ratings.map((r) => r.rating ?? 0)
     return `${Math.round(Math.min(...values))} to ${Math.round(Math.max(...values))}`
   },
-  // Bands, not a leaderboard. Simulated against known strengths, overall
-  // stratification converges long before exact positions: at Spearman 0.87 the top
-  // fifteen by rating contained 0 to 1 of the true top fifteen. Publishing a ranked
-  // list would assert precision the method does not have, so entries are grouped into
-  // quartiles by rating and only the band populations are stated.
+  // Bands by rating value, plus the value distribution underneath.
+  //
+  // The bands used to cut the sorted entries into four equally sized groups,
+  // which reported a uniform shape the data does not have: with 96% of entries at
+  // one match the ratings sit on a few discrete values, so a quantity-based cut
+  // split the 586 entries sharing one rating across two bands and printed two
+  // rows whose rating ranges both contained that value. Boundaries now fall on
+  // value edges — the quartile position picks which value ends a band, and no
+  // value is ever split — so the bands do not overlap and each states the rating
+  // range it actually covers. Band sizes are then uneven, and that unevenness is
+  // the finding: the population piles up at each end.
+  //
+  // The distribution table below names each value, because a band that holds one
+  // dominant value hides how concentrated the ratings are. Values holding fewer
+  // than MIN_DISTRIBUTION_GROUP entries collapse into one row: they are
+  // individual entries, and listing them would bury the shape both tables exist
+  // to show.
   'rating-bands': (lang) => {
     if (ratings.length === 0) return '_No comparisons have been played yet._'
-    const sorted = [...ratings].sort((x, y) => (y.rating ?? 0) - (x.rating ?? 0))
-    const size = Math.ceil(sorted.length / 4)
-    const labels = ['top quartile', 'second quartile', 'third quartile', 'bottom quartile']
-    const rows = labels
-      .map((label, i) => {
-        const band = sorted.slice(i * size, (i + 1) * size)
-        if (band.length === 0) return null
-        const values = band.map((r) => r.rating ?? 0)
-        const matches = band.reduce((sum, r) => sum + (r.matches ?? 0), 0) / band.length
-        return `| ${label} | ${band.length} | ${Math.round(Math.min(...values))}\u2013${Math.round(Math.max(...values))} | ${matches.toFixed(1)} |`
+    const groups = new Map()
+    for (const row of ratings) {
+      const value = Math.round(row.rating ?? 0)
+      const group = groups.get(value) ?? { entries: 0, matches: 0 }
+      group.entries += 1
+      group.matches += row.matches ?? 0
+      groups.set(value, group)
+    }
+    const values = [...groups.keys()].sort((a, b) => b - a)
+    const bandCount = 4
+    // Each quartile position picks the value that ends a band, so boundaries sit
+    // between values rather than inside one.
+    const bounds = []
+    let cumulative = 0
+    let nextTarget = 0
+    for (const value of values) {
+      cumulative += groups.get(value).entries
+      while (nextTarget < bandCount - 1 && cumulative >= (ratings.length * (nextTarget + 1)) / bandCount) {
+        bounds.push(value)
+        nextTarget += 1
+      }
+    }
+    const labels = lang === 'zh'
+      ? ['最高档', '次高档', '次低档', '最低档']
+      : ['top band', 'second band', 'third band', 'bottom band']
+    const rows = []
+    for (let i = 0; i < labels.length; i += 1) {
+      const upper = i === 0 ? null : bounds[i - 1]
+      const lower = i < bounds.length ? bounds[i] : null
+      const band = values.filter((value) => {
+        if (upper !== null && value >= upper) return false
+        if (lower !== null && value < lower) return false
+        return true
       })
-      .filter(Boolean)
-      .join('\n')
-    return `${headerFor('| Band | Entries | Rating range | Mean matches |', '| 分档 | 条目数 | 评级区间 | 平均场次 |', lang)}\n${rows}`
+      if (band.length === 0) continue
+      const entries = band.reduce((sum, value) => sum + groups.get(value).entries, 0)
+      const matches = band.reduce((sum, value) => sum + groups.get(value).matches, 0)
+      const range = band[0] === band[band.length - 1]
+        ? String(band[0])
+        : `${band[band.length - 1]}\u2013${band[0]}`
+      rows.push(`| ${labels[i]} | ${range} | ${entries} | ${(matches / entries).toFixed(1)} |`)
+    }
+    return `${headerFor('| Band | Rating range | Entries | Mean matches |', '| 分档 | 评级区间 | 条目数 | 平均场次 |', lang)}\n${rows.join('\n')}`
+  },
+  // The distribution by rating value: which values exist, how many entries sit on
+  // each, and how much evidence those entries carry.
+  'rating-distribution': (lang) => {
+    if (ratings.length === 0) return '_No comparisons have been played yet._'
+    const MIN_DISTRIBUTION_GROUP = 10
+    const groups = new Map()
+    for (const row of ratings) {
+      const value = Math.round(row.rating ?? 0)
+      const group = groups.get(value) ?? { entries: 0, matches: 0 }
+      group.entries += 1
+      group.matches += row.matches ?? 0
+      groups.set(value, group)
+    }
+    const values = [...groups.keys()].sort((a, b) => b - a)
+    const line = (label, group) =>
+      `| ${label} | ${group.entries} | ${(group.matches / group.entries).toFixed(1)} |`
+    const rest = values.filter((value) => groups.get(value).entries < MIN_DISTRIBUTION_GROUP)
+    const rows = values
+      .filter((value) => groups.get(value).entries >= MIN_DISTRIBUTION_GROUP)
+      .map((value) => line(value, groups.get(value)))
+    if (rest.length > 0) {
+      const tail = rest.reduce(
+        (sum, value) => ({
+          entries: sum.entries + groups.get(value).entries,
+          matches: sum.matches + groups.get(value).matches,
+        }),
+        { entries: 0, matches: 0 },
+      )
+      rows.push(line(
+        lang === 'zh' ? `其他 ${rest.length} 个分数值` : `other ${rest.length} values`,
+        tail,
+      ))
+    }
+    return `${headerFor('| Rating | Entries | Mean matches |', '| 评级 | 条目数 | 平均场次 |', lang)}\n${rows.join('\n')}`
   },
   'n-inconclusive': () => String(decay.filter((row) => row.state === 'inconclusive').length),
   'pct-inconclusive': () => share(decay.filter((row) => row.state === 'inconclusive').length, decay.length),

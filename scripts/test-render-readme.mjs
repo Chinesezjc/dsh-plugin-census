@@ -295,7 +295,11 @@ check(
 // misrepresent the data in the direction of overclaiming.
 {
   const readme = readFileSync(`${ROOT}README.md`, 'utf8')
-  for (const region of ['n-rated', 'rating-matches-mean', 'rating-matches-max', 'rating-spread', 'rating-bands']) {
+  const RATING_REGIONS = [
+    'n-rated', 'n-onematch', 'rating-matches-mean', 'rating-matches-max',
+    'rating-spread', 'rating-bands', 'rating-distribution',
+  ]
+  for (const region of RATING_REGIONS) {
     check(
       `the ratings region ${region} is generated`,
       new RegExp(`census:begin ${region} -->`).test(readme),
@@ -305,30 +309,73 @@ check(
   const zh = readFileSync(`${ROOT}README.zh.md`, 'utf8')
   check(
     'the Chinese README carries the same ratings figures',
-    ['n-rated', 'rating-matches-mean', 'rating-matches-max', 'rating-spread', 'rating-bands']
-      .every((r) => new RegExp(`census:begin ${r} -->`).test(zh)),
+    RATING_REGIONS.every((r) => new RegExp(`census:begin ${r} -->`).test(zh)),
     'README.zh.md must carry every ratings marker',
   )
-  // Bands must state their mean match count, which is what tells a reader how little
-  // evidence stands behind the stratification. They must NOT name individual plugins:
-  // simulated at Spearman 0.87 the top fifteen by rating held 0 to 1 of the true top
-  // fifteen, so naming entries in rank order would assert precision the method lacks.
-  const table = readme.split('census:begin rating-bands -->')[1]?.split('<!-- census:end')[0] ?? ''
-  const rows = table
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l.startsWith('|'))
-    .filter((l) => !/^\|(\s*---\s*\|)+\s*$/.test(l))
-    .slice(1) // skip the header row, which is part of the region now
+  const regionRows = (text, name) =>
+    (text.split(`census:begin ${name} -->`)[1]?.split('<!-- census:end')[0] ?? '')
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l.startsWith('|'))
+      .filter((l) => !/^\|(\s*---\s*\|)+\s*$/.test(l))
+      .slice(1) // skip the header row, which is part of the region now
+  const bands = regionRows(readme, 'rating-bands')
+  const distribution = regionRows(readme, 'rating-distribution')
+  // Each row must state its mean match count, which is what tells a reader how
+  // little evidence stands behind a rating. Neither table may name individual
+  // plugins: simulated at Spearman 0.87 the top fifteen by rating held 0 to 1 of
+  // the true top fifteen, so naming entries in rank order would assert precision
+  // the method lacks.
   check(
     'every published band states its mean match count',
-    rows.length === 0 || rows.every((l) => /\|\s*[\d.]+\s*\|\s*$/.test(l)),
-    `${rows.length} row(s); first: ${rows[0] ?? '(none)'}`,
+    bands.length === 0 || bands.every((l) => /\|\s*[\d.]+\s*\|\s*$/.test(l)),
+    `${bands.length} band row(s); first: ${bands[0] ?? '(none)'}`,
+  )
+  check(
+    'every published distribution row states its mean match count',
+    distribution.length === 0 || distribution.every((l) => /\|\s*[\d.]+\s*\|\s*$/.test(l)),
+    `${distribution.length} row(s); first: ${distribution[0] ?? '(none)'}`,
   )
   check(
     'the ratings section does not publish a ranked list of plugins',
-    !/census:begin rating-top/.test(readme) && !/github\.com\/[^)]+\) \| \d{4} \|/.test(table),
-    'bands must not name individual plugins in rank order',
+    !/census:begin rating-top/.test(readme)
+      && !/github\.com\/[^)]+\) \| \d{4} \|/.test(`${bands.join('\n')}${distribution.join('\n')}`),
+    'rows must not name individual plugins in rank order',
+  )
+  // Bands put their boundaries on rating values, never inside one. A quantity-based
+  // cut into quarters split the 586 entries sharing rating 1508 across two bands and
+  // printed two rows whose rating ranges both contained 1508, beside a table that
+  // looked like four equal tiers. Parsing each band's range and checking the ranges
+  // run strictly downward without touching catches both defects: a split value makes
+  // two ranges overlap, and an equal-count cut makes them touch or overlap wherever
+  // the population is concentrated.
+  const ranges = bands.map((l) => {
+    const cell = l.split('|')[2]?.trim() ?? ''
+    const [low, high] = cell.includes('\u2013') ? cell.split('\u2013') : [cell, cell]
+    return { low: Number(low), high: Number(high) }
+  })
+  check(
+    'band rating ranges never overlap',
+    ranges.every((r, i) => i === 0 || r.high < ranges[i - 1].low),
+    `ranges: ${ranges.map((r) => `${r.low}-${r.high}`).join(', ')}`,
+  )
+  // The distribution names values, so a reader can see how concentrated the ratings
+  // are; a band that holds one dominant value hides that.
+  check(
+    'rating distribution rows group by value, not by quantity',
+    distribution.length === 0
+      || distribution.every((l) => /^\|\s*(\d+(\.\d+)?|other \d+ values|其他 \d+ 个分数值)\s*\|/.test(l)),
+    `rows: ${distribution.join(' | ')}`,
+  )
+  check(
+    'no rating value appears in two distribution rows',
+    (() => {
+      const values = distribution
+        .map((l) => l.split('|')[1]?.trim())
+        .filter((v) => /^\d+(\.\d+)?$/.test(v ?? ''))
+      return new Set(values).size === values.length
+    })(),
+    `values: ${distribution.map((l) => l.split('|')[1]?.trim()).join(', ')}`,
   )
 }
 

@@ -67,7 +67,8 @@ const DEADLINE_SECONDS = Number(process.env.CENSUS_RANK_DEADLINE_SECONDS ?? 0)
  * DEEPEN_SHARE so fresh entries still enter the ranking. What the simulation
  * does still say is that overall stratification converges long before exact
  * positions do: at rho 0.87 the top fifteen contained 0 to 1 of the true top
- * fifteen. The ranking is therefore reported as bands, not as a leaderboard.
+ * fifteen. The published figures are therefore a distribution by rating value
+ * with each group's match count, not a leaderboard.
  */
 
 /** Elo K-factor. Low, because a single comparison is weak evidence. */
