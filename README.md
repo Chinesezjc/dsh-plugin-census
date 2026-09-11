@@ -200,8 +200,8 @@ distribution is imposed.** Forcing a normal curve would mean moving several hund
 plugins to a lower score than any evidence supports, about repositories this census
 does not own.
 
-**These ratings are not yet a ranking.** <!-- census:begin n-rated -->2064<!-- census:end n-rated --> entries have a rating,
-averaging <!-- census:begin rating-matches-mean -->1.4<!-- census:end rating-matches-mean --> comparisons each with a maximum of
+**These ratings are not yet a ranking.** <!-- census:begin n-rated -->2152<!-- census:end n-rated --> entries have a rating,
+averaging <!-- census:begin rating-matches-mean -->1.5<!-- census:end rating-matches-mean --> comparisons each with a maximum of
 <!-- census:begin rating-matches-max -->18<!-- census:end rating-matches-max -->, and the spread is only
 <!-- census:begin rating-spread -->1429 to 1603<!-- census:end rating-spread -->. Elo needs roughly 10 to 20 matches before a rating
 carries meaning, so the numbers below are published to show the mechanism
@@ -209,17 +209,17 @@ accumulating rather than to recommend anything.
 
 Band boundaries fall on rating values rather than on entry counts, so no rating is
 split across two bands and the published ranges do not overlap. Band sizes are
-therefore uneven, and that unevenness is the finding: <!-- census:begin n-onematch -->1539<!-- census:end n-onematch --> of the
-<!-- census:begin n-rated -->2064<!-- census:end n-rated --> rated entries have exactly one comparison, so ratings sit on a few discrete
+therefore uneven, and that unevenness is the finding: <!-- census:begin n-onematch -->1567<!-- census:end n-onematch --> of the
+<!-- census:begin n-rated -->2152<!-- census:end n-rated --> rated entries have exactly one comparison, so ratings sit on a few discrete
 values and pile up at each end of the range.
 
 <!-- census:begin rating-bands -->
 | Band | Rating range | Entries | Mean matches |
 | --- | --- | --- | --- |
-| top band | 1508–1603 | 898 | 1.4 |
+| top band | 1508–1603 | 944 | 1.4 |
 | second band | 1500–1504 | 195 | 1.6 |
-| third band | 1492–1498 | 789 | 1.1 |
-| bottom band | 1429–1489 | 182 | 3.0 |
+| third band | 1492–1498 | 808 | 1.1 |
+| bottom band | 1429–1489 | 205 | 3.0 |
 <!-- census:end rating-bands -->
 
 The distribution names each value, because a band containing one dominant value
@@ -230,16 +230,16 @@ comparisons move a rating off the few values one match can produce.
 <!-- census:begin rating-distribution -->
 | Rating | Entries | Mean matches |
 | --- | --- | --- |
-| 1516 | 172 | 2.0 |
-| 1512 | 27 | 2.0 |
-| 1508 | 691 | 1.0 |
-| 1504 | 98 | 1.3 |
-| 1500 | 96 | 1.8 |
-| 1496 | 92 | 1.3 |
-| 1492 | 689 | 1.0 |
-| 1488 | 22 | 2.5 |
-| 1484 | 131 | 2.0 |
-| other 33 values | 46 | 8.0 |
+| 1516 | 193 | 2.0 |
+| 1512 | 32 | 2.1 |
+| 1508 | 710 | 1.0 |
+| 1504 | 97 | 1.3 |
+| 1500 | 97 | 1.8 |
+| 1496 | 93 | 1.3 |
+| 1492 | 707 | 1.0 |
+| 1488 | 26 | 2.4 |
+| 1484 | 145 | 2.0 |
+| other 36 values | 52 | 8.0 |
 <!-- census:end rating-distribution -->
 
 Every catalogued entry is ranked. An earlier version restricted comparisons to a

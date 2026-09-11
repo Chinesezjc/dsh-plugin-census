@@ -173,22 +173,22 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 评级用 Elo，**只由真实发生过的比较驱动**。**不施加任何目标分布。** 强行凑成正态意味着
 把几百个插件压到证据不支持的低分上，而这些判断写着别人仓库的名字。
 
-**这些评级还不构成排名。** 目前 <!-- census:begin n-rated -->2064<!-- census:end n-rated --> 个条目有评级，平均每个只比过
-<!-- census:begin rating-matches-mean -->1.4<!-- census:end rating-matches-mean --> 场（最多 <!-- census:begin rating-matches-max -->18<!-- census:end rating-matches-max --> 场），跨度仅
+**这些评级还不构成排名。** 目前 <!-- census:begin n-rated -->2152<!-- census:end n-rated --> 个条目有评级，平均每个只比过
+<!-- census:begin rating-matches-mean -->1.5<!-- census:end rating-matches-mean --> 场（最多 <!-- census:begin rating-matches-max -->18<!-- census:end rating-matches-max --> 场），跨度仅
 <!-- census:begin rating-spread -->1429 to 1603<!-- census:end rating-spread -->。Elo 大约需要 10-20 场才有意义，发布这些数字是为了
 展示机制正在累积，不是推荐。
 
 分档边界落在**评级值**上而非条目数上，因此同一个评级不会被拆到两档，公布的区间也不重叠。
-档位大小因此不均匀，而这种不均匀本身就是结论：<!-- census:begin n-rated -->2064<!-- census:end n-rated --> 个已评级条目中有
-<!-- census:begin n-onematch -->1539<!-- census:end n-onematch --> 个只比过 1 场，评级只能落在少数几个离散值上，堆在区间两端。
+档位大小因此不均匀，而这种不均匀本身就是结论：<!-- census:begin n-rated -->2152<!-- census:end n-rated --> 个已评级条目中有
+<!-- census:begin n-onematch -->1567<!-- census:end n-onematch --> 个只比过 1 场，评级只能落在少数几个离散值上，堆在区间两端。
 
 <!-- census:begin rating-bands -->
 | 分档 | 评级区间 | 条目数 | 平均场次 |
 | --- | --- | --- | --- |
-| 最高档 | 1508–1603 | 898 | 1.4 |
+| 最高档 | 1508–1603 | 944 | 1.4 |
 | 次高档 | 1500–1504 | 195 | 1.6 |
-| 次低档 | 1492–1498 | 789 | 1.1 |
-| 最低档 | 1429–1489 | 182 | 3.0 |
+| 次低档 | 1492–1498 | 808 | 1.1 |
+| 最低档 | 1429–1489 | 205 | 3.0 |
 <!-- census:end rating-bands -->
 
 分布表逐值列出，因为某一档里若被单一数值主导，就看不出评级有多集中。条目数少于 10 的
@@ -198,16 +198,16 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 <!-- census:begin rating-distribution -->
 | 评级 | 条目数 | 平均场次 |
 | --- | --- | --- |
-| 1516 | 172 | 2.0 |
-| 1512 | 27 | 2.0 |
-| 1508 | 691 | 1.0 |
-| 1504 | 98 | 1.3 |
-| 1500 | 96 | 1.8 |
-| 1496 | 92 | 1.3 |
-| 1492 | 689 | 1.0 |
-| 1488 | 22 | 2.5 |
-| 1484 | 131 | 2.0 |
-| 其他 33 个分数值 | 46 | 8.0 |
+| 1516 | 193 | 2.0 |
+| 1512 | 32 | 2.1 |
+| 1508 | 710 | 1.0 |
+| 1504 | 97 | 1.3 |
+| 1500 | 97 | 1.8 |
+| 1496 | 93 | 1.3 |
+| 1492 | 707 | 1.0 |
+| 1488 | 26 | 2.4 |
+| 1484 | 145 | 2.0 |
+| 其他 36 个分数值 | 52 | 8.0 |
 <!-- census:end rating-distribution -->
 
 **目录内所有条目都参与排名。** 早先的版本只在部分条目之间比较，理由是
