@@ -204,18 +204,39 @@ does not own.
 averaging <!-- census:begin rating-matches-mean -->1.1<!-- census:end rating-matches-mean --> comparisons each with a maximum of
 <!-- census:begin rating-matches-max -->18<!-- census:end rating-matches-max -->, and the spread is only
 <!-- census:begin rating-spread -->1477 to 1603<!-- census:end rating-spread -->. Elo needs roughly 10 to 20 matches before a rating
-carries meaning, so the order below is close to arbitrary at present and is published
-to show the mechanism accumulating rather than to recommend anything. Each row states
-its match count for exactly that reason.
+carries meaning, so the numbers below are published to show the mechanism
+accumulating rather than to recommend anything.
+
+Band boundaries fall on rating values rather than on entry counts, so no rating is
+split across two bands and the published ranges do not overlap. Band sizes are
+therefore uneven, and that unevenness is the finding: <!-- census:begin n-onematch -->1305<!-- census:end n-onematch --> of the
+<!-- census:begin n-rated -->1362<!-- census:end n-rated --> rated entries have exactly one comparison, so ratings sit on a few discrete
+values and pile up at each end of the range.
 
 <!-- census:begin rating-bands -->
-| Band | Entries | Rating range | Mean matches |
+| Band | Rating range | Entries | Mean matches |
 | --- | --- | --- | --- |
-| top quartile | 341 | 1508–1603 | 1.1 |
-| second quartile | 341 | 1500–1508 | 1.0 |
-| third quartile | 341 | 1492–1500 | 1.0 |
-| bottom quartile | 339 | 1477–1492 | 1.1 |
+| top band | 1508–1603 | 604 | 1.1 |
+| second band | 1500–1504 | 96 | 1.2 |
+| third band | 1492–1497 | 643 | 1.0 |
+| bottom band | 1477–1489 | 19 | 2.6 |
 <!-- census:end rating-bands -->
+
+The distribution names each value, because a band containing one dominant value
+hides how concentrated the ratings are. Values holding fewer than ten entries are
+collapsed into a single row; the highest rating, 1602 with 18 matches, is one of them.
+
+<!-- census:begin rating-distribution -->
+| Rating | Entries | Mean matches |
+| --- | --- | --- |
+| 1516 | 14 | 2.0 |
+| 1508 | 586 | 1.0 |
+| 1504 | 56 | 1.1 |
+| 1500 | 40 | 1.3 |
+| 1496 | 52 | 1.0 |
+| 1492 | 587 | 1.0 |
+| other 13 values | 27 | 3.2 |
+<!-- census:end rating-distribution -->
 
 Every catalogued entry is ranked. An earlier version restricted comparisons to a
 subset of entries, on the belief that a larger pool could not converge. That belief
@@ -225,7 +246,7 @@ and the comparisons carried almost no information. With ties broken randomly, ra
 all catalogued entries reaches Spearman 0.87 against known strengths at 10 matches
 each, and 0.93 at 20.
 
-The results are reported as bands rather than a ranked list because the same
+The distribution is published rather than a ranked list because the same
 simulation shows overall stratification converging long before exact positions: at
 Spearman 0.87 the top fifteen by rating contained 0 to 1 of the true top fifteen.
 A leaderboard would assert precision this method does not have.
