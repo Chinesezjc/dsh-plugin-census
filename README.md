@@ -272,12 +272,14 @@ means "not yet verified". Selecting purely by rating instead pinned the same wea
 plugins to the ladder every run — each loss kept their rating lowest, so the next
 run selected them again, and the 25 lowest-rated entries reached an average of 9.6
 comparisons against a pool average of 1.65. Rating breaks ties inside a match
-count so the least-verified low ratings come first. Comparisons run alongside
-enumeration, which spends a different API
-allowance, so 100 of them add about 2% to the run rather than a separate 13
-minutes. Some pairs never resolve: one produced a verdict in 2 of 8 identical
-attempts, because the model's reasoning competes with its answer for the token
-budget. An unresolved pair costs coverage, not correctness — no rating moves.
+count so the least-verified low ratings come first. The refresh runs its 100
+comparisons alongside enumeration, which spends a different API allowance, so
+they add about 2% to a run rather than 13 separate minutes. A rank-only workflow
+repeats the ranking every two hours with 200 comparisons, converging ratings
+between refreshes without re-enumerating the topic. Some pairs never resolve:
+one produced a verdict in 2 of 8 identical attempts, because the model's
+reasoning competes with its answer for the token budget. An unresolved pair
+costs coverage, not correctness — no rating moves.
 
 ## What the published package declares
 
