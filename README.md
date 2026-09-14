@@ -261,14 +261,19 @@ a rating advances past its first match instead of stopping there — an earlier
 strategy that spread first-time comparisons across the whole catalogue left every
 rated entry at exactly 1 match, and reaching 10 would have taken about 453 runs.
 Half of each run's budget re-pairs entries below 10 matches; the rest opens new
-entries. Part of the deepening budget runs a king-of-the-hill ladder: the
-least-compared entries are ordered by rating and challenge the next stronger one
-in turn, and whoever wins stays on to challenge the next stronger still, so a
-plugin that keeps winning climbs several rungs in one run rather than winning once
-against a neighbour and stopping. Candidates are the least-compared rather than
-the lowest-rated entries, because selecting the lowest-rated pinned the same weak
+entries. Part of the deepening budget runs a king-of-the-hill ladder: candidates
+are the least-compared entries, lowest-rated first within a match count, then
+ordered by rating so each rung is stronger than the last; whoever wins stays on to
+challenge the next stronger still, so a plugin that keeps winning climbs several
+rungs in one run rather than winning once against a neighbour and stopping. Match
+count leads because it is the uncertainty: of the 1255 entries rated 1492 or below
+on 2026-09-13, 1195 had played one or two comparisons, so a low rating usually
+means "not yet verified". Selecting purely by rating instead pinned the same weak
 plugins to the ladder every run — each loss kept their rating lowest, so the next
-run selected them again. Comparisons run alongside enumeration, which spends a different API
+run selected them again, and the 25 lowest-rated entries reached an average of 9.6
+comparisons against a pool average of 1.65. Rating breaks ties inside a match
+count so the least-verified low ratings come first. Comparisons run alongside
+enumeration, which spends a different API
 allowance, so 100 of them add about 2% to the run rather than a separate 13
 minutes. Some pairs never resolve: one produced a verdict in 2 of 8 identical
 attempts, because the model's reasoning competes with its answer for the token
