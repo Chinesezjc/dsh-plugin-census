@@ -372,6 +372,36 @@ check(
   )
 }
 
+// Ladder candidates must be the least-compared entries, not the lowest-rated
+// ones. Picking the lowest-rated every run pinned the same weak entries to the
+// ladder: a loss left their rating lowest, so the next run selected them again.
+// Here the low-rated group has already played five matches and the high-rated
+// group only one, so the least-compared group must supply every rung.
+{
+  const lowRated = ['o/b1', 'o/b2', 'o/b3', 'o/b4']
+    .map((repo) => ({ repo, rating: 1450, matches: 5 }))
+  const fewPlayed = ['o/a1', 'o/a2', 'o/a3']
+    .map((repo) => ({ repo, rating: 1600, matches: 1 }))
+  const entries = [...lowRated, ...fewPlayed]
+  const existing = entries
+    .map((e) => JSON.stringify({ ...e, promptVersion: 'p1' }))
+    .join('\n') + '\n'
+  const rows = entries.map((e) => ({ repo: e.repo, package: e.repo }))
+  const result = runRank({
+    rows,
+    limit: 10,
+    existing,
+    env: { CENSUS_RANK_DEEPEN_SHARE: '0.5', CENSUS_RANK_LADDER_SHARE: '0.4' },
+  })
+  const ladderLines = String(result.stderr).split('\n').filter((l) => l.includes('ladder '))
+  const ladderRepos = ladderLines.flatMap((l) => l.match(/o\/[a-z0-9]+/g) ?? [])
+  check(
+    'ladder candidates are the least-compared entries, not the lowest-rated',
+    ladderRepos.length > 0 && ladderRepos.every((repo) => repo.startsWith('o/a')),
+    `ladder rungs: ${ladderLines.join(' | ') || '(none)'}`,
+  )
+}
+
 // The whole catalogue is ranked: no pool restriction may exclude entries. The earlier
 // bound rested on a simulation whose tie-breaking used array index while index also
 // encoded true strength, which made every first round pair near-equals; with random

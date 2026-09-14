@@ -334,7 +334,11 @@ function argValue(flag, fallback) {
 
 async function main() {
   const limit = Number(argValue('--limit', '150'))
-  const seed = Number(argValue('--seed', String(new Date().toISOString().slice(0, 10).replace(/-/g, ''))))
+  // Hour resolution, not day: the schedule runs several rounds per day and a
+  // day-resolution seed made every round of the same day pair the same entries.
+  const seed = Number(argValue('--seed', String(
+    new Date().toISOString().slice(0, 13).replace(/[-T:]/g, ''),
+  )))
   const entries = []
   for await (const line of createInterface({ input: process.stdin, crlfDelay: Infinity })) {
     if (!line.trim()) continue
@@ -380,8 +384,15 @@ async function main() {
   // The deepen budget splits into a serial king-of-the-hill ladder and ordinary
   // adjacent pairs. The ladder lets a winner keep challenging stronger entries
   // in one run rather than stopping after a single win against a neighbour.
-  // Its candidates are the lowest-rated entries of the deepen group, ordered by
-  // rating so each rung is stronger than the last; a win climbs the ladder.
+  //
+  // Ladder candidates are the least-compared entries, not the lowest-rated ones.
+  // Picking the lowest-rated every run pinned the same weak entries to the
+  // ladder: a loss left their rating lowest, so the next run selected them again
+  // and they lost again, accumulating 20 matches without ever proving anything
+  // while the rest of the pool stayed uncompared (measured 2026-09-13: the 25
+  // lowest-rated entries averaged 9.6 matches against a pool average of 1.65).
+  // Least-compared candidates rotate as they play, and the seed scatters the
+  // choice within a match-count tier.
   const deepenBudget = Math.floor(limit * DEEPEN_SHARE)
   const ladderBudget = Math.floor(deepenBudget * LADDER_SHARE)
   const pairsBudget = deepenBudget - ladderBudget
@@ -392,16 +403,24 @@ async function main() {
     if (ra !== rb) return ra - rb
     return hash32(`${seed}:${a.repo}`) - hash32(`${seed}:${b.repo}`)
   }
-  const ladderCandidates = [...deepenGroup].sort(byRating).slice(0, ladderBudget + 1)
+  // Take the least-compared entries first (seeded within a match-count tier),
+  // then order the selected rungs by rating so each is stronger than the last.
+  const ladderCandidates = [...deepenGroup]
+    .sort(byExperience)
+    .slice(0, ladderBudget + 1)
+    .sort(byRating)
 
   // Adjacent pairs from the deepen group after the ladder entries are reserved:
   // similar experience, which is what makes an Elo update informative rather
-  // than a foregone conclusion.
+  // than a foregone conclusion. Excluding the ladder entries keeps a run from
+  // spending two of its comparisons on the same pair.
+  const ladderSet = new Set(ladderCandidates.map((entry) => entry.repo))
+  const deepenPairPool = deepenGroup.filter((entry) => !ladderSet.has(entry.repo))
   const pairs = []
   // Deepen first: re-pair entries that already have comparisons, so their
   // ratings converge toward the matches Elo needs.
-  for (let i = 0; i + 1 < deepenGroup.length && pairs.length < pairsBudget; i += 2) {
-    pairs.push([deepenGroup[i], deepenGroup[i + 1]])
+  for (let i = 0; i + 1 < deepenPairPool.length && pairs.length < pairsBudget; i += 2) {
+    pairs.push([deepenPairPool[i], deepenPairPool[i + 1]])
   }
   // Then open first-time entries with whatever budget remains.
   for (let i = 0; i + 1 < freshGroup.length && pairs.length < limit - ladderBudget; i += 2) {
