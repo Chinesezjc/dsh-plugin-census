@@ -4,19 +4,33 @@
 # to accumulate ratings but slow to converge: Elo needs 10-20 matches per entry
 # before a rating means anything. This workflow re-runs only the ranker — it
 # does not re-enumerate the topic or re-probe repositories — so each run costs
-# model calls and a few hundred GitHub reads rather than a full census. The
+# model calls and about a thousand GitHub reads rather than a full census. The
 # ranker reads the catalogue and ratings committed by previous runs, which is
 # the same contract the in-refresh ranker relies on.
 #
+# Every two hours with 200 comparisons, rather than every six hours with 100.
+# The 2026-09-14 data held 12207 entries, 3278 of them rated and holding 2756
+# comparisons between them; ten each would need 61035, so 58279 were missing.
+# The old budget ran 400 a day and would have taken 146 days for those, while
+# this one runs 2400 a day and takes about 24; the 8929 unrated entries open in
+# 4 days instead of 22.
+#
+# Measured 2026-09-14: 100 comparisons took 366 s on a runner; 200 took 889 s
+# (189 applied, 11 failed) on a workstation, past the 820 s deadline the refresh
+# can afford, which leaves room for its probe steps. Nothing follows the ranking
+# here, so the deadline is 1500 s. A run that reaches its deadline stops early
+# rather than failing, so the looser bound only lets a slow run finish.
+#
 # Shares the `refresh` concurrency group so it never writes ratings.jsonl at
 # the same moment the daily refresh does: a rank run that starts during a
-# refresh queues behind it. GitHub queues scheduled workflows heavily at :00,
-# so the schedule sits off the hour.
+# refresh queues behind it. The schedule skips 05:00 UTC, when the refresh
+# starts. GitHub queues scheduled workflows heavily at :00, so the schedule sits
+# off the hour.
 name: rank
 
 on:
   schedule:
-    - cron: '17 1,7,13,19 * * *'
+    - cron: '17 */2 * * *'
   workflow_dispatch:
 
 permissions:
@@ -48,8 +62,11 @@ jobs:
           CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
           CENSUS_API_BASE: ${{ vars.CENSUS_API_BASE }}
           CENSUS_API_MODEL: ${{ vars.CENSUS_API_MODEL }}
-          CENSUS_RANK_LIMIT: '100'
-          CENSUS_RANK_DEADLINE_SECONDS: '820'
+          # The daily refresh keeps its 100-comparison batch because the probe
+          # steps that follow it spend the same installation allowance. This
+          # workflow spends nothing else, so it carries the larger batch.
+          CENSUS_RANK_LIMIT: '200'
+          CENSUS_RANK_DEADLINE_SECONDS: '1500'
           CENSUS_RANK_CONCURRENCY: '4'
           CENSUS_RANK_DEEPEN_SHARE: '0.5'
           CENSUS_RANK_DEEPEN_MIN_MATCHES: '10'

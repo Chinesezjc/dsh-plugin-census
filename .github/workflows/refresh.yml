@@ -245,6 +245,9 @@ jobs:
           # The review is gone (2026-09), so ranking no longer shares its budget
           # with a second model step: 100 comparisons cost about 600 calls, the
           # probe steps still run, and the review's former ~540 calls are free.
+          # This batch stays at 100 because the probe steps below spend the same
+          # installation allowance in the same job; the rank-only workflow, which
+          # spends nothing else, carries 200 comparisons every two hours.
           # Half the budget deepens entries that already have comparisons, so
           # ratings converge past a single match; the rest opens new entries.
           # A share of the deepen budget runs a serial king-of-the-hill ladder:
