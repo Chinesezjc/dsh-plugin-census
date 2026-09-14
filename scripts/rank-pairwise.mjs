@@ -385,14 +385,18 @@ async function main() {
   // adjacent pairs. The ladder lets a winner keep challenging stronger entries
   // in one run rather than stopping after a single win against a neighbour.
   //
-  // Ladder candidates are the least-compared entries, not the lowest-rated ones.
-  // Picking the lowest-rated every run pinned the same weak entries to the
-  // ladder: a loss left their rating lowest, so the next run selected them again
-  // and they lost again, accumulating 20 matches without ever proving anything
-  // while the rest of the pool stayed uncompared (measured 2026-09-13: the 25
-  // lowest-rated entries averaged 9.6 matches against a pool average of 1.65).
-  // Least-compared candidates rotate as they play, and the seed scatters the
-  // choice within a match-count tier.
+  // Ladder candidates are the least-compared entries, lowest-rated first within
+  // a match-count tier. Selecting purely by rating pinned the same weak entries
+  // to the ladder: a loss left their rating lowest, so the next run selected them
+  // again and they lost again, accumulating 20 matches without ever proving
+  // anything while the rest of the pool stayed uncompared (measured 2026-09-13:
+  // the 25 lowest-rated entries averaged 9.6 matches against a pool average of
+  // 1.65). Match count leads because it is the uncertainty: of the 1255 entries
+  // rated 1492 or below, 1195 have played one or two comparisons, so a low rating
+  // usually means "not yet verified" rather than "proven weak", and those entries
+  // are exactly the ones the match-count tier selects. Rating breaks the tie
+  // inside a tier so the least-verified low ratings come first, and the seed
+  // scatters entries that share both a match count and a rating.
   const deepenBudget = Math.floor(limit * DEEPEN_SHARE)
   const ladderBudget = Math.floor(deepenBudget * LADDER_SHARE)
   const pairsBudget = deepenBudget - ladderBudget
@@ -403,10 +407,19 @@ async function main() {
     if (ra !== rb) return ra - rb
     return hash32(`${seed}:${a.repo}`) - hash32(`${seed}:${b.repo}`)
   }
-  // Take the least-compared entries first (seeded within a match-count tier),
-  // then order the selected rungs by rating so each is stronger than the last.
+  const byFewestThenRating = (a, b) => {
+    const pa = played.get(a.repo) ?? 0
+    const pb = played.get(b.repo) ?? 0
+    if (pa !== pb) return pa - pb
+    const ra = rating.get(a.repo) ?? BASE_RATING
+    const rb = rating.get(b.repo) ?? BASE_RATING
+    if (ra !== rb) return ra - rb
+    return hash32(`${seed}:${a.repo}`) - hash32(`${seed}:${b.repo}`)
+  }
+  // Take the least-compared, lowest-rated entries first, then order the selected
+  // rungs by rating so each is stronger than the last.
   const ladderCandidates = [...deepenGroup]
-    .sort(byExperience)
+    .sort(byFewestThenRating)
     .slice(0, ladderBudget + 1)
     .sort(byRating)
 
