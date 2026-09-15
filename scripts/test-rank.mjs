@@ -54,13 +54,14 @@ function runRank(options = {}) {
   writeFileSync(callFile, '')
 
   // Stub `gh`: every repository is readable and small.
+  const stubReadme = options.stubReadme ?? '# plugin\nreal content'
   writeFileSync(
     join(dir, 'gh'),
     `#!/usr/bin/env node
 const path = process.argv.slice(2).join(' ')
 const out = (o) => process.stdout.write(JSON.stringify(o))
 if (path.includes('/commits')) out([{ sha: 'deadbeef' }])
-else if (path.includes('/readme')) out({ content: Buffer.from('# plugin\\nreal content').toString('base64') })
+else if (path.includes('/readme')) out({ content: Buffer.from(${JSON.stringify(stubReadme)}).toString('base64') })
 else if (path.includes('/git/trees')) out({ tree: [{ path: 'lib/index.js', type: 'blob' }, { path: 'package.json', type: 'blob' }] })
 else out({})
 `,
@@ -79,6 +80,29 @@ const server = createServer((req, res) => {
   req.on('data', (c) => { body += c })
   req.on('end', () => {
     appendFileSync(${JSON.stringify(callFile)}, 'x')
+    // The endpoint rejects a body carrying a lone surrogate with HTTP 400. A stub
+    // that accepted it would let the surrogate control pass without the fix.
+    const hasLoneSurrogate = (text) => {
+      for (let i = 0; i < text.length; i += 1) {
+        const code = text.charCodeAt(i)
+        if (code >= 0xd800 && code <= 0xdbff) {
+          const next = text.charCodeAt(i + 1)
+          if (!(next >= 0xdc00 && next <= 0xdfff)) return true
+          i += 1
+        } else if (code >= 0xdc00 && code <= 0xdfff) return true
+      }
+      return false
+    }
+    let content = ''
+    try {
+      content = JSON.parse(body).messages?.[0]?.content ?? ''
+    } catch {
+      content = String.fromCharCode(0xd800)
+    }
+    if (hasLoneSurrogate(content)) {
+      res.writeHead(400, { 'content-type': 'application/json' })
+      return res.end(JSON.stringify({ error: 'unexpected end of hex escape' }))
+    }
     const reply = replies[Math.min(n, replies.length - 1)]
     n += 1
     res.writeHead(200, { 'content-type': 'application/json' })
@@ -195,6 +219,23 @@ check(
   'the token ceiling is named when it is hit',
   /token ceiling before answering/.test(truncated.stderr),
   truncated.stderr.split('\n').slice(-4).join(' | '),
+)
+
+// The README cap is 3000 code units, and a cut can land between the two halves of
+// a surrogate pair: an emoji at that offset leaves the request body ending on a
+// lone high surrogate, which the endpoint rejects on every attempt, so the pair
+// can never be compared. Measured 2026-09-15 on Fayelin12/dsh-office, whose 3000th
+// code unit is the high half of an emoji and whose three attempts all returned 400.
+const cutEmoji = runRank({ stubReadme: `${'x'.repeat(2999)}\u{1F916}tail` })
+check(
+  'a readme cut through a surrogate pair still produces a comparison',
+  cutEmoji.records.length === 2,
+  `${cutEmoji.records.length} record(s): ${cutEmoji.stderr.split('\n').filter((l) => l.trim()).slice(-3).join(' | ')}`,
+)
+check(
+  'the request body is not rejected for a lone surrogate',
+  !/api 400|unexpected end of hex escape/.test(cutEmoji.stderr),
+  `${cutEmoji.modelCalls} model call(s) | ${cutEmoji.stderr.trim().split('\n').join(' | ')}`,
 )
 
 const garbage = runRank({ replies: ['garbage'] })

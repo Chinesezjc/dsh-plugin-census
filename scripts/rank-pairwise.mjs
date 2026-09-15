@@ -182,6 +182,27 @@ async function api(path) {
 }
 
 /**
+ * Truncate text to `max` UTF-16 code units without cutting a surrogate pair.
+ *
+ * A plain `slice` can end on the high half of an emoji, and the endpoint rejects
+ * the resulting request body — "Failed to parse the request body as JSON:
+ * messages[0].content: unexpected end of hex escape" — on every attempt. Measured
+ * 2026-09-15: `Fayelin12/dsh-office` has a 10398-character README whose 3000th code
+ * unit is the high half of an emoji, so three of three attempts returned HTTP 400
+ * and that pair could never be compared.
+ *
+ * @param text - source text.
+ * @param max - code units to keep.
+ * @returns a prefix of at most `max` code units, ending on a code point boundary.
+ */
+function truncate(text, max) {
+  if (text.length <= max) return text
+  const last = text.charCodeAt(max - 1)
+  const endsOnHighSurrogate = last >= 0xd800 && last <= 0xdbff
+  return text.slice(0, endsOnHighSurrogate ? max - 1 : max)
+}
+
+/**
  * Gather the evidence shown for one plugin.
  * @param entry - catalogue row.
  * @returns brief, or null when the repository could not be read.
@@ -202,7 +223,7 @@ async function brief(entry) {
   return {
     repo: entry.repo,
     sha,
-    readme: readme.slice(0, 3000),
+    readme: truncate(readme, 3000),
     files: files.filter((p) => !/^(\.git|node_modules|dist|build)\//.test(p)).slice(0, 80),
     total: files.length,
   }
