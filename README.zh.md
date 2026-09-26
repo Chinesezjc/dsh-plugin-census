@@ -16,19 +16,19 @@
 **6923** 个仓库，四天前是 1064 个。GitHub 的话题页按 star 排序，而 star 最高的
 条目恰恰最不可能是插件。
 
-话题是被完整枚举的，不是采样：<!-- census:begin n-enumerated -->16072<!-- census:end n-enumerated --> 个唯一仓库，做法是围绕搜索 API
+话题是被完整枚举的，不是采样：<!-- census:begin n-enumerated -->16167<!-- census:end n-enumerated --> 个唯一仓库，做法是围绕搜索 API
 单次查询 1000 条的上限做分片。契约探测则跨运行累积，所以下表覆盖的是目前已探测的
-<!-- census:begin n-probed -->16842<!-- census:end n-probed --> 个仓库：
+<!-- census:begin n-probed -->16968<!-- census:end n-probed --> 个仓库：
 
 <!-- census:begin compliance-zh -->
 | Star | 符合插件契约的比例 |
 | --- | --- |
 | 0 | 81.5% |
-| 1-2 | 79.9% |
-| 3-9 | 83.0% |
-| 10-49 | 82.6% |
-| 50+ | **63.7%** |
-| 全部 | 80.7% |
+| 1-2 | 80.0% |
+| 3-9 | 83.1% |
+| 10-49 | 82.5% |
+| 50+ | **63.9%** |
+| 全部 | 80.8% |
 <!-- census:end compliance-zh -->
 
 只有最高那一档偏低，其构成解释了原因：带这个话题的高 star 仓库大多是这个话题
@@ -44,15 +44,15 @@
 
 ## 样本构成
 
-全部 <!-- census:begin n-probed -->16842<!-- census:end n-probed --> 个被探测仓库，按判定分类：
+全部 <!-- census:begin n-probed -->16968<!-- census:end n-probed --> 个被探测仓库，按判定分类：
 
 <!-- census:begin verdicts -->
 | 判定 | 数量 | 占比 |
 | --- | --- | --- |
-| `CONTRACT_OK` | 13535 | 80.4% |
-| `NO_DSH_FIELD` | 1355 | 8.0% |
-| `NO_PACKAGE_JSON` | 977 | 5.8% |
-| `DSH_WITHOUT_BUNDLE_PATCH` | 799 | 4.7% |
+| `CONTRACT_OK` | 13650 | 80.4% |
+| `NO_DSH_FIELD` | 1359 | 8.0% |
+| `NO_PACKAGE_JSON` | 983 | 5.8% |
+| `DSH_WITHOUT_BUNDLE_PATCH` | 800 | 4.7% |
 | `PATCH_FILE_EMPTY_OR_INVALID` | 54 | 0.3% |
 | `VENDORED_HARNESS` | 49 | 0.3% |
 | `TREE_UNREADABLE` | 26 | 0.2% |
@@ -63,7 +63,7 @@
 <!-- census:end verdicts -->
 
 探测是累积的：每次运行把 API 配额先花在从未探测过的仓库上，然后是最陈旧的，所以
-这张表覆盖的是 <!-- census:begin n-enumerated -->16072<!-- census:end n-enumerated --> 个已枚举仓库中不断增长的一部分，而不是每次重新采样。
+这张表覆盖的是 <!-- census:begin n-enumerated -->16167<!-- census:end n-enumerated --> 个已枚举仓库中不断增长的一部分，而不是每次重新采样。
 
 `VENDORED_HARNESS` 标记的是携带了 harness 副本、而非插件的仓库：它之所以满足
 契约，是因为它*内含* DSH 自己的 bundle 包。这 <!-- census:begin n-vendored -->49<!-- census:end n-vendored --> 个的 `fork` 全部为 false，
@@ -100,7 +100,7 @@
 
 只有达到 `PARSED` 的条目才被列为插件。
 
-**如实说明的局限：** 第 2、3 级在实践中拦下的很少——<!-- census:begin n-declared -->3580<!-- census:end n-declared --> 个声明了 patch
+**如实说明的局限：** 第 2、3 级在实践中拦下的很少——<!-- census:begin n-declared -->3629<!-- census:end n-declared --> 个声明了 patch
 的仓库中只有 <!-- census:begin n-tier23-fail -->71<!-- census:end n-tier23-fail --> 个在这两级失败。静态验证在第 1 级就基本到顶了，剩余的不确定性只能靠实际安装
 插件来消除。安装验证尚未实现；本仓库不声称任何插件能运行。
 
@@ -111,15 +111,15 @@
 <!-- census:begin surface-zh -->
 | 置信度 | 依据 | 数量 | 占比 |
 | --- | --- | --- | --- |
-| `high` | 依赖 `@deepseek-ai/dsh-client-*`（client 侧）或 `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧） | 7685 | 56.8% |
-| `declared` | 插件自己的 `dsh.client` 或 `dsh.host` 块声明了该 surface | 3580 | 26.4% |
-| `medium` | 有 `@deepseek-ai/*` 依赖，但没有一个依赖能区分 client 与 host，surface 记为 `indeterminate` | 459 | 3.4% |
-| `low` | 没有 `@deepseek-ai/*` 依赖，surface 由名称或描述中的关键词猜测 | 1185 | 8.8% |
-| `none` | 既无依赖证据也无关键词命中——**根本没有归因** | 626 | 4.6% |
+| `high` | 依赖 `@deepseek-ai/dsh-client-*`（client 侧）或 `@deepseek-ai/dsh-host-*` 及 host 专用包（host 侧） | 7736 | 56.7% |
+| `declared` | 插件自己的 `dsh.client` 或 `dsh.host` 块声明了该 surface | 3629 | 26.6% |
+| `medium` | 有 `@deepseek-ai/*` 依赖，但没有一个依赖能区分 client 与 host，surface 记为 `indeterminate` | 464 | 3.4% |
+| `low` | 没有 `@deepseek-ai/*` 依赖，surface 由名称或描述中的关键词猜测 | 1190 | 8.7% |
+| `none` | 既无依赖证据也无关键词命中——**根本没有归因** | 631 | 4.6% |
 <!-- census:end surface-zh -->
 
-`high` 与 `medium` 这 <!-- census:begin n-dep-evidence -->8144<!-- census:end n-dep-evidence --> 行基于**已安装的依赖**。另有
-<!-- census:begin n-declared -->3580<!-- census:end n-declared --> 行为 `declared`：插件自己的 `dsh` 块声明了 surface——这是作者的
+`high` 与 `medium` 这 <!-- census:begin n-dep-evidence -->8200<!-- census:end n-dep-evidence --> 行基于**已安装的依赖**。另有
+<!-- census:begin n-declared -->3629<!-- census:end n-declared --> 行为 `declared`：插件自己的 `dsh` 块声明了 surface——这是作者的
 声明而非已安装的包，所以排在依赖证据之下、猜测之上。
 
 归因此前只读依赖，因而丢掉了这些声明，并用猜测取而代之。**这些猜测里有 52% 把
@@ -143,9 +143,9 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 <!-- census:begin install-zh -->
 | 判定 | 含义 | 数量 |
 | --- | --- | --- |
-| `published` | 声明的包名可在 npm registry 解析 | 6262 |
-| `git-only` | 不在 npm 上；只能用 Git specifier 安装 | 7091 |
-| `unpublishable-scope` | 仓库不属于该组织，却用 `@deepseek-ai/` 命名自己 | 180 |
+| `published` | 声明的包名可在 npm registry 解析 | 6313 |
+| `git-only` | 不在 npm 上；只能用 Git specifier 安装 | 7151 |
+| `unpublishable-scope` | 仓库不属于该组织，却用 `@deepseek-ai/` 命名自己 | 184 |
 | `unknown` | **registry 没有给出结论**——这不是对该包的判断 | 2 |
 <!-- census:end install-zh -->
 
@@ -246,18 +246,18 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 契约验证读的是仓库里的 `package.json`。而用户执行 `dsh plugin add <name>` 装的是
 **已发布的 tarball**。**这是两个不同的产物，而它们并不一致。**
 
-在 <!-- census:begin n-npm-checked -->6262<!-- census:end n-npm-checked --> 个能在 npm 上解析的包中：
+在 <!-- census:begin n-npm-checked -->6313<!-- census:end n-npm-checked --> 个能在 npm 上解析的包中：
 
 <!-- census:begin npm-manifest-zh -->
 | 状态 | 含义 | 数量 | 占比 |
 | --- | --- | --- | --- |
-| `bundle-ok` | 已发布的清单声明了 `dsh.bundle` | 5639 | 90.1% |
-| `bundle-missing` | **已发布的清单没有 `dsh.bundle`**——DSH 会拒绝把它作为 profile bundle 加载 | 308 | 4.9% |
-| `package-missing` | 声明的包名已无法在 registry 上解析 | 59 | 0.9% |
-| `unreadable` | registry 读取失败；这不是对该包的判断 | 256 | 4.1% |
+| `bundle-ok` | 已发布的清单声明了 `dsh.bundle` | 5748 | 91.1% |
+| `bundle-missing` | **已发布的清单没有 `dsh.bundle`**——DSH 会拒绝把它作为 profile bundle 加载 | 312 | 4.9% |
+| `package-missing` | 声明的包名已无法在 registry 上解析 | 60 | 1.0% |
+| `unreadable` | registry 读取失败；这不是对该包的判断 | 193 | 3.1% |
 <!-- census:end npm-manifest-zh -->
 
-其中 <!-- census:begin n-npm-broken -->367<!-- census:end n-npm-broken --> 个（<!-- census:begin pct-npm-broken -->5.9%<!-- census:end pct-npm-broken -->）**按包名装不上**，尽管它们
+其中 <!-- census:begin n-npm-broken -->372<!-- census:end n-npm-broken --> 个（<!-- census:begin pct-npm-broken -->5.9%<!-- census:end pct-npm-broken -->）**按包名装不上**，尽管它们
 的仓库满足契约。`bobcat848/dsh-calculator` 的仓库里有 `dsh.bundle` 和完整的
 `dsh.client` 块，而已发布的 `dsh-calculator@0.0.1` **连 `dsh` 字段都没有**；
 `orriduck/dsh-tui` 在 `0.2.19` 上同样如此。装上并注册为 profile bundle 会失败并报
@@ -275,21 +275,21 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 `unbundled`（契约已不成立）。无法得出结论的探测被报为 `inconclusive`，
 而绝不报为失效——因为每个失效状态都会促使他人删除条目，而证据可能并不支持。
 
-全部 <!-- census:begin n-catalog-rows -->13535<!-- census:end n-catalog-rows --> 个条目：
+全部 <!-- census:begin n-catalog-rows -->13650<!-- census:end n-catalog-rows --> 个条目：
 
 <!-- census:begin decay -->
 | 状态 | 数量 |
 | --- | --- |
-| `live` | 10355 |
-| `archived` | 79 |
-| `gone` | 196 |
-| `unbundled` | 63 |
-| `dormant` | 2838 |
+| `live` | 10090 |
+| `archived` | 83 |
+| `gone` | 209 |
+| `unbundled` | 65 |
+| `dormant` | 3199 |
 | `inconclusive` | 4 |
 <!-- census:end decay -->
 
 **`dormant: 0` 反映的是话题的年龄，不是它的健康度。** 目录条目中最久的一次 push 距今
-<!-- census:begin max-age-days -->42<!-- census:end max-age-days --> 天，所以 30 天的休眠阈值根本还触发不了。这已经不再是过去那种
+<!-- census:begin max-age-days -->43<!-- census:end max-age-days --> 天，所以 30 天的休眠阈值根本还触发不了。这已经不再是过去那种
 采样偏差——枚举现在覆盖整个话题，而不是「最近更新的那一页」——但这个数字仍然说明
 不了长期维护情况，因为这个生态里还没有任何项目有时间沉寂下来。
 
@@ -304,7 +304,7 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 中的某个状态可能来自比上面那些数字更早的一次运行。
 
 <!-- census:begin decay-flagged-zh -->
-被判定为失效的 3176 个条目（`inconclusive` 不是失效，已排除）：
+被判定为失效的 3556 个条目（`inconclusive` 不是失效，已排除）：
 
 | 条目 | 状态 |
 | --- | --- |
@@ -321,7 +321,7 @@ surface 搞错了**——283 个中有 147 个在读到声明后发生了改变�
 | `cherrchen/dsh-client-ui-details-host` | archived — repository is archived |
 | `Dawn388887/dsh-fileview` | archived — repository is archived |
 
-……另有 3164 个见 `data/decay.jsonl`。
+……另有 3544 个见 `data/decay.jsonl`。
 <!-- census:end decay-flagged-zh -->
 
 ## 复现
@@ -369,7 +369,7 @@ owner、同时不误伤有权发布者、无关 scope 和形近 scope。两个�
 | `data/ratings.jsonl` | 成对比较得出的 Elo 评级，含每个条目的场次 |
 
 搜索 API 单次查询最多返回 1000 条结果。`scripts/enumerate-topic.mjs` 先按 star 桶、
-再按创建日期分片绕过这个上限，最终枚举到 <!-- census:begin n-enumerated -->16072<!-- census:end n-enumerated --> 个唯一仓库——
+再按创建日期分片绕过这个上限，最终枚举到 <!-- census:begin n-enumerated -->16167<!-- census:end n-enumerated --> 个唯一仓库——
 即整个话题，不是样本。日期边界取自结果计数而非排序，因为这个搜索后端根本不支持
 按创建时间排序。
 
@@ -408,7 +408,7 @@ owner、同时不误伤有权发布者、无关 scope 和形近 scope。两个�
   `dormant` 和 `unbundled`，并把探测不成功的情况报为 `inconclusive` 而不是失效，
   因为每一个失效状态都会促使他人删除条目，而证据可能并不支持这个删除。
 - **公布整个样本的分布**而非精选列表：判定占比、按 star 档的合格率、以及全部
-  <!-- census:begin n-probed -->16842<!-- census:end n-probed --> 个被探测仓库的可安装性，探针脚本一并提供。
+  <!-- census:begin n-probed -->16968<!-- census:end n-probed --> 个被探测仓库的可安装性，探针脚本一并提供。
 
 更深入的单仓库审计已经存在，但**未发布**——见
 [AUDIT-EXPERIMENTAL.md](AUDIT-EXPERIMENTAL.md)。它的首个实现在每一个被测仓库上
